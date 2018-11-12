@@ -1,19 +1,7 @@
-# Chrome Extension Boilerplate built with React + Parcel
+# Chrome Extension Create elements locators for JDI UI tests
 
-# CLI Commands
-
-## Development
-
-```Shell
-npm run watch
-```
-
-Starts the watcher for building project when a file changed.
-
-## Building
-
-```Shell
-npm run build
-```
-
-Preps your app for deployment. Minifies all files, piping them to the `src/build` folder.
+## How to import in browser
+Download repo
+Open Chrome Settings -> choose option 'More tools' -> choose option Extensions -> Click 'Load unpacked'
+Select root folder of this project
+Open Chrome developer tools JDN tab should be added
