@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-class Button extends React.Component {
+class Link extends React.Component {
 	handleClick = () => {
 		const { onclick } = this.props;
 		if (onclick) {
@@ -11,7 +11,7 @@ class Button extends React.Component {
 
 	render () {
 		const { label, className, icon } = this.props;
-		let cl = `btn ${className}`;
+		let cl = `btn-link ${className}`;
 		return (
 			<button className={cl} type="button" onClick={this.handleClick}>
 				{icon
@@ -26,6 +26,6 @@ class Button extends React.Component {
 	}
 }
 
-Button.propTypes = {};
+Link.propTypes = {};
 
-export default Button;
+export default Link;

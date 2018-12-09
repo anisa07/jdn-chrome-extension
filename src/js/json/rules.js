@@ -1,10 +1,14 @@
 const rulesJson = {
+	"ListOfSearchAttributes": ['id', 'class'],
 	"SimpleRules":
 		{
 			"Button":
-				[{ "Locator": "button[type=submit]", "uniqness": "text", "id": 0 }], "CheckBox":
-				[{ "Locator": "input[type=checkbox]", "id": 0, "uniqness": "name" }], "Image":
-				[{ "Locator": "img", "id": 0, "uniqness": "id" }], "Label":
+				[{ "Locator": "button[type=submit]", "uniqness": "text", "id": 0 }],
+			"CheckBox":
+				[{ "Locator": "input[type=checkbox]", "id": 0, "uniqness": "name" }],
+			"Image":
+				[{ "Locator": "img", "id": 0, "uniqness": "id" }],
+			"Label":
 				[{ "Locator": "h1", "id": 0, "uniqness": "name" }, {
 					"Locator": "h2",
 					"id": 1,
@@ -13,21 +17,32 @@ const rulesJson = {
 					"Locator": "[ui=label]",
 					"id": 3,
 					"uniqness": "text"
-				}], "Link":
-				[{ "Locator": "", "uniqness": "", "id": 0 }], "Text":
-				[{ "Locator": ".main-txt", "id": 0, "uniqness": "name" }], "TextField":
+				}],
+			"Link":
+				[{ "Locator": "", "uniqness": "", "id": 0 }],
+			"Text":
+				[{ "Locator": ".main-txt", "id": 0, "uniqness": "name" }],
+			"TextField":
 				[{ "Locator": "input[type=text]", "id": 0, "uniqness": "id" }, {
 					"Locator": "input[type=password]",
 					"id": 1,
 					"uniqness": "id"
-				}], "TextArea":
-				[{ "Locator": "textarea", "id": 0, "uniqness": "id" }], "DataPicker":
-				[{ "Locator": "", "id": 0, "uniqness": "" }], "FileInput":
-				[{ "Locator": "", "id": 0, "uniqness": "" }], "Selector":
-				[{ "Locator": "", "id": 0, "uniqness": "" }], "CheckList":
-				[{ "Locator": "", "id": 0, "uniqness": "" }], "Menu":
-				[{ "Locator": "", "id": 0, "uniqness": "" }], "RadioButtons":
-				[{ "Locator": "", "id": 0, "uniqness": "" }], "Tabs":
+				}],
+			"TextArea":
+				[{ "Locator": "textarea", "id": 0, "uniqness": "id" }],
+			"DataPicker":
+				[{ "Locator": "", "id": 0, "uniqness": "" }],
+			"FileInput":
+				[{ "Locator": "", "id": 0, "uniqness": "" }],
+			"Selector":
+				[{ "Locator": "", "id": 0, "uniqness": "" }],
+			"CheckList":
+				[{ "Locator": "", "id": 0, "uniqness": "" }],
+			"Menu":
+				[{ "Locator": "", "id": 0, "uniqness": "" }],
+			"RadioButtons":
+				[{ "Locator": "", "id": 0, "uniqness": "" }],
+			"Tabs":
 				[{ "Locator": "", "id": 0, "uniqness": "" }]
 		}
 	,

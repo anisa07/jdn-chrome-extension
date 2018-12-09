@@ -26,14 +26,18 @@ const styles = {
 		},
 	},
 	leftBlock: {
-		flexGrow: 1,
 		border: '1px solid #e1e4e8',
 		padding: '10px',
+		minWidth: '35%',
+		width: '100%',
+		minHeight: '400px'
 	},
 	rightBlock: {
-		flexGrow: 2,
 		border: '1px solid #e1e4e8',
 		padding: '10px',
+		minWidth: '65%',
+		width: '100%',
+		minHeight: '400px'
 	}
 };
 
