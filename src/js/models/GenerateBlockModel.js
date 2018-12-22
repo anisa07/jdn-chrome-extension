@@ -1,4 +1,4 @@
-import { genRand, cssToXpath } from "../utils/helpers";
+import { genRand, cssToXPath } from "../utils/helpers";
 import { observable, action } from 'mobx';
 import Log from "./Log";
 
@@ -59,7 +59,7 @@ export default class GenerateBlockModel {
 		}
 
 		function generateLocator (xpath, locator) {
-			return xpath === isXpath(locator) ? locator : cssToXpath(locator);
+			return xpath === isXpath(locator) ? locator : cssToXPath(locator);
 		}
 
 		function getCorrectLocator (dom, locator, uniqness) {
@@ -267,11 +267,11 @@ export default class GenerateBlockModel {
 			if (composites.indexOf(e.Type) > -1) {
 				element.Locator = e.Locator;
 				element.isSection = true;
-				element.children = [];
+				element.children = e.children || [];
 				let found = this.sections.get(element.elId);
 
 				if (!!found) {
-					element = found;
+					// element = found;
 					this.page.elements.push(found.elId);
 				} else {
 					for (let f in fields) {
@@ -305,6 +305,7 @@ export default class GenerateBlockModel {
 					Name: nameElement(firstSearch.locatorType.locator, uniq, '', elements[0]).slice(0, 20),
 				};
 				fillEl(e, t, parent, ruleId);
+				return;
 			}
 			let tooMuchElements = `Too much elements found(${elements.length} for ${uniqness.value}. Locator (${firstSearch.locatorType.locator}))`;
 			this.log.addToLog(tooMuchElements);
@@ -332,7 +333,7 @@ export default class GenerateBlockModel {
 					}
 				}
 			}
-		}
+		};
 
 		function getComposite(dom, t) {
 			let rules = rulesObj.CompositeRules[t];
@@ -467,7 +468,6 @@ export default class GenerateBlockModel {
 							}
 						}
 					}
-
 
 					results.push({ Locator: "body", Type: null, content: observedDOM, elId: null, parentId: null, parent: null });
 

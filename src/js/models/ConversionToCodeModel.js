@@ -49,10 +49,10 @@ export default class ConversionToCodeModel {
 			zip.folder("pages").file(getPageName(pages[index].name) + extension, page)
 		);
 
-		sections.forEach(section =>
+		sections.forEach(section => {
 			zip.folder("sections").file(getClassName(section.Name) + extension,
 				sectionCode(pack, section, mainModel))
-		);
+		});
 
 		sections.forEach(section => {
 			if (section.Type === "Form") {
@@ -129,6 +129,13 @@ function getFields (obj, commonFields) {
 	for (let field in commonFields) {
 		delete clone[field];
 	}
+
+	for (let field in clone) {
+		if (clone[field] === 'internal') {
+			delete clone[field]
+		}
+	}
+
 	return clone;
 }
 
@@ -151,7 +158,8 @@ function genEntities (parentId, arrOfElements, mainModel) {
 }
 
 function getElement (el, generateBlockModel) {
-	return typeof el === 'string' ? generateBlockModel.sections.get(el) : el;
+	const key = typeof el;
+	return (key === 'number' || key === 'string') ? generateBlockModel.sections.get(el) : el;
 }
 
 function genCodeOfElements (parentId, arrOfElements, mainModel) {
@@ -222,6 +230,7 @@ export function getEntityName (name) {
 
 export function sectionCode (pack, el, mainModel) {
 	let code = genCodeOfElements(el.elId, el.children, mainModel);
+
 	switch (el.Type) {
 		case "Section":
 			return sectionTemplate(pack, el.Name, code);
@@ -245,9 +254,7 @@ export function siteCode (pack, domain, name, mainModel) {
 	return `package ${pack};
 	
 import ${pack}.pages.*;
-import com.epam.jdi.uitests.web.selenium.elements.composite.WebSite;
-import com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.*;
-
+${mainModel.settingsModel.customSiteImports}
 @JSite("${domain}")
 public class ${name} extends WebSite {
 	${getPageCode(mainModel)}

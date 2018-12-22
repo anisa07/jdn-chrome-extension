@@ -10,8 +10,8 @@ export default class RulesBlockModel {
 	@observable elementFields = {};
 
 	commonFields = {
-		"Name": "TextField",
-		"Type": "ComboBox",
+//		"Name": "TextField",
+//		"Type": "ComboBox",
 		"parent": "internal",
 		"parentId": "internal",
 		"elId": "internal"
@@ -97,7 +97,7 @@ export default class RulesBlockModel {
 	// TODO update localStorage if update rules
 
 	@action
-	clearStorage () {
+	clearRuleStorage () {
 		const rulesStorage = window.localStorage;
 		rulesStorage.removeItem(this.rulesStorageName);
 		this.rules = JSON.parse(JSON.stringify(RulesJson));
@@ -150,12 +150,44 @@ export default class RulesBlockModel {
 		this.currentRuleItem = index;
 	}
 
-	// TODO add new item to existing rule
-	// TODO delete item from existing rule
-	// TODO edit item from existing rule
+	@action
+	handleAddRuleItem () {
+		const currentRules =  this.rules[this.currentRuleSet][this.currentRuleName].slice();
+		const rule = currentRules.slice(-1)[0];
+		const newRule = {};
+
+		if (rule.Locator || rule.Root) {
+			Object.keys(rule).forEach(prop => {
+				newRule[prop] = '';
+			});
+			newRule.id = rule.id + 1;
+			currentRules.push(newRule);
+			this.currentRuleItem = this.rules[this.currentRuleSet][this.currentRuleName].length;
+			this.rules[this.currentRuleSet][this.currentRuleName] = currentRules.slice();
+			this.updateRules();
+		}
+	}
+
+	@action
+	handleDeleteRuleItem (index) {
+		const currentRules =  this.rules[this.currentRuleSet][this.currentRuleName].slice();
+		if (currentRules.length > 1) {
+			currentRules.splice(index, 1);
+			this.rules[this.currentRuleSet][this.currentRuleName] = currentRules.slice();
+			this.updateRules();
+		}
+	}
+
+	@action
+	handleEditRuleName(value, field) {
+		const currentRules =  this.rules[this.currentRuleSet][this.currentRuleName].slice();
+		currentRules[this.currentRuleItem][field] = value;
+		this.rules[this.currentRuleSet][this.currentRuleName] = currentRules.slice();
+		this.updateRules();
+	}
+
 	// TODO edit rule name e.g Button
 	// TODO copy rule e.g Button
 	// TODO delete rule e.g Button
-
 	// TODO add new rule for unknown item next generation
 }

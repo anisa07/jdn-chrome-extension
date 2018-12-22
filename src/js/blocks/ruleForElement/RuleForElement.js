@@ -40,6 +40,17 @@ const styles = {
 	field: {
 		display: 'inline-block',
 		width: '100px'
+	},
+	deleteRule: {
+		width: '16px',
+		height: '16px',
+		marginLeft: '5px'
+	},
+	ruleLink: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		cursor: 'pointer'
 	}
 };
 
@@ -48,7 +59,7 @@ const styles = {
 class RuleForElement extends React.Component {
 	@observable isEditable = false;
 
-	handleEditRuleName= () => {
+	handleEditRuleName = () => {
 		this.isEditable = !this.isEditable;
 	};
 
@@ -61,6 +72,19 @@ class RuleForElement extends React.Component {
 			return Object.keys(rules[index]);
 		}
 		return [];
+	};
+
+	handleDeleteRule = (e, index) => {
+		e.stopPropagation();
+		this.props.mainModel.ruleBlockModel.handleDeleteRuleItem(index);
+	};
+
+	handleAddRule = () => {
+		this.props.mainModel.ruleBlockModel.handleAddRuleItem();
+	};
+
+	handleEditRule = (value, field) => {
+		this.props.mainModel.ruleBlockModel.handleEditRuleName(value, field);
 	};
 
 	render () {
@@ -80,20 +104,25 @@ class RuleForElement extends React.Component {
 					<div className="UnderlineNav-body">
 						{
 							rules.map((rule, index) => {
-								const cl = index === itemIndex ? `selected` : '';
+								const cl = index === itemIndex ? ` selected` : '';
 								return (
 									<a role="tab"
 									   key={`Rule ${index + 1}`}
-									   className={`UnderlineNav-item ${cl}`}
+									   className={`UnderlineNav-item ${classes.ruleLink} ${cl}`}
 									   onClick={() => {this.handleSwitchTab(index)}}
-									>{`Rule ${index + 1}`}</a>
+									>
+										{`Rule ${index + 1}`}
+										<img src={close} className={classes.deleteRule} onClick={(e) => {this.handleDeleteRule(e, index)}} />
+									</a>
 								)
 							})
 						}
+						<a role="tab"
+						   className='UnderlineNav-item'
+						>
+							<img src={add} className={classes.deleteRule} onClick={this.handleAddRule} />
+						</a>
 					</div>
-					{/*<div className="UnderlineNav-actions">*/}
-						{/*<a className="btn">Button</a>*/}
-					{/*</div>*/}
 				</nav>
 				<div className={classes.fieldsContainer}>
 					{ruleFields.map(field => {
@@ -103,7 +132,7 @@ class RuleForElement extends React.Component {
 									<span className={classes.field}>{field} </span>
 									<Input
 										value={rules[itemIndex][field]}
-										onchange={(e) => {}}
+										onchange={(e) => {this.handleEditRule(e, field)}}
 									/>
 								</div>
 							)

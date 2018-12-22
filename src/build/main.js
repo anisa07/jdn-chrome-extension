@@ -38364,7 +38364,7 @@ function () {
       }
 
       function generateLocator(xpath, locator) {
-        return xpath === isXpath(locator) ? locator : (0, _helpers.cssToXpath)(locator);
+        return xpath === isXpath(locator) ? locator : (0, _helpers.cssToXPath)(locator);
       }
 
       function getCorrectLocator(dom, locator, uniqness) {
@@ -38614,13 +38614,12 @@ function () {
         if (composites.indexOf(e.Type) > -1) {
           element.Locator = e.Locator;
           element.isSection = true;
-          element.children = [];
+          element.children = e.children || [];
 
           var found = _this.sections.get(element.elId);
 
           if (!!found) {
-            element = found;
-
+            // element = found;
             _this.page.elements.push(found.elId);
           } else {
             for (var _f in fields) {
@@ -38659,6 +38658,7 @@ function () {
             Name: nameElement(firstSearch.locatorType.locator, uniq, '', elements[0]).slice(0, 20)
           };
           fillEl(e, t, parent, ruleId);
+          return;
         }
 
         var tooMuchElements = "Too much elements found(".concat(elements.length, " for ").concat(uniqness.value, ". Locator (").concat(firstSearch.locatorType.locator, "))");
@@ -39246,8 +39246,8 @@ function () {
     _initDefineProp(this, "elementFields", _descriptor5, this);
 
     this.commonFields = {
-      "Name": "TextField",
-      "Type": "ComboBox",
+      //		"Name": "TextField",
+      //		"Type": "ComboBox",
       "parent": "internal",
       "parentId": "internal",
       "elId": "internal"
@@ -39321,8 +39321,8 @@ function () {
 
 
   _createClass(RulesBlockModel, [{
-    key: "clearStorage",
-    value: function clearStorage() {
+    key: "clearRuleStorage",
+    value: function clearRuleStorage() {
       var rulesStorage = window.localStorage;
       rulesStorage.removeItem(this.rulesStorageName);
       this.rules = JSON.parse(JSON.stringify(_rules.default));
@@ -39374,10 +39374,44 @@ function () {
     key: "handleSwitchRule",
     value: function handleSwitchRule(index) {
       this.currentRuleItem = index;
-    } // TODO add new item to existing rule
-    // TODO delete item from existing rule
-    // TODO edit item from existing rule
-    // TODO edit rule name e.g Button
+    }
+  }, {
+    key: "handleAddRuleItem",
+    value: function handleAddRuleItem() {
+      var currentRules = this.rules[this.currentRuleSet][this.currentRuleName].slice();
+      var rule = currentRules.slice(-1)[0];
+      var newRule = {};
+
+      if (rule.Locator || rule.Root) {
+        Object.keys(rule).forEach(function (prop) {
+          newRule[prop] = '';
+        });
+        newRule.id = rule.id + 1;
+        currentRules.push(newRule);
+        this.currentRuleItem = this.rules[this.currentRuleSet][this.currentRuleName].length;
+        this.rules[this.currentRuleSet][this.currentRuleName] = currentRules.slice();
+        this.updateRules();
+      }
+    }
+  }, {
+    key: "handleDeleteRuleItem",
+    value: function handleDeleteRuleItem(index) {
+      var currentRules = this.rules[this.currentRuleSet][this.currentRuleName].slice();
+
+      if (currentRules.length > 1) {
+        currentRules.splice(index, 1);
+        this.rules[this.currentRuleSet][this.currentRuleName] = currentRules.slice();
+        this.updateRules();
+      }
+    }
+  }, {
+    key: "handleEditRuleName",
+    value: function handleEditRuleName(value, field) {
+      var currentRules = this.rules[this.currentRuleSet][this.currentRuleName].slice();
+      currentRules[this.currentRuleItem][field] = value;
+      this.rules[this.currentRuleSet][this.currentRuleName] = currentRules.slice();
+      this.updateRules();
+    } // TODO edit rule name e.g Button
     // TODO copy rule e.g Button
     // TODO delete rule e.g Button
     // TODO add new rule for unknown item next generation
@@ -39413,7 +39447,7 @@ function () {
   initializer: function initializer() {
     return 'Default rules';
   }
-}), _applyDecoratedDescriptor(_class.prototype, "clearStorage", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "clearStorage"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "changeListOfAttr", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "changeListOfAttr"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "deleteItemFromListOfAttr", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "deleteItemFromListOfAttr"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "addItemToListOfAttr", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "addItemToListOfAttr"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setCurrentRuleName", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setCurrentRuleName"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setCurrentRuleSet", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setCurrentRuleSet"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "handleSwitchRule", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "handleSwitchRule"), _class.prototype)), _class);
+}), _applyDecoratedDescriptor(_class.prototype, "clearRuleStorage", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "clearRuleStorage"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "changeListOfAttr", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "changeListOfAttr"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "deleteItemFromListOfAttr", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "deleteItemFromListOfAttr"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "addItemToListOfAttr", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "addItemToListOfAttr"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setCurrentRuleName", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setCurrentRuleName"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setCurrentRuleSet", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setCurrentRuleSet"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "handleSwitchRule", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "handleSwitchRule"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "handleAddRuleItem", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "handleAddRuleItem"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "handleDeleteRuleItem", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "handleDeleteRuleItem"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "handleEditRuleName", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "handleEditRuleName"), _class.prototype)), _class);
 exports.default = RulesBlockModel;
 },{"mobx":"../../node_modules/mobx/lib/mobx.module.js","../json/rules":"json/rules.js"}],"../../node_modules/react-loading/dist/react-loading.js":[function(require,module,exports) {
 var define;
@@ -43328,7 +43362,9 @@ function (_React$Component) {
           onClick: function onClick() {
             _this2.handleClickRule(item);
           }
-        }, item);
+        }, _react.default.createElement("a", {
+          className: linkClass
+        }, item));
       })));
     }
   }]);
@@ -43881,6 +43917,17 @@ var styles = {
   field: {
     display: 'inline-block',
     width: '100px'
+  },
+  deleteRule: {
+    width: '16px',
+    height: '16px',
+    marginLeft: '5px'
+  },
+  ruleLink: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer'
   }
 };
 var RuleForElement = (_dec = (0, _mobxReact.inject)('mainModel'), _dec(_class = (0, _mobxReact.observer)(_class = (_class2 =
@@ -43911,6 +43958,14 @@ function (_React$Component) {
       }
 
       return [];
+    }, _this.handleDeleteRule = function (e, index) {
+      e.stopPropagation();
+
+      _this.props.mainModel.ruleBlockModel.handleDeleteRuleItem(index);
+    }, _this.handleAddRule = function () {
+      _this.props.mainModel.ruleBlockModel.handleAddRuleItem();
+    }, _this.handleEditRule = function (value, field) {
+      _this.props.mainModel.ruleBlockModel.handleEditRuleName(value, field);
     }, _temp));
   }
 
@@ -43936,16 +43991,29 @@ function (_React$Component) {
       }, _react.default.createElement("div", {
         className: "UnderlineNav-body"
       }, rules.map(function (rule, index) {
-        var cl = index === itemIndex ? "selected" : '';
+        var cl = index === itemIndex ? " selected" : '';
         return _react.default.createElement("a", {
           role: "tab",
           key: "Rule ".concat(index + 1),
-          className: "UnderlineNav-item ".concat(cl),
+          className: "UnderlineNav-item ".concat(classes.ruleLink, " ").concat(cl),
           onClick: function onClick() {
             _this2.handleSwitchTab(index);
           }
-        }, "Rule ".concat(index + 1));
-      }))), _react.default.createElement("div", {
+        }, "Rule ".concat(index + 1), _react.default.createElement("img", {
+          src: _index.close,
+          className: classes.deleteRule,
+          onClick: function onClick(e) {
+            _this2.handleDeleteRule(e, index);
+          }
+        }));
+      }), _react.default.createElement("a", {
+        role: "tab",
+        className: "UnderlineNav-item"
+      }, _react.default.createElement("img", {
+        src: _index.add,
+        className: classes.deleteRule,
+        onClick: this.handleAddRule
+      })))), _react.default.createElement("div", {
         className: classes.fieldsContainer
       }, ruleFields.map(function (field) {
         if (field !== 'id') {
@@ -43956,7 +44024,9 @@ function (_React$Component) {
             className: classes.field
           }, field, " "), _react.default.createElement(_Input.default, {
             value: rules[itemIndex][field],
-            onchange: function onchange(e) {}
+            onchange: function onchange(e) {
+              _this2.handleEditRule(e, field);
+            }
           }));
         }
       })));
@@ -59724,6 +59794,8 @@ var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -59832,7 +59904,7 @@ function () {
         return zip.folder("pages").file(getPageName(pages[index].name) + extension, page);
       });
       sections.forEach(function (section) {
-        return zip.folder("sections").file(getClassName(section.Name) + extension, sectionCode(pack, section, mainModel));
+        zip.folder("sections").file(getClassName(section.Name) + extension, sectionCode(pack, section, mainModel));
       });
       sections.forEach(function (section) {
         if (section.Type === "Form") {
@@ -59933,6 +60005,12 @@ function getFields(obj, commonFields) {
     delete clone[field];
   }
 
+  for (var _field in clone) {
+    if (clone[_field] === 'internal') {
+      delete clone[_field];
+    }
+  }
+
   return clone;
 }
 
@@ -59958,7 +60036,9 @@ function genEntities(parentId, arrOfElements, mainModel) {
 }
 
 function getElement(el, generateBlockModel) {
-  return typeof el === 'string' ? generateBlockModel.sections.get(el) : el;
+  var key = _typeof(el);
+
+  return key === 'number' || key === 'string' ? generateBlockModel.sections.get(el) : el;
 }
 
 function genCodeOfElements(parentId, arrOfElements, mainModel) {
@@ -60033,7 +60113,7 @@ function entityCode(pack, section, mainModel) {
 }
 
 function siteCode(pack, domain, name, mainModel) {
-  return "package ".concat(pack, ";\n\t\nimport ").concat(pack, ".pages.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebSite;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.*;\n\n@JSite(\"").concat(domain, "\")\npublic class ").concat(name, " extends WebSite {\n\t").concat(getPageCode(mainModel), "\n}");
+  return "package ".concat(pack, ";\n\t\nimport ").concat(pack, ".pages.*;\n").concat(mainModel.settingsModel.customSiteImports, "\n@JSite(\"").concat(domain, "\")\npublic class ").concat(name, " extends WebSite {\n\t").concat(getPageCode(mainModel), "\n}");
 }
 
 function pageCode(page, mainModel) {
@@ -60067,9 +60147,17 @@ exports.default = void 0;
 
 var _mobx = require("mobx");
 
-var _desc, _value, _class, _descriptor, _descriptor2;
+var _rules = _interopRequireDefault(require("../json/rules"));
+
+var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _initDefineProp(target, property, descriptor, context) {
   if (!descriptor) return;
@@ -60114,13 +60202,51 @@ function _initializerWarningHelper(descriptor, context) {
   throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 }
 
-var SettingsModel = (_class = function SettingsModel() {
-  _classCallCheck(this, SettingsModel);
+var SettingsModel = (_class =
+/*#__PURE__*/
+function () {
+  function SettingsModel() {
+    _classCallCheck(this, SettingsModel);
 
-  _initDefineProp(this, "downloadAfterGeneration", _descriptor, this);
+    _initDefineProp(this, "downloadAfterGeneration", _descriptor, this);
 
-  _initDefineProp(this, "extension", _descriptor2, this);
-}, (_descriptor = _applyDecoratedDescriptor(_class.prototype, "downloadAfterGeneration", [_mobx.observable], {
+    _initDefineProp(this, "extension", _descriptor2, this);
+
+    _initDefineProp(this, "defaultSiteImports", _descriptor3, this);
+
+    _initDefineProp(this, "customSiteImports", _descriptor4, this);
+
+    _initDefineProp(this, "siteImportsStorageName", _descriptor5, this);
+
+    _initDefineProp(this, "defaultCommonImports", _descriptor6, this);
+
+    this.siteImportsStorageName = "".concat(this.extension.substring(1), "SiteImports");
+    var settingsStorage = window.localStorage;
+    var siteImportsSettings = settingsStorage.getItem(this.siteImportsStorageName);
+
+    if (siteImportsSettings) {
+      this.defaultSiteImports = siteImportsSettings;
+      this.customSiteImports = siteImportsSettings;
+    }
+  }
+
+  _createClass(SettingsModel, [{
+    key: "updateSiteImportSettings",
+    value: function updateSiteImportSettings(name) {
+      var rulesStorage = window.localStorage;
+      rulesStorage.setItem(name, this.customSiteImports);
+    }
+  }, {
+    key: "clearSiteStorage",
+    value: function clearSiteStorage(nameToRemove, defaultSettings) {
+      var settingsStorage = window.localStorage;
+      settingsStorage.removeItem(nameToRemove);
+      settingsStorage.setItem(name, defaultSettings);
+    }
+  }]);
+
+  return SettingsModel;
+}(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "downloadAfterGeneration", [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return false;
@@ -60130,9 +60256,29 @@ var SettingsModel = (_class = function SettingsModel() {
   initializer: function initializer() {
     return '.java';
   }
-})), _class);
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "defaultSiteImports", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return "\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebSite;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.*;\n";
+  }
+}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "customSiteImports", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return this.defaultSiteImports;
+  }
+}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, "siteImportsStorageName", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return '';
+  }
+}), _descriptor6 = _applyDecoratedDescriptor(_class.prototype, "defaultCommonImports", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return "\nimport com.epam.jdi.uitests.web.selenium.elements.common.*;\nimport com.epam.jdi.uitests.web.selenium.elements.complex.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebPage;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.objects.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.simple.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;";
+  }
+}), _applyDecoratedDescriptor(_class.prototype, "clearSiteStorage", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "clearSiteStorage"), _class.prototype)), _class);
 exports.default = SettingsModel;
-},{"mobx":"../../node_modules/mobx/lib/mobx.module.js"}],"models/MainModel.js":[function(require,module,exports) {
+},{"mobx":"../../node_modules/mobx/lib/mobx.module.js","../json/rules":"json/rules.js"}],"models/MainModel.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -60501,7 +60647,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60758" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59035" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

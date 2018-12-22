@@ -51,7 +51,9 @@ class ListOfHiddenItems extends React.Component {
 				<a className={linkClass} onClick={this.handleShowList}>{name}</a>
 				{this.show && <ul className={className}>
 					{list.map((item, index) => (
-						<li key={item + index} onClick={()=>{this.handleClickRule(item)}}>{item}</li>
+						<li key={item + index} onClick={() => {
+							this.handleClickRule(item)
+						}}><a className={linkClass}>{item}</a></li>
 					))}
 				</ul>}
 			</li>
@@ -86,7 +88,9 @@ class RulesBlock extends React.Component {
 						<li>
 							<a
 								className={classes.link}
-								onClick={()=> {this.handleSwitchRightPart('ListOfSearchAttributesWrapper')}}
+								onClick={() => {
+									this.handleSwitchRightPart('ListOfSearchAttributesWrapper')
+								}}
 							>List of search attributes</a>
 						</li>
 						<ListOfHiddenItems
