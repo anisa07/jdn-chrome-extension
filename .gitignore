@@ -3,5 +3,5 @@ node_modules/
 *.map
 .idea
 package-lock.json
-src/tests/
+
 
