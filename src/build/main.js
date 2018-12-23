@@ -38235,7 +38235,7 @@ exports.default = Log;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = void 0;
+exports.default = exports.getTitleCallBack = exports.getDomainCallBack = exports.getLocationCallBack = exports.generationCallBack = void 0;
 
 var _helpers = require("../utils/helpers");
 
@@ -38243,18 +38243,9 @@ var _mobx = require("mobx");
 
 var _Log = _interopRequireDefault(require("./Log"));
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6;
 
-var _this = void 0,
-    _desc,
-    _value,
-    _class,
-    _descriptor,
-    _descriptor2,
-    _descriptor3,
-    _descriptor4,
-    _descriptor5,
-    _descriptor6;
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -38307,25 +38298,23 @@ function _initializerWarningHelper(descriptor, context) {
   throw new Error('Decorating class property failed. Please ensure that transform-class-properties is enabled.');
 }
 
-function camelCase(n) {
-  var name = "";
+var getElements = function getElements(_ref, dom, locatorType) {
+  var log = _ref.log;
+  var elements = [];
 
-  if (n) {
-    var arrayName = n.split(/[^a-zA-Zа-яёА-ЯЁ0-9]/);
+  try {
+    elements = locatorType.xpath ? getElementsByXpath(dom, locatorType.locator) : dom.querySelectorAll(locatorType.locator);
+  } catch (e) {
+    log.addToLog("Error!: cannot get elements by ".concat(locatorType.locator)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
 
-    for (var j = 0; j < arrayName.length; j++) {
-      if (arrayName[j]) {
-        name += arrayName[j][0].toUpperCase() + arrayName[j].slice(1);
-      }
-    }
+    document.querySelector('#refresh').click();
   }
 
-  return name;
-}
-
-function isXpath(locator) {
-  return locator[1] === '/';
-}
+  return {
+    elements: elements,
+    locatorType: locatorType
+  };
+};
 
 function generateLocator(xpath, locator) {
   return xpath === isXpath(locator) ? locator : (0, _helpers.cssToXPath)(locator);
@@ -38342,48 +38331,28 @@ function getCorrectLocator(dom, locator, uniqness) {
   return results;
 }
 
-function getElementsByXpath(dom, locator) {
-  var results = [];
-  var result = document.evaluate(locator, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-
-  for (var i = 0; i < result.snapshotLength; i++) {
-    results.push(result.snapshotItem(i));
-  }
-
-  return results;
-}
-
-function getValue(content, uniqness) {
-  switch (uniqness.value) {
-    case "text":
-      return content.innerText.trim().split(/\n/)[0];
-
-    default:
-      return content.attributes[uniqness.value] ? content.attributes[uniqness.value].value : undefined;
-  }
-}
-
-var getElements = function getElements(dom, locatorType) {
-  var elements = [];
-
-  try {
-    elements = locatorType.xpath ? getElementsByXpath(dom, locatorType.locator) : dom.querySelectorAll(locatorType.locator);
-  } catch (e) {
-    _this.log.addToLog("Error!: cannot get elements by ".concat(locatorType.locator)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
-
-
-    document.querySelector('#refresh').click();
-  }
-
-  return {
-    elements: elements,
-    locatorType: locatorType
-  };
-};
-
-function searchByWithoutValue(dom, locator, uniqness) {
+function searchByWithoutValue(_ref2, dom, locator, uniqness) {
+  var log = _ref2.log;
   var locatorType = getCorrectLocator(dom, locator, uniqness);
-  return getElements(dom, locatorType);
+  return getElements({
+    log: log
+  }, dom, locatorType);
+}
+
+function camelCase(n) {
+  var name = "";
+
+  if (n) {
+    var arrayName = n.split(/[^a-zA-Zа-яёА-ЯЁ0-9]/);
+
+    for (var j = 0; j < arrayName.length; j++) {
+      if (arrayName[j]) {
+        name += arrayName[j][0].toUpperCase() + arrayName[j].slice(1);
+      }
+    }
+  }
+
+  return name;
 }
 
 function nameElement(locator, uniqness, value, content) {
@@ -38453,10 +38422,10 @@ function valueToCss(uniqness, value) {
   }
 
   return '';
-} // todo sections
+}
 
-
-var checkIfItIsUnique = function checkIfItIsUnique(element, sections) {
+var checkIfItIsUnique = function checkIfItIsUnique(_ref3, element) {
+  var sections = _ref3.sections;
   var locator = element.Locator || element.Root;
   var check = true;
 
@@ -38473,13 +38442,136 @@ var checkIfItIsUnique = function checkIfItIsUnique(element, sections) {
   }
 
   return check;
-}; // todo object with composites, results, sections
+};
 
+function hashCode(str) {
+  var hash = 0,
+      i,
+      chr;
+  if (str === 0) return hash;
 
-function fillEl(element, type, parent, ruleId, _ref) {
-  var composites = _ref.composites,
-      results = _ref.results,
-      sections = _ref.sections;
+  for (i = 0; i < str.length; i++) {
+    chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+
+  return hash;
+}
+
+;
+
+var findInParent = function findInParent(_ref4, element, parent) {
+  var sections = _ref4.sections,
+      page = _ref4.page;
+  var loc = element.Locator ? "Locator" : "Root"; //let found = objCopy.sections.find((section) => parent.Locator === section.Locator && parent.Type === section.Type);
+
+  var found, find;
+  sections.forEach(function (value, key) {
+    if (value.elId === parent.elId && value.Name === parent.Name) {
+      found = key;
+    }
+  });
+
+  if (!!found) {
+    var sec = sections.get(found);
+    var children = sec.children;
+
+    for (var i = 0; i < children.length; i++) {
+      if (children[i][loc] === element[loc]) {
+        element.elId = children[i].elId;
+        find = true;
+        break;
+      }
+    }
+
+    if (!find) {
+      children.push(element);
+      sections.set(found, sec);
+    }
+  }
+
+  page.elements.push(element);
+};
+
+var applyFoundResult = function applyFoundResult(_ref5, e, parent, ruleId) {
+  var mainModel = _ref5.mainModel;
+  var ruleBlockModel = mainModel.ruleBlockModel,
+      generateBlockModel = mainModel.generateBlockModel;
+  var rulesObj = ruleBlockModel.rules;
+  var composites = Object.keys(rulesObj.CompositeRules);
+  var complex = Object.keys(rulesObj.ComplexRules);
+  var simple = Object.keys(rulesObj.SimpleRules);
+  var element = {
+    Name: e.Name || (0, _helpers.genRand)(e.Type),
+    Type: e.Type,
+    parent: e.parent || null,
+    parentId: e.parentId,
+    elId: e.elId
+  };
+
+  if (simple.indexOf(e.Type) > -1) {
+    element.Locator = e.Locator;
+    findInParent({
+      sections: generateBlockModel.sections,
+      page: generateBlockModel.page
+    }, element, parent);
+    return;
+  }
+
+  if (complex.indexOf(e.Type) > -1) {
+    var _fields = rulesObj.ComplexRules[e.Type].find(function (r) {
+      return r.id === ruleId;
+    });
+
+    element.Root = e.Locator;
+
+    for (var f in _fields) {
+      if (!element.hasOwnProperty(f) && f !== "Root") {
+        element[f] = _fields[f];
+      }
+    }
+
+    findInParent({
+      sections: generateBlockModel.sections,
+      page: generateBlockModel.page
+    }, element, parent);
+    return;
+  }
+
+  var fields = ruleBlockModel.elementFields[e.Type];
+
+  if (composites.indexOf(e.Type) > -1) {
+    element.Locator = e.Locator;
+    element.isSection = true;
+    element.children = e.children || [];
+    var found = generateBlockModel.sections.get(element.elId);
+
+    if (!!found) {
+      // element = found;
+      generateBlockModel.page.elements.push(found.elId);
+    } else {
+      for (var _f in fields) {
+        if (!element.hasOwnProperty(_f)) {
+          element[_f] = "";
+        }
+      }
+
+      generateBlockModel.page.elements.push(element.elId);
+      generateBlockModel.sections.set(element.elId, element);
+    }
+
+    return;
+  }
+};
+
+function fillEl(_ref6, element, type, parent, ruleId) {
+  var results = _ref6.results,
+      mainModel = _ref6.mainModel;
+  var ruleBlockModel = mainModel.ruleBlockModel,
+      generateBlockModel = mainModel.generateBlockModel;
+  var rulesObj = ruleBlockModel.rules;
+  var composites = Object.keys(rulesObj.CompositeRules);
 
   var result = _extends({}, element, {
     Type: type
@@ -38495,46 +38587,387 @@ function fillEl(element, type, parent, ruleId, _ref) {
     result.parent = parent.Name;
     result.elId = (0, _helpers.genRand)('El');
 
-    if (checkIfItIsUnique(result, sections)) {
-      applyFoundResult(result, parent, ruleId);
+    if (checkIfItIsUnique({
+      sections: generateBlockModel.sections
+    }, result)) {
+      applyFoundResult({
+        mainModel: mainModel
+      }, result, parent, ruleId);
     }
   }
 }
 
-var findInParent = function findInParent(element, parent) {
-  var loc = element.Locator ? "Locator" : "Root"; //let found = objCopy.sections.find((section) => parent.Locator === section.Locator && parent.Type === section.Type);
+function getValue(content, uniqness) {
+  switch (uniqness.value) {
+    case "text":
+      return (content.innerText || content.textContent).trim().split(/\n/)[0];
 
-  var found, find;
+    default:
+      return content.attributes[uniqness.value] ? content.attributes[uniqness.value].value : undefined;
+  }
+}
 
-  _this.sections.forEach(function (value, key) {
-    if (value.elId === parent.elId && value.Name === parent.Name) {
-      found = key;
+var defineElements = function defineElements(_ref7, dom, Locator, uniq, t, ruleId, parent) {
+  var results = _ref7.results,
+      mainModel = _ref7.mainModel;
+  var generateBlockModel = mainModel.generateBlockModel;
+  var splitUniqness = uniq.split("#");
+  var uniqness = {
+    locator: splitUniqness.length == 2 ? splitUniqness[0] : "",
+    value: splitUniqness.length == 2 ? splitUniqness[1] : uniq
+  };
+  var firstSearch = searchByWithoutValue({
+    log: generateBlockModel.log
+  }, dom, Locator, uniqness);
+  var xpath = firstSearch.locatorType.xpath;
+  var elements = firstSearch.elements;
+
+  if (elements.length === 0) {
+    return;
+  }
+
+  if (elements.length === 1) {
+    var e = {
+      Locator: firstSearch.locatorType.locator,
+      content: elements[0],
+      Name: nameElement(firstSearch.locatorType.locator, uniq, '', elements[0]).slice(0, 20)
+    };
+    fillEl({
+      results: results,
+      mainModel: mainModel
+    }, e, t, parent, ruleId);
+    return;
+  }
+
+  var tooMuchElements = "Too much elements found(".concat(elements.length, " for ").concat(uniqness.value, ". Locator (").concat(firstSearch.locatorType.locator, "))");
+  generateBlockModel.log.addToLog(tooMuchElements);
+
+  if (elements.length > 1) {
+    if (uniqness.value === "tag" || uniqness.value === '[') {
+      generateBlockModel.log.addToLog("Warning! Too much elements found by locator ".concat(firstSearch.locatorType.locator, "; uniqness ").concat(uniqness.value, "; ").concat(elements.length, " elements")); // document.querySelector('#refresh').click();
+    }
+
+    for (var i = 0; i < elements.length; i++) {
+      var val = getValue(elements[i], uniqness, Locator);
+      var finalLocator = xpath ? valueToXpath(firstSearch.locatorType.locator, uniqness, val) : firstSearch.locatorType.locator + valueToCss(uniqness, val);
+      var s2 = getElements({
+        log: generateBlockModel.log
+      }, dom, {
+        locator: finalLocator,
+        xpath: xpath
+      });
+
+      if (s2.elements.length === 1) {
+        var _e = {
+          Locator: finalLocator,
+          content: s2.elements[0],
+          Name: nameElement(finalLocator, uniq, val, s2.elements[0]).slice(0, 20)
+        };
+        fillEl({
+          results: results,
+          mainModel: mainModel
+        }, _e, t, parent, ruleId);
+      } else {
+        generateBlockModel.log.addToLog("Warning! Too much elements found by locator ".concat(finalLocator, "; ").concat(s2.elements.length, " elements")); // document.querySelector('#refresh').click();
+      }
+    }
+  }
+};
+
+function getElementsByXpath(dom, locator) {
+  var results = [];
+  var result = document.evaluate(locator, dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+
+  for (var i = 0; i < result.snapshotLength; i++) {
+    results.push(result.snapshotItem(i));
+  }
+
+  return results;
+}
+
+function isXpath(locator) {
+  return locator[1] === '/';
+}
+
+function getComposite(_ref8, dom, t) {
+  var mainModel = _ref8.mainModel,
+      results = _ref8.results;
+  var ruleBlockModel = mainModel.ruleBlockModel;
+  var rulesObj = ruleBlockModel.rules;
+  var relatives = new Map();
+  var rules = rulesObj.CompositeRules[t];
+  rules.forEach(function (rule) {
+    if (!!rule.Locator) {
+      defineElements({
+        mainModel: mainModel,
+        results: results
+      }, dom, rule.Locator, rule.uniqness, t, rule.id, null);
     }
   });
 
-  if (!!found) {
-    var sec = _this.sections.get(found);
+  for (var k = 0; k < results.length; k++) {
+    relatives.set(results[k].elId, 0);
+    var child = results[k];
 
-    var children = sec.children;
+    for (var j = 0; j < results.length; j++) {
+      var parent = results[j];
+      var r = isXpath(child.Locator) ? getElementsByXpath(parent.content, child.Locator) : parent.content.querySelectorAll(child.Locator);
 
-    for (var i = 0; i < children.length; i++) {
-      if (children[i][loc] === element[loc]) {
-        element.elId = children[i].elId;
-        find = true;
-        break;
+      for (var i = 0; i < r.length; i++) {
+        if (r[i] === child.content) {
+          var v = relatives.get(child.elId);
+          relatives.set(child.elId, ++v);
+        }
       }
-    }
-
-    if (!find) {
-      children.push(element);
-
-      _this.sections.set(found, sec);
     }
   }
 
-  _this.page.elements.push(element);
+  for (var _k = 0; _k < results.length; _k++) {
+    var _child = results[_k];
+
+    for (var _j = 0; _j < results.length; _j++) {
+      var _parent = results[_j];
+
+      var _r = isXpath(_child.Locator) ? getElementsByXpath(_parent.content, _child.Locator) : _parent.content.querySelectorAll(_child.Locator);
+
+      for (var _i = 0; _i < _r.length; _i++) {
+        if (_r[_i] === _child.content) {
+          var c = relatives.get(_child.elId);
+          var p = relatives.get(_parent.elId);
+
+          if (c - p === 1) {
+            _child.parent = _parent.Type;
+            _child.parentId = _parent.elId;
+          }
+        }
+      }
+    }
+  }
+}
+
+function getComplex(_ref9, parent, t) {
+  var mainModel = _ref9.mainModel,
+      results = _ref9.results;
+  var ruleBlockModel = mainModel.ruleBlockModel;
+  var rulesObj = ruleBlockModel.rules;
+  var dom = parent.content;
+  var rules = rulesObj.ComplexRules[t];
+  rules.forEach(function (rule) {
+    if (!!rule.Root) {
+      defineElements({
+        mainModel: mainModel,
+        results: results
+      }, dom, rule.Root, rule.uniqness, t, rule.id, parent);
+    }
+  });
+}
+
+function getSimple(_ref10, parent, t) {
+  var mainModel = _ref10.mainModel,
+      results = _ref10.results;
+  var ruleBlockModel = mainModel.ruleBlockModel;
+  var rulesObj = ruleBlockModel.rules;
+  var dom = parent.content;
+  var rules = rulesObj.SimpleRules[t];
+  rules.forEach(function (rule, i) {
+    if (!!rule.Locator) {
+      defineElements({
+        mainModel: mainModel,
+        results: results
+      }, dom, rule.Locator, rule.uniqness, t, rule.id, parent);
+    }
+  });
+}
+
+;
+
+var generationCallBack = function generationCallBack(_ref11, r, err) {
+  var mainModel = _ref11.mainModel;
+  var parser = new DOMParser();
+  var observedDOM = parser.parseFromString(r, "text/html").body; // document.evaluate(".//*[@ui='label' and contains(.,'Bootstrap')]", observedDOM, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+  //let copyOfDom = parser.parseFromString(r, "text/html").body;
+
+  var ruleBlockModel = mainModel.ruleBlockModel,
+      settingsModel = mainModel.settingsModel,
+      conversionModel = mainModel.conversionModel,
+      generateBlockModel = mainModel.generateBlockModel;
+  var rulesObj = ruleBlockModel.rules;
+  var composites = Object.keys(rulesObj.CompositeRules);
+  var complex = Object.keys(rulesObj.ComplexRules);
+  var simple = Object.keys(rulesObj.SimpleRules);
+  var results = [];
+
+  if (err) {
+    generateBlockModel.log.addToLog("Error, loading data from active page! ".concat(err)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+    // document.querySelector('#refresh').click();
+  }
+
+  if (r) {
+    if (generateBlockModel.jdi) {
+      composites.forEach(function (rule) {
+        try {
+          getComposite({
+            mainModel: mainModel,
+            results: results
+          }, observedDOM, rule);
+        } catch (e) {
+          generateBlockModel.log.addToLog("Error! Getting composite element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+          // document.querySelector('#refresh').click();
+        }
+
+        ;
+      });
+
+      var _loop = function _loop(i) {
+        var findParent = results.find(function (section) {
+          return section.elId === results[i].parentId && results[i].parentId !== null;
+        });
+
+        if (findParent) {
+          if (findParent.children) {
+            findParent.children.push(results[i]);
+          } else {
+            findParent.children = [];
+            findParent.children.push(results[i]);
+          }
+        }
+      };
+
+      for (var i = 0; i < results.length; i++) {
+        _loop(i);
+      }
+
+      results.push({
+        Locator: "body",
+        Type: null,
+        content: observedDOM,
+        elId: null,
+        parentId: null,
+        parent: null
+      });
+
+      for (var i = 0; i < results.length - 1; i++) {
+        applyFoundResult({
+          mainModel: mainModel
+        }, results[i]);
+      }
+
+      for (var _i2 = 0; _i2 < results.length; _i2++) {
+        results[_i2].content.parentNode.removeChild(results[_i2].content);
+      }
+
+      results.forEach(function (section) {
+        complex.forEach(function (rule) {
+          try {
+            getComplex({
+              mainModel: mainModel,
+              results: results
+            }, section, rule);
+          } catch (e) {
+            generateBlockModel.log.addToLog("Error! Getting complex element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+            // document.querySelector('#refresh').click();
+          }
+        });
+      });
+    } else {
+      results.push({
+        Locator: "body",
+        Type: null,
+        content: observedDOM,
+        elId: null,
+        parentId: null,
+        parent: null
+      });
+    }
+
+    results.forEach(function (section) {
+      simple.forEach(function (rule) {
+        try {
+          getSimple({
+            mainModel: mainModel,
+            results: results
+          }, section, rule);
+        } catch (e) {
+          generateBlockModel.log.addToLog("Error! Getting simple element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+          // document.querySelector('#refresh').click();
+        }
+      });
+    });
+
+    if (!generateBlockModel.pages.includes(generateBlockModel.page.id)) {
+      generateBlockModel.pages.push(generateBlockModel.page);
+      mainModel.conversionModel.siteCodeReady = true;
+      conversionModel.genPageCode(generateBlockModel.page, mainModel);
+
+      if (settingsModel.downloadAfterGeneration) {
+        conversionModel.downloadPageCode(generateBlockModel.page, mainModel.settingsModel.extension);
+      }
+    }
+  } // console.log(this.page.elements)
+  // console.log(this.sections)
+  // map = drawMap(page.elements, objCopy.sections, new Map());
+  // objCopy.pageMap = map;
+  // objCopy.resultTree = getChildren(map, null);
+
 };
 
+exports.generationCallBack = generationCallBack;
+
+var getLocationCallBack = function getLocationCallBack(_ref12, r, err) {
+  var mainModel = _ref12.mainModel;
+  var generateBlockModel = mainModel.generateBlockModel;
+
+  if (err) {
+    generateBlockModel.log.addToLog("Error, getting location from active page! ".concat(err)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+    // document.querySelector('#refresh').click();
+  }
+
+  if (r) {
+    generateBlockModel.page.url = r.pathname;
+    generateBlockModel.page.id = hashCode(r.pathname);
+    generateBlockModel.siteInfo.hostName = r.hostname;
+    generateBlockModel.page.package = r.host ? r.host.split('.').reverse().join('.') : '';
+    generateBlockModel.siteInfo.siteTitle = camelCase(r.hostname.substring(0, r.hostname.lastIndexOf(".")));
+    generateBlockModel.siteInfo.origin = r.origin;
+    mainModel.setPageId(hashCode(r.pathname));
+  }
+};
+
+exports.getLocationCallBack = getLocationCallBack;
+
+var getDomainCallBack = function getDomainCallBack(_ref13, r, err) {
+  var mainModel = _ref13.mainModel;
+  var generateBlockModel = mainModel.generateBlockModel;
+
+  if (err) {
+    generateBlockModel.log.addToLog("Error, getting domain from active page! ".concat(err)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+    // document.querySelector('#refresh').click();
+  }
+
+  if (r) {
+    generateBlockModel.siteInfo.domainName = r;
+    generateBlockModel.siteInfo.pack = r.split('.').reverse().join('.');
+  }
+};
+
+exports.getDomainCallBack = getDomainCallBack;
+
+var getTitleCallBack = function getTitleCallBack(_ref14, r, err) {
+  var mainModel = _ref14.mainModel;
+  var generateBlockModel = mainModel.generateBlockModel;
+
+  if (err) {
+    generateBlockModel.log.addToLog("Error, getting title from active page! ".concat(err)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+    // document.querySelector('#refresh').click();
+  }
+
+  if (r) {
+    generateBlockModel.page.title = r;
+    generateBlockModel.page.name = camelCase(r);
+  }
+};
+
+exports.getTitleCallBack = getTitleCallBack;
 var GenerateBlockModel = (_class =
 /*#__PURE__*/
 function () {
@@ -38560,17 +38993,6 @@ function () {
   _createClass(GenerateBlockModel, [{
     key: "generate",
     value: function generate(mainModel) {
-      var _this2 = this;
-
-      var ruleBlockModel = mainModel.ruleBlockModel,
-          settingsModel = mainModel.settingsModel,
-          conversionModel = mainModel.conversionModel;
-      var rulesObj = ruleBlockModel.rules;
-      var composites = Object.keys(rulesObj.CompositeRules);
-      var complex = Object.keys(rulesObj.ComplexRules);
-      var simple = Object.keys(rulesObj.SimpleRules);
-      var results = [];
-      var relatives = new Map();
       this.page = {
         id: '',
         name: '',
@@ -38578,348 +39000,26 @@ function () {
         url: '',
         package: '',
         elements: []
-      }; // const findSection = (locator, type) => {
-      // 	let id;
-      // 	this.sections.forEach((value, key) => {
-      // 		if (value.Locator === locator && value.Type === type) {
-      // 			id = key;
-      // 		}
-      // 	});
-      // 	return id;
-      // };
-
-      var applyFoundResult = function applyFoundResult(e, parent, ruleId) {
-        var element = {
-          Name: e.Name || (0, _helpers.genRand)(e.Type),
-          Type: e.Type,
-          parent: e.parent || null,
-          parentId: e.parentId,
-          elId: e.elId
-        };
-
-        if (simple.indexOf(e.Type) > -1) {
-          element.Locator = e.Locator;
-          findInParent(element, parent);
-          return;
-        }
-
-        if (complex.indexOf(e.Type) > -1) {
-          var _fields = rulesObj.ComplexRules[e.Type].find(function (r) {
-            return r.id === ruleId;
-          });
-
-          element.Root = e.Locator;
-
-          for (var f in _fields) {
-            if (!element.hasOwnProperty(f) && f !== "Root") {
-              element[f] = _fields[f];
-            }
-          }
-
-          findInParent(element, parent);
-          return;
-        }
-
-        var fields = ruleBlockModel.elementFields[e.Type];
-
-        if (composites.indexOf(e.Type) > -1) {
-          element.Locator = e.Locator;
-          element.isSection = true;
-          element.children = e.children || [];
-
-          var found = _this2.sections.get(element.elId);
-
-          if (!!found) {
-            // element = found;
-            _this2.page.elements.push(found.elId);
-          } else {
-            for (var _f in fields) {
-              if (!element.hasOwnProperty(_f)) {
-                element[_f] = "";
-              }
-            }
-
-            _this2.page.elements.push(element.elId);
-
-            _this2.sections.set(element.elId, element);
-          }
-
-          return;
-        }
       };
-
-      var defineElements = function defineElements(dom, Locator, uniq, t, ruleId, parent) {
-        var splitUniqness = uniq.split("#");
-        var uniqness = {
-          locator: splitUniqness.length == 2 ? splitUniqness[0] : "",
-          value: splitUniqness.length == 2 ? splitUniqness[1] : uniq
-        };
-        var firstSearch = searchByWithoutValue(dom, Locator, uniqness);
-        var xpath = firstSearch.locatorType.xpath;
-        var elements = firstSearch.elements;
-
-        if (elements.length === 0) {
-          return;
-        }
-
-        if (elements.length === 1) {
-          var e = {
-            Locator: firstSearch.locatorType.locator,
-            content: elements[0],
-            Name: nameElement(firstSearch.locatorType.locator, uniq, '', elements[0]).slice(0, 20)
-          };
-          fillEl(e, t, parent, ruleId);
-          return;
-        }
-
-        var tooMuchElements = "Too much elements found(".concat(elements.length, " for ").concat(uniqness.value, ". Locator (").concat(firstSearch.locatorType.locator, "))");
-
-        _this2.log.addToLog(tooMuchElements);
-
-        if (elements.length > 1) {
-          if (uniqness.value === "tag" || uniqness.value === '[') {
-            _this2.log.addToLog("Warning! Too much elements found by locator ".concat(firstSearch.locatorType.locator, "; uniqness ").concat(uniqness.value, "; ").concat(elements.length, " elements")); // document.querySelector('#refresh').click();
-
-          }
-
-          for (var i = 0; i < elements.length; i++) {
-            var val = getValue(elements[i], uniqness, Locator);
-            var finalLocator = xpath ? valueToXpath(firstSearch.locatorType.locator, uniqness, val) : firstSearch.locatorType.locator + valueToCss(uniqness, val);
-            var s2 = getElements(dom, {
-              locator: finalLocator,
-              xpath: xpath
-            });
-
-            if (s2.elements.length === 1) {
-              var _e = {
-                Locator: finalLocator,
-                content: s2.elements[0],
-                Name: nameElement(finalLocator, uniq, val, s2.elements[0]).slice(0, 20)
-              };
-              fillEl(_e, t, parent, ruleId);
-            } else {
-              _this2.log.addToLog("Warning! Too much elements found by locator ".concat(finalLocator, "; ").concat(s2.elements.length, " elements")); // document.querySelector('#refresh').click();
-
-            }
-          }
-        }
-      };
-
-      function getComposite(dom, t) {
-        var rules = rulesObj.CompositeRules[t];
-        rules.forEach(function (rule) {
-          if (!!rule.Locator) {
-            defineElements(dom, rule.Locator, rule.uniqness, t, rule.id);
-          }
-        });
-
-        for (var k = 0; k < results.length; k++) {
-          relatives.set(results[k].elId, 0);
-          var child = results[k];
-
-          for (var j = 0; j < results.length; j++) {
-            parent = results[j];
-            var r = isXpath(child.Locator) ? getElementsByXpath(parent.content, child.Locator) : parent.content.querySelectorAll(child.Locator);
-
-            for (var i = 0; i < r.length; i++) {
-              if (r[i] === child.content) {
-                var v = relatives.get(child.elId);
-                relatives.set(child.elId, ++v);
-              }
-            }
-          }
-        }
-
-        for (var _k = 0; _k < results.length; _k++) {
-          var _child = results[_k];
-
-          for (var _j = 0; _j < results.length; _j++) {
-            parent = results[_j];
-
-            var _r = isXpath(_child.Locator) ? getElementsByXpath(parent.content, _child.Locator) : parent.content.querySelectorAll(_child.Locator);
-
-            for (var _i = 0; _i < _r.length; _i++) {
-              if (_r[_i] === _child.content) {
-                var c = relatives.get(_child.elId);
-                var p = relatives.get(parent.elId);
-
-                if (c - p === 1) {
-                  _child.parent = parent.Type;
-                  _child.parentId = parent.elId;
-                }
-              }
-            }
-          }
-        }
-      }
-
-      function getComplex(parent, t) {
-        var dom = parent.content;
-        var rules = rulesObj.ComplexRules[t];
-        rules.forEach(function (rule) {
-          if (!!rule.Root) {
-            defineElements(dom, rule.Root, rule.uniqness, t, rule.id, parent);
-          }
-        });
-      }
-
-      function getSimple(parent, t) {
-        var dom = parent.content;
-        var rules = rulesObj.SimpleRules[t];
-        rules.forEach(function (rule, i) {
-          if (!!rule.Locator) {
-            defineElements(dom, rule.Locator, rule.uniqness, t, rule.id, parent);
-          }
-        });
-      }
-
-      ;
-
-      function hashCode(str) {
-        var hash = 0,
-            i,
-            chr;
-        if (str === 0) return hash;
-
-        for (i = 0; i < str.length; i++) {
-          chr = str.charCodeAt(i);
-          hash = (hash << 5) - hash + chr;
-          hash |= 0; // Convert to 32bit integer
-        }
-
-        return hash;
-      }
-
-      ;
       chrome.devtools.inspectedWindow.eval('document.location', function (r, err) {
-        _this2.page.url = r.pathname;
-        _this2.page.id = hashCode(r.pathname);
-        _this2.siteInfo.hostName = r.hostname;
-        _this2.page.package = r.host ? r.host.split('.').reverse().join('.') : '';
-        _this2.siteInfo.siteTitle = camelCase(r.hostname.substring(0, r.hostname.lastIndexOf(".")));
-        _this2.siteInfo.origin = r.origin;
-        mainModel.setPageId(_this2.page.id);
+        getLocationCallBack({
+          mainModel: mainModel
+        }, r, err);
       });
       chrome.devtools.inspectedWindow.eval('document.domain', function (r, err) {
-        if (r !== "") {
-          _this2.siteInfo.domainName = r;
-          _this2.siteInfo.pack = r.split('.').reverse().join('.');
-        }
+        getDomainCallBack({
+          mainModel: mainModel
+        }, r, err);
       });
       chrome.devtools.inspectedWindow.eval('document.title', function (r, err) {
-        if (r !== "") {
-          _this2.page.title = r;
-          _this2.page.name = camelCase(r);
-        }
+        getTitleCallBack({
+          mainModel: mainModel
+        }, r, err);
       });
       chrome.devtools.inspectedWindow.eval('document.body.outerHTML', function (r, err) {
-        if (err) {
-          _this2.log.addToLog("Error, loading data from active page! ".concat(err)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
-          // document.querySelector('#refresh').click();
-
-        }
-
-        var parser = new DOMParser();
-        var observedDOM = parser.parseFromString(r, "text/html").body; //let copyOfDom = parser.parseFromString(r, "text/html").body;
-
-        if (_this2.jdi) {
-          composites.forEach(function (rule) {
-            try {
-              getComposite(observedDOM, rule);
-            } catch (e) {
-              _this2.log.addToLog("Error! Getting composite element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
-              // document.querySelector('#refresh').click();
-
-            }
-
-            ;
-          });
-
-          var _loop = function _loop(i) {
-            var findParent = results.find(function (section) {
-              return section.elId === results[i].parentId && results[i].parentId !== null;
-            });
-
-            if (findParent) {
-              if (findParent.children) {
-                findParent.children.push(results[i]);
-              } else {
-                findParent.children = [];
-                findParent.children.push(results[i]);
-              }
-            }
-          };
-
-          for (var i = 0; i < results.length; i++) {
-            _loop(i);
-          }
-
-          results.push({
-            Locator: "body",
-            Type: null,
-            content: observedDOM,
-            elId: null,
-            parentId: null,
-            parent: null
-          });
-
-          for (var i = 0; i < results.length - 1; i++) {
-            applyFoundResult(results[i]);
-          }
-
-          for (var _i2 = 0; _i2 < results.length; _i2++) {
-            results[_i2].content.parentNode.removeChild(results[_i2].content);
-          }
-
-          results.forEach(function (section) {
-            complex.forEach(function (rule) {
-              try {
-                getComplex(section, rule);
-              } catch (e) {
-                _this2.log.addToLog("Error! Getting complex element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
-                // document.querySelector('#refresh').click();
-
-              }
-            });
-          });
-        } else {
-          results.push({
-            Locator: "body",
-            Type: null,
-            content: observedDOM,
-            elId: null,
-            parentId: null,
-            parent: null
-          });
-        }
-
-        results.forEach(function (section) {
-          simple.forEach(function (rule) {
-            try {
-              getSimple(section, rule);
-            } catch (e) {
-              _this2.log.addToLog("Error! Getting simple element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
-              // document.querySelector('#refresh').click();
-
-            }
-          });
-        });
-
-        if (!_this2.pages.includes(_this2.page.id)) {
-          _this2.pages.push(_this2.page);
-
-          mainModel.conversionModel.siteCodeReady = true;
-          conversionModel.genPageCode(_this2.page, mainModel);
-
-          if (settingsModel.downloadAfterGeneration) {
-            conversionModel.downloadPageCode(_this2.page, mainModel.settingsModel.extension);
-          }
-        } // console.log(this.page.elements)
-        // console.log(this.sections)
-        // map = drawMap(page.elements, objCopy.sections, new Map());
-        // objCopy.pageMap = map;
-        // objCopy.resultTree = getChildren(map, null);
-
+        generationCallBack({
+          mainModel: mainModel
+        }, r, err);
       });
     }
   }]);
@@ -38959,19 +39059,6 @@ function () {
     return {};
   }
 }), _applyDecoratedDescriptor(_class.prototype, "generate", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "generate"), _class.prototype)), _class);
-/*
-* hashCode = function(str) {
-  var hash = 0, i, chr;
-  if (str === 0) return hash;
-  for (i = 0; i < str.length; i++) {
-    chr   = str.charCodeAt(i);
-    hash  = ((hash << 5) - hash) + chr;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return hash;
-};
-* */
-
 exports.default = GenerateBlockModel;
 },{"../utils/helpers":"utils/helpers.js","mobx":"../../node_modules/mobx/lib/mobx.module.js","./Log":"models/Log.js"}],"json/rules.js":[function(require,module,exports) {
 "use strict";
@@ -60658,7 +60745,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59035" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55302" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
