@@ -1,11 +1,13 @@
 import { observable, action } from 'mobx';
 import GenerateBlockModel from './GenerateBlockModel';
 import RulesBlockModel from './RulesBlockModel';
-import GenerateBlockWrapper from '../blocks/generate/GenerateBlock'
-import GenerateResultsWrapper from '../blocks/generateResults/GenerateResults'
-import RulesBlockWrapper from '../blocks/rules/RulesBlock'
-import ListOfSearchAttributesWrapper from '../blocks/listOfSearchAttributes/ListOfSearchAttributes'
-import RuleForElementWrapper from '../blocks/ruleForElement/RuleForElement'
+import GenerateBlockWrapper from '../blocks/generate/left/GenerateBlock';
+import GenerateSettingsWrapper from '../blocks/generate/left/GenerateSettings';
+import GenerateResultsWrapper from '../blocks/generate/right/GenerateResults'
+import GeneralSettingsWrapper from '../blocks/generate/right/GeneralSettings'
+import RulesBlockWrapper from '../blocks/rules/left/RulesBlock'
+import ListOfSearchAttributesWrapper from '../blocks/rules/right/ListOfSearchAttributes'
+import RuleForElementWrapper from '../blocks/rules/right/RuleForElement'
 import ConversionToCodeModel from './ConversionToCodeModel'
 import SettingsModel from './SettingsModel'
 
@@ -16,6 +18,7 @@ export default class MainModel {
 	@observable ruleBlockModel;
 	@observable currentTab = 2;
 	@observable currentRightPart = '';
+	@observable currentLeftPart = 'GenerateBlockWrapper';
 	@observable currentPageId;
 	ApplicationMap = new Map();
 
@@ -26,37 +29,50 @@ export default class MainModel {
 		this.settingsModel = new SettingsModel();
 
 		this.ApplicationMap.set(2, {
-			componentLeft: GenerateBlockWrapper,
+			componentsLeft: { GenerateBlockWrapper, GenerateSettingsWrapper, },
 			tabName: 'Generate',
-			componentsRight: { GenerateResultsWrapper }
+			componentsRight: {
+				GeneralSettingsWrapper,
+				GenerateResultsWrapper,
+			},
+			initialLeft: 'GenerateBlockWrapper',
 		});
 		this.ApplicationMap.set(1,
 			{
-				componentLeft: RulesBlockWrapper,
+				componentsLeft: { RulesBlockWrapper },
 				tabName: 'Rules',
 				componentsRight: {
-					ListOfSearchAttributesWrapper: ListOfSearchAttributesWrapper,
-					RuleForElementWrapper: RuleForElementWrapper
-				}
+					ListOfSearchAttributesWrapper,
+					RuleForElementWrapper
+				},
+				initialLeft: 'RulesBlockWrapper'
 			});
-		this.ApplicationMap.set(0, { componentLeft: '', tabName: 'Manage', componentsRight: {} });
+		this.ApplicationMap.set(0, { componentsLeft: {}, tabName: 'Manage', componentsRight: {} });
 	}
 
 	@action
 	switchTab (tab) {
 		this.currentTab = tab;
 		this.currentRightPart = '';
+		this.currentLeftPart = this.ApplicationMap.get(tab).initialLeft;
 	}
 
 	@action
-	setRightPart (part, currentRule, ruleSet) {
-		this.currentRightPart = part ? part : '';
-		ruleSet ? this.ruleBlockModel.setCurrentRuleSet(ruleSet) : this.ruleBlockModel.setCurrentRuleSet('');
-		currentRule ? this.ruleBlockModel.setCurrentRuleName(currentRule) : this.ruleBlockModel.setCurrentRuleName('');
+	setRightPart (currentRightPart, currentRule, ruleSet) {
+		this.currentRightPart = currentRightPart;
+		// ruleSet ? this.ruleBlockModel.setCurrentRuleSet(ruleSet) : this.ruleBlockModel.setCurrentRuleSet('');
+		// currentRule ? this.ruleBlockModel.setCurrentRuleName(currentRule) : this.ruleBlockModel.setCurrentRuleName('');
 	}
 
 	@action
-	setPageId (id) {
-		this.currentPageId = id;
+	setLeftPart (currentLeftPart) {
+		this.currentLeftPart = currentLeftPart;
+		// ruleSet ? this.ruleBlockModel.setCurrentRuleSet(ruleSet) : this.ruleBlockModel.setCurrentRuleSet('');
+		// currentRule ? this.ruleBlockModel.setCurrentRuleName(currentRule) : this.ruleBlockModel.setCurrentRuleName('');
 	}
+
+	// @action
+	// setPageId (id) {
+	// 	this.currentPageId = id;
+	// }
 }

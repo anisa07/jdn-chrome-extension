@@ -3,7 +3,6 @@ import { saveAs } from 'file-saver';
 import JSZip from '../jszip/dist/jszip';
 
 export default class ConversionToCodeModel {
-	@observable language = 'java';
 	@observable currentPageCode;
 	@observable siteCodeReady = false;
 	@observable generatedPages = [];
@@ -94,7 +93,7 @@ function getPageName (name) {
 }
 
 function locatorType (locator) {
-	return locator.indexOf('/') !== 1 ? "Css" : "XPath";
+	return locator && locator.indexOf('/') !== 1 ? "Css" : "XPath";
 }
 
 function elementCode (locatorType, locator, elType, name) {

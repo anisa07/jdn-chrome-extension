@@ -3,7 +3,8 @@ const importIcon = 'src/icons/import.png';
 const exportIcon = 'src/icons/export.png';
 const add = 'src/icons/add.png';
 const close = 'src/icons/close.png';
-const infinity = 'src/icons/infinity.svg';
+const back = 'src/icons/back.png';
+const arrowDown = 'src/icons/arrow-down.png';
 
 export {
 	settings,
@@ -11,5 +12,6 @@ export {
 	exportIcon,
 	add,
 	close,
-	infinity
+	back,
+	arrowDown,
 }

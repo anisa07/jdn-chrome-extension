@@ -1,34 +1,28 @@
 import { observable, action } from 'mobx';
-import RulesJson from "../json/rules";
+import { JavaJDIUITemplate } from '../json/JavaJDIUITemplate';
 
 export default class SettingsModel {
 	@observable downloadAfterGeneration = false;
-	@observable extension = '.java';
-
-	@observable defaultSiteImports = `
-import com.epam.jdi.uitests.web.selenium.elements.composite.WebSite;
-import com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.*;
-`;
-	@observable customSiteImports = this.defaultSiteImports;
-	@observable siteImportsStorageName = '';
-
-	@observable defaultCommonImports = `
-import com.epam.jdi.uitests.web.selenium.elements.common.*;
-import com.epam.jdi.uitests.web.selenium.elements.complex.*;
-import com.epam.jdi.uitests.web.selenium.elements.composite.*;
-import com.epam.jdi.uitests.web.selenium.elements.composite.WebPage;
-import com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.objects.*;
-import com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.simple.*;
-import com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;`;
+	@observable jdi = true;
+	@observable extension = '';
+	@observable framework = '';
+	@observable template;
 
 	constructor () {
-		this.siteImportsStorageName = `${this.extension.substring(1)}SiteImports`;
 		const settingsStorage = window.localStorage;
-		const siteImportsSettings = settingsStorage.getItem(this.siteImportsStorageName);
 
-		if (siteImportsSettings) {
-			this.defaultSiteImports = siteImportsSettings;
-			this.customSiteImports = siteImportsSettings;
+		this.downloadAfterGeneration = settingsStorage.getItem('DownloadAfterGeneration') === 'true';
+		this.extension = settingsStorage.getItem('DefaultLanguage') || '.java';
+		this.framework = settingsStorage.getItem('DefaultFramework') || 'jdiUI';
+
+		if (this.extension === '.java' && this.framework === 'jdiUI') {
+			const defaultTemplate = settingsStorage.getItem('DefaultTemplate');
+			if (defaultTemplate) {
+				this.template = JSON.parse(defaultTemplate);
+			} else {
+				this.template = JavaJDIUITemplate;
+				settingsStorage.setItem('DefaultTemplate', JSON.stringify(JavaJDIUITemplate));
+			}
 		}
 	}
 
@@ -42,5 +36,25 @@ import com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy
 		const settingsStorage = window.localStorage;
 		settingsStorage.removeItem(nameToRemove);
 		settingsStorage.setItem(name, defaultSettings);
+	}
+
+	@action
+	triggerDownloadAfterGen () {
+		this.downloadAfterGeneration = !this.downloadAfterGeneration;
+		window.localStorage.setItem('DownloadAfterGeneration', this.downloadAfterGeneration.toString());
+	}
+
+	@action
+	changeLanguage (lang) {
+		this.extension = lang;
+
+		window.localStorage.setItem('DefaultLanguage', this.extension);
+	}
+
+	@action
+	changeFramework (frame) {
+		this.framework = frame;
+
+		window.localStorage.setItem('DefaultFramework', this.framework);
 	}
 }

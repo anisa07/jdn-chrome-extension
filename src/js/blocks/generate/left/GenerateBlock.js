@@ -2,9 +2,8 @@ import React from 'react';
 import injectSheet from 'react-jss';
 import PropTypes from 'prop-types';
 import { inject, observer } from "mobx-react";
-import Button from '../../components/Button/Button';
-import { settings } from '../../../icons/index';
-
+import Button from '../../../components/Button/Button';
+import { settings } from '../../../../icons/index';
 
 const styles = {
 	generateStyle: {
@@ -17,8 +16,16 @@ const styles = {
 class GenerateBlock extends React.Component {
 	handleGenerate = () => {
 		const { mainModel } = this.props;
+
 		mainModel.generateBlockModel.generate(mainModel );
 		mainModel.setRightPart('GenerateResultsWrapper');
+	};
+
+	handleOpenSettings = () => {
+		const { mainModel } = this.props;
+
+		mainModel.setLeftPart('GenerateSettingsWrapper');
+		mainModel.setRightPart('GeneralSettingsWrapper');
 	};
 
 	render () {
@@ -28,8 +35,13 @@ class GenerateBlock extends React.Component {
 				<Button
 					className='BtnGroup-item btn-primary'
 					label={'Generate'}
-					onclick={this.handleGenerate}/>
-				<Button className='BtnGroup-item' icon={settings}/>
+					onclick={this.handleGenerate}
+				/>
+				<Button
+					className='BtnGroup-item'
+					icon={settings}
+					onclick={this.handleOpenSettings}
+				/>
 			</div>
 		)
 	}

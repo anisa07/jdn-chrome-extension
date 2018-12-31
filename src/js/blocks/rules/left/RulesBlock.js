@@ -3,11 +3,10 @@ import injectSheet from 'react-jss';
 import { inject, observer } from "mobx-react";
 import { observable, action } from 'mobx';
 import PropTypes from 'prop-types';
-import Button from '../../components/Button/Button';
-import LabelWrapper from '../../components/Label/Label';
-import { exportIcon, importIcon } from '../../../icons/index';
-import { headerStyle } from "../BlockStyles";
-
+import Button from '../../../components/Button/Button';
+import LabelWrapper from '../../../components/Label/Label';
+import { exportIcon, importIcon } from '../../../../icons/index';
+import { headerStyle } from "../../BlockStyles";
 
 const styles = {
 	headerStyle,
@@ -66,7 +65,10 @@ class ListOfHiddenItems extends React.Component {
 class RulesBlock extends React.Component {
 	handleSwitchRightPart = (part, currentRule, ruleSet) => {
 		const { mainModel } = this.props;
+
 		mainModel.setRightPart(part, currentRule, ruleSet);
+		ruleSet ? mainModel.ruleBlockModel.setCurrentRuleSet(ruleSet) : mainModel.ruleBlockModel.setCurrentRuleSet('');
+		currentRule ? mainModel.ruleBlockModel.setCurrentRuleName(currentRule) : mainModel.ruleBlockModel.setCurrentRuleName('');
 	};
 
 	render () {

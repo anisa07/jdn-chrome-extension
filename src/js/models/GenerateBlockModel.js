@@ -52,7 +52,7 @@ function camelCase (n) {
 
 function nameElement (locator, uniqness, value, content) {
 	if (uniqness === "text" || uniqness.includes("#text")) {
-		return (camelCase(value) || camelCase(content.innerText));
+		return (camelCase(value) || (content.innerText || content.textContent).trim());
 	}
 	if (uniqness.includes('tag')) {
 		return camelCase(content.tagName.toLowerCase());
@@ -401,7 +401,7 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 	}
 
 	if (r) {
-		if (generateBlockModel.jdi) {
+		if (settingsModel.jdi) {
 			composites.forEach((rule) => {
 				try {
 					getComposite({ mainModel, results }, observedDOM, rule)
@@ -462,7 +462,9 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 			});
 		});
 
-		if (!generateBlockModel.pages.includes(generateBlockModel.page.id)) {
+		const pageAlreadyGenerated = generateBlockModel.pages.find(page => page.id === generateBlockModel.page.id);
+
+		if (!pageAlreadyGenerated) {
 			generateBlockModel.pages.push(generateBlockModel.page);
 			mainModel.conversionModel.siteCodeReady = true;
 			conversionModel.genPageCode(generateBlockModel.page, mainModel);
@@ -471,6 +473,7 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 				conversionModel.downloadPageCode(generateBlockModel.page, mainModel.settingsModel.extension);
 			}
 		}
+		// TODO create beautiful popup
 	}
 
 	// console.log(this.page.elements)
@@ -497,7 +500,7 @@ export const getLocationCallBack = ({ mainModel }, r, err) => {
 		generateBlockModel.page.package = r.host ? r.host.split('.').reverse().join('.') : '';
 		generateBlockModel.siteInfo.siteTitle = camelCase(r.hostname.substring(0, r.hostname.lastIndexOf(".")));
 		generateBlockModel.siteInfo.origin = r.origin;
-		mainModel.setPageId(hashCode(r.pathname));
+		generateBlockModel.currentPageId = hashCode(r.pathname);
 	}
 };
 
@@ -545,6 +548,7 @@ export default class GenerateBlockModel {
 		elements: []
 	};
 	@observable siteInfo = {};
+	@observable currentPageId;
 
 	constructor () {
 		this.log = new Log();

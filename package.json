@@ -21,6 +21,7 @@
     "react-jss": "^8.6.1",
     "react-loading": "^2.0.3",
     "react-responsive": "^6.0.1",
+    "react-select": "^2.2.0",
     "simple-crypto-js": "^2.0.2"
   },
   "devDependencies": {

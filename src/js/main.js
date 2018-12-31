@@ -6,7 +6,6 @@ import { observer, Provider } from 'mobx-react';
 import { observable } from "mobx";
 import PropTypes from 'prop-types';
 import ScreenSizes from './utils/screen-dimesions';
-import GenerateBlockWrapper from './blocks/generate/GenerateBlock';
 import { TabsBlockWrapper, LeftBlockWrapper, RightBlockWrapper } from './blocks/tabs/Tabs';
 import MainModel from './models/MainModel';
 
@@ -37,7 +36,8 @@ class App extends React.Component {
 
 	render () {
 		const { classes } = this.props;
-		const ComponentLeft = this.mainModel.ApplicationMap.get(this.mainModel.currentTab).componentLeft;
+		const currentLeftPart = this.mainModel.currentLeftPart;
+		const ComponentLeft = this.mainModel.ApplicationMap.get(this.mainModel.currentTab).componentsLeft[currentLeftPart];
 		const currentRightPart = this.mainModel.currentRightPart;
 		const ComponentRight = this.mainModel.ApplicationMap.get(this.mainModel.currentTab).componentsRight[currentRightPart];
 

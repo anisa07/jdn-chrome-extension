@@ -38,7 +38,7 @@ const styles = {
 		minWidth: '65%',
 		width: '100%',
 		minHeight: '400px'
-	}
+	},
 };
 
 
@@ -46,7 +46,12 @@ const styles = {
 @observer
 class Nav extends React.Component {
 	handleSwitchTab = (tab) => {
-		this.props.mainModel.switchTab(tab);
+		const { mainModel } = this.props;
+
+		mainModel.switchTab(tab);
+		if (tab === 2 && mainModel.generateBlockModel.pages.length) {
+			mainModel.setRightPart('GenerateResultsWrapper');
+		}
 	};
 
 	render () {
@@ -54,20 +59,20 @@ class Nav extends React.Component {
 
 		return (
 			<nav className={direction ? `UnderlineNav UnderlineNav--${direction}` : 'UnderlineNav UnderlineNav'}>
-				<div className='UnderlineNav-body'>
-					{ [0, 1, 2].map((index) => {
+				<div className='UnderlineNav-body' style={direction ? { flexDirection: 'row-reverse' } : {}}>
+					{[0, 1, 2].map((index) => {
 						const tab = mainModel.ApplicationMap.get(index).tabName;
 						return (<a
 							href='#url'
 							role='tab'
-							title={ tab }
-							key={ tab + index }
+							title={tab}
+							key={tab + index}
 							className={cn('UnderlineNav-item', { 'selected': index === mainModel.currentTab })}
 							onClick={() => {
 								this.handleSwitchTab(index)
 							}}
-						>{ tab }</a>)
-					})  }
+						>{tab}</a>)
+					})}
 				</div>
 			</nav>
 		)
@@ -82,12 +87,12 @@ class TabsBlock extends React.Component {
 			<div>
 				<MediaQuery minWidth={ScreenSizes.tablet}>
 					<div className={classes.rotateBlockDesktop}>
-						<Nav />
+						<Nav/>
 					</div>
 				</MediaQuery>
 				<MediaQuery maxWidth={ScreenSizes.tablet}>
 					<div className={classes.blockTablet}>
-						<Nav direction={'right'} />
+						<Nav direction={'right'}/>
 					</div>
 				</MediaQuery>
 			</div>
