@@ -38049,7 +38049,7 @@ var _mobx = require("mobx");
 
 var _Log = _interopRequireDefault(require("./Log"));
 
-var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7;
+var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -38163,7 +38163,7 @@ function camelCase(n) {
 
 function nameElement(locator, uniqness, value, content) {
   if (uniqness === "text" || uniqness.includes("#text")) {
-    return camelCase(value) || (content.innerText || content.textContent).trim();
+    return camelCase(value || (content.innerText || content.textContent).trim());
   }
 
   if (uniqness.includes('tag')) {
@@ -38609,83 +38609,71 @@ var generationCallBack = function generationCallBack(_ref11, r, err) {
   }
 
   if (r) {
-    if (settingsModel.jdi) {
-      composites.forEach(function (rule) {
-        try {
-          getComposite({
-            mainModel: mainModel,
-            results: results
-          }, observedDOM, rule);
-        } catch (e) {
-          generateBlockModel.log.addToLog("Error! Getting composite element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
-          // document.querySelector('#refresh').click();
+    composites.forEach(function (rule) {
+      try {
+        getComposite({
+          mainModel: mainModel,
+          results: results
+        }, observedDOM, rule);
+      } catch (e) {
+        generateBlockModel.log.addToLog("Error! Getting composite element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+        // document.querySelector('#refresh').click();
+      }
+
+      ;
+    });
+
+    var _loop = function _loop(i) {
+      var findParent = results.find(function (section) {
+        return section.elId === results[i].parentId && results[i].parentId !== null;
+      });
+
+      if (findParent) {
+        if (findParent.children) {
+          findParent.children.push(results[i]);
+        } else {
+          findParent.children = [];
+          findParent.children.push(results[i]);
         }
-
-        ;
-      });
-
-      var _loop = function _loop(i) {
-        var findParent = results.find(function (section) {
-          return section.elId === results[i].parentId && results[i].parentId !== null;
-        });
-
-        if (findParent) {
-          if (findParent.children) {
-            findParent.children.push(results[i]);
-          } else {
-            findParent.children = [];
-            findParent.children.push(results[i]);
-          }
-        }
-      };
-
-      for (var i = 0; i < results.length; i++) {
-        _loop(i);
       }
+    };
 
-      results.push({
-        Locator: "body",
-        Type: null,
-        content: observedDOM,
-        elId: null,
-        parentId: null,
-        parent: null
-      });
-
-      for (var i = 0; i < results.length - 1; i++) {
-        applyFoundResult({
-          mainModel: mainModel
-        }, results[i]);
-      }
-
-      for (var _i2 = 0; _i2 < results.length; _i2++) {
-        results[_i2].content.parentNode.removeChild(results[_i2].content);
-      }
-
-      results.forEach(function (section) {
-        complex.forEach(function (rule) {
-          try {
-            getComplex({
-              mainModel: mainModel,
-              results: results
-            }, section, rule);
-          } catch (e) {
-            generateBlockModel.log.addToLog("Error! Getting complex element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
-            // document.querySelector('#refresh').click();
-          }
-        });
-      });
-    } else {
-      results.push({
-        Locator: "body",
-        Type: null,
-        content: observedDOM,
-        elId: null,
-        parentId: null,
-        parent: null
-      });
+    for (var i = 0; i < results.length; i++) {
+      _loop(i);
     }
 
+    results.push({
+      Locator: "body",
+      Type: null,
+      content: observedDOM,
+      elId: null,
+      parentId: null,
+      parent: null
+    });
+
+    for (var i = 0; i < results.length - 1; i++) {
+      applyFoundResult({
+        mainModel: mainModel
+      }, results[i]);
+    }
+
+    for (var _i2 = 0; _i2 < results.length; _i2++) {
+      results[_i2].content.parentNode.removeChild(results[_i2].content);
+    }
+
+    results.forEach(function (section) {
+      complex.forEach(function (rule) {
+        try {
+          getComplex({
+            mainModel: mainModel,
+            results: results
+          }, section, rule);
+        } catch (e) {
+          generateBlockModel.log.addToLog("Error! Getting complex element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+          // document.querySelector('#refresh').click();
+        }
+      });
+    });
     results.forEach(function (section) {
       simple.forEach(function (rule) {
         try {
@@ -38704,9 +38692,8 @@ var generationCallBack = function generationCallBack(_ref11, r, err) {
     });
 
     if (!pageAlreadyGenerated) {
-      generateBlockModel.pages.push(generateBlockModel.page);
-      mainModel.conversionModel.siteCodeReady = true;
-      conversionModel.genPageCode(generateBlockModel.page, mainModel);
+      generateBlockModel.pages.push(generateBlockModel.page); // mainModel.conversionModel.siteCodeReady = true;
+      // conversionModel.genPageCode(generateBlockModel.page, mainModel);
 
       if (settingsModel.downloadAfterGeneration) {
         conversionModel.downloadPageCode(generateBlockModel.page, mainModel.settingsModel.extension);
@@ -38786,21 +38773,20 @@ function () {
 
     _initDefineProp(this, "log", _descriptor, this);
 
-    _initDefineProp(this, "jdi", _descriptor2, this);
+    _initDefineProp(this, "sections", _descriptor2, this);
 
-    _initDefineProp(this, "sections", _descriptor3, this);
+    _initDefineProp(this, "pages", _descriptor3, this);
 
-    _initDefineProp(this, "pages", _descriptor4, this);
+    _initDefineProp(this, "page", _descriptor4, this);
 
-    _initDefineProp(this, "page", _descriptor5, this);
+    _initDefineProp(this, "siteInfo", _descriptor5, this);
 
-    _initDefineProp(this, "siteInfo", _descriptor6, this);
-
-    _initDefineProp(this, "currentPageId", _descriptor7, this);
+    _initDefineProp(this, "currentPageId", _descriptor6, this);
 
     this.log = new _Log.default();
     this.sections = new Map();
-  }
+  } //	@observable jdi = true;
+
 
   _createClass(GenerateBlockModel, [{
     key: "generate",
@@ -38840,20 +38826,15 @@ function () {
 }(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "log", [_mobx.observable], {
   enumerable: true,
   initializer: null
-}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "jdi", [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return true;
-  }
-}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "sections", [_mobx.observable], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "sections", [_mobx.observable], {
   enumerable: true,
   initializer: null
-}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "pages", [_mobx.observable], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "pages", [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return [];
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, "page", [_mobx.observable], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "page", [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return {
@@ -38865,12 +38846,12 @@ function () {
       elements: []
     };
   }
-}), _descriptor6 = _applyDecoratedDescriptor(_class.prototype, "siteInfo", [_mobx.observable], {
+}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, "siteInfo", [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return {};
   }
-}), _descriptor7 = _applyDecoratedDescriptor(_class.prototype, "currentPageId", [_mobx.observable], {
+}), _descriptor6 = _applyDecoratedDescriptor(_class.prototype, "currentPageId", [_mobx.observable], {
   enumerable: true,
   initializer: null
 }), _applyDecoratedDescriptor(_class.prototype, "generate", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "generate"), _class.prototype)), _class);
@@ -43272,11 +43253,16 @@ function (_React$Component) {
 
     return _possibleConstructorReturn(_this, (_temp = _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(GenerateResults)).call.apply(_getPrototypeOf2, [this].concat(args))), _this.handleDownloadSiteCode = function () {
       var mainModel = _this.props.mainModel;
+      mainModel.conversionModel.clearOldConversion();
+      mainModel.generateBlockModel.pages.forEach(function (p) {
+        mainModel.conversionModel.genPageCode(p, mainModel);
+      });
       mainModel.conversionModel.zipAllCode(mainModel);
-    }, _this.handleDownloadPageCode = function (index) {
+    }, _this.handleDownloadPageCode = function (page, index) {
       var mainModel = _this.props.mainModel;
+      mainModel.conversionModel.genPageCode(page, mainModel);
       mainModel.conversionModel.setCurrentPageCode(index);
-      mainModel.conversionModel.downloadPageCode(mainModel.generateBlockModel.pages[index], mainModel.settingsModel.extension);
+      mainModel.conversionModel.downloadPageCode(page, mainModel.settingsModel.extension);
     }, _temp));
   }
 
@@ -43288,12 +43274,11 @@ function (_React$Component) {
       var _this$props = this.props,
           classes = _this$props.classes,
           mainModel = _this$props.mainModel;
-      var pageReady = !!mainModel.conversionModel.currentPageCode;
-      var siteReady = mainModel.conversionModel.siteCodeReady;
       var pages = mainModel.generateBlockModel.pages || [];
+      var pageReady = !!pages.length;
       return _react.default.createElement("div", {
         className: classes.buttonContainer
-      }, siteReady ? _react.default.createElement("div", null, _react.default.createElement(_Button.default, {
+      }, pageReady ? _react.default.createElement("div", null, _react.default.createElement(_Button.default, {
         className: classes.btn,
         icon: _index.importIcon,
         onclick: this.handleDownloadSiteCode
@@ -43310,7 +43295,7 @@ function (_React$Component) {
           className: classes.btn,
           icon: _index.importIcon,
           onclick: function onclick() {
-            _this2.handleDownloadPageCode(index);
+            _this2.handleDownloadPageCode(page, index);
           }
         }), _react.default.createElement("span", null, "Download page ".concat(page.name)));
       }) : _react.default.createElement(_Infinity.default, {
@@ -69303,7 +69288,6 @@ exports.sectionCode = sectionCode;
 exports.entityCode = entityCode;
 exports.siteCode = siteCode;
 exports.pageCode = pageCode;
-exports.seleniumPageCode = seleniumPageCode;
 exports.default = void 0;
 
 var _mobx = require("mobx");
@@ -69381,10 +69365,14 @@ function () {
   }
 
   _createClass(ConversionToCodeModel, [{
+    key: "clearOldConversion",
+    value: function clearOldConversion() {
+      this.generatedPages = [];
+    }
+  }, {
     key: "genPageCode",
     value: function genPageCode(page, mainModel) {
-      var generateBlockModel = mainModel.generateBlockModel;
-      this.currentPageCode = generateBlockModel.jdi ? pageCode(page, mainModel) : seleniumPageCode(page);
+      this.currentPageCode = pageCode(page, mainModel);
       this.generatedPages.push(this.currentPageCode);
     }
   }, {
@@ -69421,7 +69409,7 @@ function () {
       var siteName = getSiteName(siteTitle);
       zip.file(siteName + extension, siteCode(pack, origin, siteName, mainModel));
       this.generatedPages.forEach(function (page, index) {
-        return zip.folder("pages").file(getPageName(pages[index].name) + extension, page);
+        zip.folder("pages").file(getPageName(pages[index].name) + extension, page);
       });
       sections.forEach(function (section) {
         zip.folder("sections").file(getClassName(section.Name) + extension, sectionCode(pack, section, mainModel));
@@ -69453,7 +69441,7 @@ function () {
   initializer: function initializer() {
     return [];
   }
-}), _applyDecoratedDescriptor(_class.prototype, "genPageCode", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "genPageCode"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setCurrentPageCode", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setCurrentPageCode"), _class.prototype)), _class);
+}), _applyDecoratedDescriptor(_class.prototype, "clearOldConversion", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "clearOldConversion"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "genPageCode", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "genPageCode"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setCurrentPageCode", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setCurrentPageCode"), _class.prototype)), _class);
 exports.default = ConversionToCodeModel;
 
 function varName(name) {
@@ -69485,32 +69473,58 @@ function locatorType(locator) {
   return locator && locator.indexOf('/') !== 1 ? "Css" : "XPath";
 }
 
-function elementCode(locatorType, locator, elType, name) {
-  return " @".concat(locatorType, "(").concat(locator, ") public ").concat(elType, " ").concat(varName(name), ";\n\t");
+function complexCode(type, locator, name, mainModel) {
+  var template = mainModel.settingsModel.template;
+  var complexTemplate = template.pageElementComplex;
+  complexTemplate = complexTemplate.replace(/({{type}})/g, type);
+  complexTemplate = complexTemplate.replace(/({{locators}})/, locator);
+  complexTemplate = complexTemplate.replace(/({{name}})/, varName(name));
+  return complexTemplate + '\n'; // ` @${locatorType}(${locator}) public ${elType} ${varName(name)};`;
 }
 
-function simpleCode(locatorType, locator, elType, name) {
-  return elementCode(locatorType, "\"".concat(locator, "\""), elType, name);
+function simpleCode(locatorType, locator, elType, name, mainModel) {
+  var template = mainModel.settingsModel.template;
+  var templatePath = locatorType === 'Css' ? template.pageElementCss : template.pageElementXpath;
+  templatePath = templatePath.replace(/({{locator}})/, locator);
+  templatePath = templatePath.replace(/({{type}})/, elType);
+  templatePath = templatePath.replace(/({{name}})/, varName(name));
+  return templatePath + '\n'; // `@Css("{{locator}}") public {{type}} {{name}};`,
+  // return ` @${locatorType}(${locator}) public ${elType} ${varName(name)};
+  // `;
+  // return elementCode(locatorType, `"${locator}"`, elType, name)
 }
 
-function pageElementCode(page, pageName) {
-  return "@JPage(url = \"".concat(page.url, "\", title = \"").concat(page.title, "\") \n\tpublic static ").concat(getPageName(pageName), " ").concat(varName(pageName), ";\n\t");
+function pageElementCode(page, pageName, mainModel) {
+  var template = mainModel.settingsModel.template;
+  var pageElementCodeTemplate = template.siteElement;
+  pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{url}})/, page.url);
+  pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{title}})/, page.title);
+  pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{type}})/, getPageName(pageName));
+  pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{name}})/, varName(pageName));
+  return pageElementCodeTemplate;
 }
 
 ;
 
-function complexLocators(el, fields) {
+function complexLocators(el, fields, mainModel) {
+  var template = mainModel.settingsModel.template;
+  var templatePath = '';
   var locators = [];
 
   for (var field in fields) {
     var locator = el[field];
 
     if (!!locator && typeof locator === 'string') {
-      locators.push("".concat(field.toLowerCase(), " = @FindBy(").concat(locatorType(locator).toLowerCase(), " =\"").concat(locator, "\")"));
+      templatePath = locatorType(locator) === 'Css' ? template.locatorCss : template.locatorXPath;
+      templatePath = templatePath.replace(/({{type}})/, field.toLowerCase());
+      templatePath = templatePath.replace(/({{locator}})/, locator);
+      locators.push(templatePath);
     }
   }
 
-  return locators.join(",\n\t\t\t") + "\n\t";
+  var lastLoc = locators[locators.length - 1];
+  locators[locators.length - 1] = lastLoc.lastIndexOf(',') ? lastLoc.substring(0, lastLoc.length - 1) : lastLoc;
+  return locators.join("\n\t\t") + "\n\t";
 }
 
 function getFields(obj, commonFields) {
@@ -69540,14 +69554,17 @@ function isSimple(el, fields) {
 }
 
 function genEntities(parentId, arrOfElements, mainModel) {
-  var ruleBlockModel = mainModel.ruleBlockModel;
+  var ruleBlockModel = mainModel.ruleBlockModel,
+      settingsModel = mainModel.settingsModel;
   var complex = ruleBlockModel.rules.ComplexRules;
   var simple = ruleBlockModel.rules.SimpleRules;
+  var template = settingsModel.template;
+  var entityTemplate = template.dataElement;
   return arrOfElements.filter(function (el) {
     return el.parentId === parentId && (simple[el.Type] || complex[el.Type]) && el.Type != "Button";
   }).map(function (el) {
-    return "public String ".concat(varName(el.Name), ";");
-  }).join('\n\t');
+    return entityTemplate.replace(/({{name}})/, varName(el.Name));
+  }).join('\n'); // `public String ${varName(el.Name)};`
 }
 
 function getElement(el, generateBlockModel) {
@@ -69569,16 +69586,16 @@ function genCodeOfElements(parentId, arrOfElements, mainModel) {
 
     if (el.parentId === parentId && (!!el.Locator || !!el.Root)) {
       if (!!composites[el.Type]) {
-        result += simpleCode(locatorType(el.Locator), el.Locator, getClassName(el.Name), el.Name);
+        result += simpleCode(locatorType(el.Locator), el.Locator, getClassName(el.Name), el.Name, mainModel);
       }
 
       if (!!complex[el.Type]) {
         var fields = getFields(ruleBlockModel.elementFields[el.Type]);
-        result += isSimple(el, fields) ? simpleCode(locatorType(el.Root), el.Root, el.Type, el.Name) : elementCode("J" + el.Type, complexLocators(el, fields), el.Type, el.Name);
+        result += isSimple(el, fields) ? simpleCode(locatorType(el.Root), el.Root, el.Type, el.Name) : complexCode(el.Type, complexLocators(el, fields, mainModel), el.Name, mainModel);
       }
 
       if (!!simple[el.Type]) {
-        result += simpleCode(locatorType(el.Locator), el.Locator, el.Type, el.Name);
+        result += simpleCode(locatorType(el.Locator), el.Locator, el.Type, el.Name, mainModel);
       }
     }
   }
@@ -69588,20 +69605,27 @@ function genCodeOfElements(parentId, arrOfElements, mainModel) {
 
 function getPageCode(mainModel) {
   return mainModel.generateBlockModel.pages.map(function (page) {
-    return pageElementCode(page, getPageName(page.name));
+    return pageElementCode(page, getPageName(page.name), mainModel);
   }).join(''); // return objCopy.PageObjects.map(page=>pageElementCode(page, getPageName(page.name))).join('');
 }
 
-function commonImport() {
-  return "\nimport com.epam.jdi.uitests.web.selenium.elements.common.*;\nimport com.epam.jdi.uitests.web.selenium.elements.complex.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebPage;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.objects.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.simple.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;";
+function sectionTemplate(pack, name, code, mainModel) {
+  var template = mainModel.settingsModel.template;
+  var secTemplate = template.section;
+  secTemplate = secTemplate.replace(/({{package}})/, template.package || pack);
+  secTemplate = secTemplate.replace(/({{type}})/, getClassName(name));
+  secTemplate = secTemplate.replace(/({{elements}})/, code);
+  return secTemplate;
 }
 
-function sectionTemplate(pack, name, code) {
-  return "package ".concat(pack, ".sections;\n").concat(commonImport(), "\n\npublic class ").concat(getClassName(name), " extends Section {\n\t").concat(code, "\n}");
-}
-
-function formTemplate(pack, name, code, entityName) {
-  return "package ".concat(pack, ".sections;\n").concat(commonImport(), "\nimport ").concat(pack, ".entities.*;\n\npublic class ").concat(getClassName(name), " extends Form<").concat(entityName, "> {\n\t").concat(code, "\n}");
+function formTemplate(pack, name, code, entityName, mainModel) {
+  var template = mainModel.settingsModel.template;
+  var fTemplate = template.form;
+  fTemplate = fTemplate.replace(/({{package}})/g, template.package || pack);
+  fTemplate = fTemplate.replace(/({{type}})/g, getClassName(name));
+  fTemplate = fTemplate.replace(/({{data}})/g, entityName);
+  fTemplate = fTemplate.replace(/({{elements}})/g, code);
+  return fTemplate;
 }
 
 function getEntityName(name) {
@@ -69613,10 +69637,10 @@ function sectionCode(pack, el, mainModel) {
 
   switch (el.Type) {
     case "Section":
-      return sectionTemplate(pack, el.Name, code);
+      return sectionTemplate(pack, el.Name, code, mainModel);
 
     case "Form":
-      return formTemplate(pack, el.Name, code, getEntityName(el.Name));
+      return formTemplate(pack, el.Name, code, getEntityName(el.Name), mainModel);
   }
 
   ;
@@ -69624,33 +69648,32 @@ function sectionCode(pack, el, mainModel) {
 
 function entityCode(pack, section, mainModel) {
   var entityName = getEntityName(section.Name);
-  return "package ".concat(pack, ".entities;\n\nimport com.epam.jdi.tools.DataClass;\n\npublic class ").concat(entityName, " extends DataClass<").concat(entityName, "> {\n\t").concat(genEntities(section.elId, section.children, mainModel), "\n}");
+  var template = mainModel.settingsModel.template;
+  var entityCodeTemplate = template.data;
+  entityCodeTemplate = entityCodeTemplate.replace(/({{package}})/, template.package || pack);
+  entityCodeTemplate = entityCodeTemplate.replace(/({{type}})/g, entityName);
+  entityCodeTemplate = entityCodeTemplate.replace(/({{elements}})/, genEntities(section.elId, section.children, mainModel));
+  return entityCodeTemplate;
 }
 
 function siteCode(pack, domain, name, mainModel) {
-  return "package ".concat(pack, ";\n\t\nimport ").concat(pack, ".pages.*;\n").concat(mainModel.settingsModel.customSiteImports, "\n@JSite(\"").concat(domain, "\")\npublic class ").concat(name, " extends WebSite {\n\t").concat(getPageCode(mainModel), "\n}");
+  var template = mainModel.settingsModel.template;
+  var siteTemplate = mainModel.settingsModel.template.site;
+  siteTemplate = siteTemplate.replace(/({{package}})/g, template.package || pack);
+  siteTemplate = siteTemplate.replace(/({{domain}})/g, domain);
+  siteTemplate = siteTemplate.replace(/({{siteName}})/g, template.siteName || name);
+  siteTemplate = siteTemplate.replace(/({{pages}})/, getPageCode(mainModel));
+  return siteTemplate;
 }
 
 function pageCode(page, mainModel) {
   var pageName = getPageName(page.name);
-  return "package ".concat(page.package, ".pages;\n").concat(commonImport(), "\nimport ").concat(page.package, ".sections.*;\n\npublic class ").concat(pageName, " extends WebPage {\n\t").concat(genCodeOfElements(null, page.elements, mainModel), "\n}");
-}
-
-function seleniumPageCode(page) {
-  var pageName = getPageName(page.name);
-  return "package ".concat(page.package, ".pages;\n\t\t\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;\nimport org.openqa.selenium.WebElement;\n\npublic class ").concat(pageName, " {\n\t").concat(genCodeOfWEBElements(page.elements), "\n}");
-}
-
-function findByCode(el) {
-  var locator = el.Locator;
-  var name = el.Name;
-  return elementCode("FindBy", "".concat(locatorType(locator).toLowerCase(), " =\"").concat(locator, "\""), "WebElement", name);
-}
-
-function genCodeOfWEBElements(arrOfElements) {
-  return arrOfElements.map(function (el) {
-    return "".concat(findByCode(el));
-  }).join("");
+  var template = mainModel.settingsModel.template;
+  var pageTemplate = template.page;
+  pageTemplate = pageTemplate.replace(/({{package}})/g, template.package || page.package);
+  pageTemplate = pageTemplate.replace(/{{type}}/g, pageName);
+  pageTemplate = pageTemplate.replace(/{{elements}}/, genCodeOfElements(null, page.elements, mainModel));
+  return pageTemplate;
 }
 },{"mobx":"../../node_modules/mobx/lib/mobx.module.js","file-saver":"../../node_modules/file-saver/dist/FileSaver.min.js","../jszip/dist/jszip":"jszip/dist/jszip.js"}],"json/JavaJDIUITemplate.js":[function(require,module,exports) {
 "use strict";
@@ -69664,13 +69687,18 @@ var JavaJDIUITemplate = {
   "siteName": "",
   "nameCase": "camelCase",
   "typeCase": "PascalCase",
-  "site": "package {{package}};\n\t\nimport {{package}}.pages.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebSite;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.*;\n\n@JSite(\"{{domain}}\")\npublic class {{siteName}}Site extends WebSite {\n  {{pages}} \t\n}",
-  "siteElement": "@JPage(url = \"{{url}}\", title = \"{{title}}\") \npublic static {{type}} {{name}};",
-  "page": "package {{package}}.pages;\n\nimport com.epam.jdi.uitests.web.selenium.elements.common.*;\nimport com.epam.jdi.uitests.web.selenium.elements.complex.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebPage;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.objects.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.simple.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;\nimport {{package}}.sections.*;\n\npublic class {{type}} extends WebPage {\n    {{elements}}\t\n}",
-  "pageElement": "@Css(\"{{locator}}\") public {{type}} {{name}};",
-  "section": "package {{package}};\n\nimport com.epam.jdi.uitests.web.selenium.elements.common.*;\nimport com.epam.jdi.uitests.web.selenium.elements.complex.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebPage;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.objects.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.simple.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;\n\npublic class {{type}} extends Section {\n    {{elements}}\t\n}",
-  "data": "package {{package}}.entities;\n\nimport com.epam.jdi.tools.DataClass;\n\npublic class {{type}} extends DataClass<{{type}}> {\n    {{elements}}\n}",
-  "dataElement": "public String {{name}};"
+  "site": "package {{package}};\n\t\nimport {{package}}.pages.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebSite;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.*;\n\n@JSite(\"{{domain}}\")\npublic class {{siteName}} extends WebSite {\n{{pages}} \t\n}",
+  "siteElement": "    @JPage(url = \"{{url}}\", title = \"{{title}}\") \n    public static {{type}} {{name}};",
+  "page": "package {{package}}.pages;\n\nimport com.epam.jdi.uitests.web.selenium.elements.common.*;\nimport com.epam.jdi.uitests.web.selenium.elements.complex.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebPage;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.objects.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.simple.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;\nimport {{package}}.sections.*;\n\npublic class {{type}} extends WebPage {\n{{elements}}\t\n}",
+  "pageElementCss": "    @Css(\"{{locator}}\") public {{type}} {{name}};",
+  "pageElementXpath": "    @XPath(\"{{locator}}\") public {{type}} {{name}};",
+  "pageElementComplex": "    @J{{type}}({{locators}})\n\tpublic {{type}} {{name}};",
+  "locatorCss": "{{type}} = @FindBy(css = \"{{locator}}\"),",
+  "locatorXPath": "{{type}} = @FindBy(xpath = \"{{locator}}\"),",
+  "section": "package {{package}}.sections;\n\nimport com.epam.jdi.uitests.web.selenium.elements.common.*;\nimport com.epam.jdi.uitests.web.selenium.elements.complex.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebPage;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.objects.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.simple.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;\n\npublic class {{type}} extends Section {\n{{elements}}\t\n}",
+  "form": "package {{package}}.sections;\n\nimport com.epam.jdi.uitests.web.selenium.elements.common.*;\nimport com.epam.jdi.uitests.web.selenium.elements.complex.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebPage;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.objects.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.simple.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;\nimport {{package}}.entities.*;\n\npublic class {{type}} extends Form<{{data}}> {\n{{elements}}\t\n}",
+  "data": "package {{package}}.entities;\n\nimport com.epam.jdi.tools.DataClass;\n\npublic class {{type}} extends DataClass<{{type}}> {\n{{elements}}\n}",
+  "dataElement": "    public String {{name}};"
 };
 exports.JavaJDIUITemplate = JavaJDIUITemplate;
 },{}],"models/SettingsModel.js":[function(require,module,exports) {
@@ -70220,7 +70248,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55480" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63194" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

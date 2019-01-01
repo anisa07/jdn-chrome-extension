@@ -52,7 +52,7 @@ function camelCase (n) {
 
 function nameElement (locator, uniqness, value, content) {
 	if (uniqness === "text" || uniqness.includes("#text")) {
-		return (camelCase(value) || (content.innerText || content.textContent).trim());
+		return camelCase(value || (content.innerText || content.textContent).trim());
 	}
 	if (uniqness.includes('tag')) {
 		return camelCase(content.tagName.toLowerCase());
@@ -401,54 +401,50 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 	}
 
 	if (r) {
-		if (settingsModel.jdi) {
-			composites.forEach((rule) => {
+		composites.forEach((rule) => {
+			try {
+				getComposite({ mainModel, results }, observedDOM, rule)
+			} catch (e) {
+				generateBlockModel.log.addToLog(`Error! Getting composite element: ${e}`);
+				// objCopy.warningLog = [...objCopy.warningLog, getLog()];
+				// document.querySelector('#refresh').click();
+			}
+			;
+		});
+
+		for (let i = 0; i < results.length; i++) {
+			let findParent = results.find(section => section.elId === results[i].parentId && results[i].parentId !== null);
+			if (findParent) {
+				if (findParent.children) {
+					findParent.children.push(results[i]);
+				} else {
+					findParent.children = [];
+					findParent.children.push(results[i]);
+				}
+			}
+		}
+
+		results.push({ Locator: "body", Type: null, content: observedDOM, elId: null, parentId: null, parent: null });
+
+		for (let i = 0; i < results.length - 1; i++) {
+			applyFoundResult({ mainModel }, results[i]);
+		}
+
+		for (let i = 0; i < results.length; i++) {
+			results[i].content.parentNode.removeChild(results[i].content);
+		}
+
+		results.forEach((section) => {
+			complex.forEach((rule) => {
 				try {
-					getComposite({ mainModel, results }, observedDOM, rule)
+					getComplex({ mainModel, results }, section, rule);
 				} catch (e) {
-					generateBlockModel.log.addToLog(`Error! Getting composite element: ${e}`);
+					generateBlockModel.log.addToLog(`Error! Getting complex element: ${e}`);
 					// objCopy.warningLog = [...objCopy.warningLog, getLog()];
 					// document.querySelector('#refresh').click();
 				}
-				;
 			});
-
-			for (let i = 0; i < results.length; i++) {
-				let findParent = results.find(section => section.elId === results[i].parentId && results[i].parentId !== null);
-				if (findParent) {
-					if (findParent.children) {
-						findParent.children.push(results[i]);
-					} else {
-						findParent.children = [];
-						findParent.children.push(results[i]);
-					}
-				}
-			}
-
-			results.push({ Locator: "body", Type: null, content: observedDOM, elId: null, parentId: null, parent: null });
-
-			for (let i = 0; i < results.length - 1; i++) {
-				applyFoundResult({ mainModel }, results[i]);
-			}
-
-			for (let i = 0; i < results.length; i++) {
-				results[i].content.parentNode.removeChild(results[i].content);
-			}
-
-			results.forEach((section) => {
-				complex.forEach((rule) => {
-					try {
-						getComplex({ mainModel, results }, section, rule);
-					} catch (e) {
-						generateBlockModel.log.addToLog(`Error! Getting complex element: ${e}`);
-						// objCopy.warningLog = [...objCopy.warningLog, getLog()];
-						// document.querySelector('#refresh').click();
-					}
-				});
-			});
-		} else {
-			results.push({ Locator: "body", Type: null, content: observedDOM, elId: null, parentId: null, parent: null });
-		}
+		});
 
 		results.forEach((section) => {
 			simple.forEach((rule) => {
@@ -466,8 +462,8 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 
 		if (!pageAlreadyGenerated) {
 			generateBlockModel.pages.push(generateBlockModel.page);
-			mainModel.conversionModel.siteCodeReady = true;
-			conversionModel.genPageCode(generateBlockModel.page, mainModel);
+			// mainModel.conversionModel.siteCodeReady = true;
+			// conversionModel.genPageCode(generateBlockModel.page, mainModel);
 
 			if (settingsModel.downloadAfterGeneration) {
 				conversionModel.downloadPageCode(generateBlockModel.page, mainModel.settingsModel.extension);
@@ -536,7 +532,7 @@ export const getTitleCallBack = ({ mainModel }, r, err) => {
 
 export default class GenerateBlockModel {
 	@observable log;
-	@observable jdi = true;
+//	@observable jdi = true;
 	@observable sections;
 	@observable pages = [];
 	@observable page = {

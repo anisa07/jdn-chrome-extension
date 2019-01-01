@@ -8,9 +8,13 @@ export default class ConversionToCodeModel {
 	@observable generatedPages = [];
 
 	@action
+	clearOldConversion () {
+		this.generatedPages = [];
+	}
+
+	@action
 	genPageCode (page, mainModel) {
-		const { generateBlockModel } = mainModel;
-		this.currentPageCode = generateBlockModel.jdi ? pageCode(page, mainModel) : seleniumPageCode(page);
+		this.currentPageCode = pageCode(page, mainModel);
 		this.generatedPages.push(this.currentPageCode);
 	}
 
@@ -44,9 +48,9 @@ export default class ConversionToCodeModel {
 		zip.file(siteName + extension,
 			siteCode(pack, origin, siteName, mainModel));
 
-		this.generatedPages.forEach((page, index)=>
+		this.generatedPages.forEach((page, index)=> {
 			zip.folder("pages").file(getPageName(pages[index].name) + extension, page)
-		);
+		});
 
 		sections.forEach(section => {
 			zip.folder("sections").file(getClassName(section.Name) + extension,
@@ -96,30 +100,61 @@ function locatorType (locator) {
 	return locator && locator.indexOf('/') !== 1 ? "Css" : "XPath";
 }
 
-function elementCode (locatorType, locator, elType, name) {
-	return ` @${locatorType}(${locator}) public ${elType} ${varName(name)};
-	`;
+function complexCode (type, locator, name, mainModel) {
+	const template = mainModel.settingsModel.template;
+	let complexTemplate = template.pageElementComplex;
+	complexTemplate = complexTemplate.replace(/({{type}})/g, type);
+	complexTemplate = complexTemplate.replace(/({{locators}})/, locator);
+	complexTemplate = complexTemplate.replace(/({{name}})/, varName(name));
+
+	return complexTemplate + '\n';
+	// ` @${locatorType}(${locator}) public ${elType} ${varName(name)};`;
 }
 
-function simpleCode (locatorType, locator, elType, name) {
-	return elementCode(locatorType, `"${locator}"`, elType, name)
+function simpleCode (locatorType, locator, elType, name, mainModel) {
+	const template = mainModel.settingsModel.template;
+	let templatePath = locatorType === 'Css' ? template.pageElementCss : template.pageElementXpath;
+	templatePath = templatePath.replace(/({{locator}})/, locator);
+	templatePath = templatePath.replace(/({{type}})/, elType);
+	templatePath = templatePath.replace(/({{name}})/, varName(name));
+
+	return templatePath + '\n';
+
+	// `@Css("{{locator}}") public {{type}} {{name}};`,
+
+	// return ` @${locatorType}(${locator}) public ${elType} ${varName(name)};
+	// `;
+	// return elementCode(locatorType, `"${locator}"`, elType, name)
 }
 
-function pageElementCode (page, pageName) {
-	return `@JPage(url = "${page.url}", title = "${page.title}") 
-	public static ${getPageName(pageName)} ${varName(pageName)};
-	`;
+function pageElementCode (page, pageName, mainModel) {
+	const template = mainModel.settingsModel.template;
+
+	let pageElementCodeTemplate = template.siteElement;
+	pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{url}})/, page.url);
+	pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{title}})/, page.title);
+	pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{type}})/, getPageName(pageName));
+	pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{name}})/, varName(pageName));
+
+	return pageElementCodeTemplate;
 };
 
-function complexLocators (el, fields) {
+function complexLocators (el, fields, mainModel) {
+	const template = mainModel.settingsModel.template;
+	let templatePath = '';
 	let locators = [];
 	for (let field in fields) {
 		let locator = el[field];
 		if (!!locator && typeof locator === 'string') {
-			locators.push(`${field.toLowerCase()} = @FindBy(${locatorType(locator).toLowerCase()} ="${locator}")`);
+			templatePath = locatorType(locator) === 'Css' ? template.locatorCss : template.locatorXPath;
+			templatePath = templatePath.replace(/({{type}})/, field.toLowerCase());
+			templatePath = templatePath.replace(/({{locator}})/, locator);
+			locators.push(templatePath);
 		}
 	}
-	return locators.join(",\n\t\t\t") + "\n\t";
+	const lastLoc = locators[locators.length - 1 ];
+	locators[locators.length - 1 ] = lastLoc.lastIndexOf(',') ? lastLoc.substring(0, lastLoc.length-1) : lastLoc;
+	return locators.join("\n\t\t") + "\n\t";
 }
 
 function getFields (obj, commonFields) {
@@ -148,12 +183,17 @@ function isSimple (el, fields) {
 }
 
 function genEntities (parentId, arrOfElements, mainModel) {
-	const { ruleBlockModel } = mainModel;
+	const { ruleBlockModel, settingsModel } = mainModel;
 	const complex = ruleBlockModel.rules.ComplexRules;
 	const simple = ruleBlockModel.rules.SimpleRules;
+	const template = settingsModel.template;
+	let entityTemplate = template.dataElement;
+
 	return arrOfElements
 		.filter(el => el.parentId === parentId && (simple[el.Type] || complex[el.Type]) && el.Type != "Button")
-		.map(el => `public String ${varName(el.Name)};`).join('\n\t');
+		.map(el => entityTemplate.replace(/({{name}})/, varName(el.Name)))
+		.join('\n');
+	// `public String ${varName(el.Name)};`
 }
 
 function getElement (el, generateBlockModel) {
@@ -172,16 +212,16 @@ function genCodeOfElements (parentId, arrOfElements, mainModel) {
 		let el = getElement(arrOfElements[i], generateBlockModel);
 		if (el.parentId === parentId && (!!el.Locator || !!el.Root)) {
 			if (!!composites[el.Type]) {
-				result += simpleCode(locatorType(el.Locator), el.Locator, getClassName(el.Name), el.Name);
+				result += simpleCode(locatorType(el.Locator), el.Locator, getClassName(el.Name), el.Name, mainModel);
 			}
 			if (!!complex[el.Type]) {
 				let fields = getFields(ruleBlockModel.elementFields[el.Type]);
 				result += isSimple(el, fields)
 					? simpleCode(locatorType(el.Root), el.Root, el.Type, el.Name)
-					: elementCode("J" + el.Type, complexLocators(el, fields), el.Type, el.Name);
+					: complexCode(el.Type, complexLocators(el, fields, mainModel), el.Name, mainModel);
 			}
 			if (!!simple[el.Type]) {
-				result += simpleCode(locatorType(el.Locator), el.Locator, el.Type, el.Name);
+				result += simpleCode(locatorType(el.Locator), el.Locator, el.Type, el.Name, mainModel);
 			}
 		}
 	}
@@ -189,38 +229,31 @@ function genCodeOfElements (parentId, arrOfElements, mainModel) {
 }
 
 function getPageCode (mainModel) {
-	return mainModel.generateBlockModel.pages.map(page => pageElementCode(page, getPageName(page.name))).join('');
+	return mainModel.generateBlockModel.pages.map(page => pageElementCode(page, getPageName(page.name), mainModel)).join('');
 	// return objCopy.PageObjects.map(page=>pageElementCode(page, getPageName(page.name))).join('');
 }
 
-function commonImport () {
-	return `
-import com.epam.jdi.uitests.web.selenium.elements.common.*;
-import com.epam.jdi.uitests.web.selenium.elements.complex.*;
-import com.epam.jdi.uitests.web.selenium.elements.composite.*;
-import com.epam.jdi.uitests.web.selenium.elements.composite.WebPage;
-import com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.objects.*;
-import com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.simple.*;
-import com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;`;
+function sectionTemplate (pack, name, code, mainModel) {
+	const template = mainModel.settingsModel.template;
+	let secTemplate = template.section;
+
+	secTemplate = secTemplate.replace(/({{package}})/, template.package || pack);
+	secTemplate = secTemplate.replace(/({{type}})/, getClassName(name));
+	secTemplate = secTemplate.replace(/({{elements}})/, code);
+
+	return secTemplate;
 }
 
-function sectionTemplate (pack, name, code) {
-	return `package ${pack}.sections;
-${commonImport()}
+function formTemplate (pack, name, code, entityName, mainModel) {
+	const template = mainModel.settingsModel.template;
+	let fTemplate = template.form;
 
-public class ${getClassName(name)} extends Section {
-	${code}
-}`;
-}
+	fTemplate = fTemplate.replace(/({{package}})/g, template.package || pack);
+	fTemplate = fTemplate.replace(/({{type}})/g, getClassName(name));
+	fTemplate = fTemplate.replace(/({{data}})/g, entityName);
+	fTemplate = fTemplate.replace(/({{elements}})/g, code);
 
-function formTemplate (pack, name, code, entityName) {
-	return `package ${pack}.sections;
-${commonImport()}
-import ${pack}.entities.*;
-
-public class ${getClassName(name)} extends Form<${entityName}> {
-	${code}
-}`;
+	return fTemplate;
 }
 
 export function getEntityName (name) {
@@ -232,63 +265,44 @@ export function sectionCode (pack, el, mainModel) {
 
 	switch (el.Type) {
 		case "Section":
-			return sectionTemplate(pack, el.Name, code);
+			return sectionTemplate(pack, el.Name, code, mainModel);
 		case "Form":
-			return formTemplate(pack, el.Name, code, getEntityName(el.Name));
+			return formTemplate(pack, el.Name, code, getEntityName(el.Name), mainModel);
 	};
 }
 
 export function entityCode (pack, section, mainModel) {
-	let entityName = getEntityName(section.Name);
-	return `package ${pack}.entities;
+	const entityName = getEntityName(section.Name);
+	const template = mainModel.settingsModel.template;
 
-import com.epam.jdi.tools.DataClass;
+	let entityCodeTemplate = template.data;
+	entityCodeTemplate = entityCodeTemplate.replace(/({{package}})/, template.package || pack);
+	entityCodeTemplate = entityCodeTemplate.replace(/({{type}})/g, entityName);
+	entityCodeTemplate = entityCodeTemplate.replace(/({{elements}})/, genEntities(section.elId, section.children, mainModel));
 
-public class ${entityName} extends DataClass<${entityName}> {
-	${genEntities(section.elId, section.children, mainModel)}
-}`;
+	return entityCodeTemplate;
 }
 
 export function siteCode (pack, domain, name, mainModel) {
-	return `package ${pack};
-	
-import ${pack}.pages.*;
-${mainModel.settingsModel.customSiteImports}
-@JSite("${domain}")
-public class ${name} extends WebSite {
-	${getPageCode(mainModel)}
-}`;
+	const template = mainModel.settingsModel.template;
+
+	let siteTemplate = mainModel.settingsModel.template.site;
+	siteTemplate = siteTemplate.replace(/({{package}})/g, template.package || pack);
+	siteTemplate = siteTemplate.replace(/({{domain}})/g, domain);
+	siteTemplate = siteTemplate.replace(/({{siteName}})/g, template.siteName || name);
+	siteTemplate = siteTemplate.replace(/({{pages}})/, getPageCode(mainModel));
+
+	return siteTemplate;
 }
 
 export function pageCode (page, mainModel) {
-	let pageName = getPageName(page.name);
-	return `package ${page.package}.pages;
-${commonImport()}
-import ${page.package}.sections.*;
+	const pageName = getPageName(page.name);
+	const template = mainModel.settingsModel.template;
 
-public class ${pageName} extends WebPage {
-	${genCodeOfElements(null, page.elements, mainModel)}
-}`;
-}
+	let pageTemplate = template.page;
+	pageTemplate = pageTemplate.replace(/({{package}})/g, template.package || page.package);
+	pageTemplate = pageTemplate.replace(/{{type}}/g, pageName);
+	pageTemplate = pageTemplate.replace(/{{elements}}/, genCodeOfElements(null, page.elements, mainModel));
 
-export function seleniumPageCode (page) {
-	let pageName = getPageName(page.name);
-	return `package ${page.package}.pages;
-		
-import com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;
-import org.openqa.selenium.WebElement;
-
-public class ${pageName} {
-	${genCodeOfWEBElements(page.elements)}
-}`;
-}
-
-function findByCode (el) {
-	let locator = el.Locator;
-	let name = el.Name;
-	return elementCode("FindBy", `${locatorType(locator).toLowerCase()} ="${locator}"`, "WebElement", name);
-}
-
-function genCodeOfWEBElements (arrOfElements) {
-	return arrOfElements.map(el => `${findByCode(el)}`).join("");
+	return pageTemplate;
 }

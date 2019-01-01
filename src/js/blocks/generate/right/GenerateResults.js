@@ -24,24 +24,30 @@ const styles = {
 class GenerateResults extends React.Component {
 	handleDownloadSiteCode = () => {
 		const { mainModel } = this.props;
+
+		mainModel.conversionModel.clearOldConversion();
+		mainModel.generateBlockModel.pages.forEach(p => {
+			mainModel.conversionModel.genPageCode(p, mainModel);
+		});
 		mainModel.conversionModel.zipAllCode(mainModel);
 	};
 
-	handleDownloadPageCode = (index) => {
+	handleDownloadPageCode = (page, index) => {
 		const { mainModel } = this.props;
+
+		mainModel.conversionModel.genPageCode(page, mainModel);
 		mainModel.conversionModel.setCurrentPageCode(index);
-		mainModel.conversionModel.downloadPageCode(mainModel.generateBlockModel.pages[index], mainModel.settingsModel.extension);
+		mainModel.conversionModel.downloadPageCode(page, mainModel.settingsModel.extension);
 	};
 
 	render () {
 		const { classes, mainModel } = this.props;
-		const pageReady = !!mainModel.conversionModel.currentPageCode;
-		const siteReady = mainModel.conversionModel.siteCodeReady;
 		const pages = mainModel.generateBlockModel.pages || [];
+		const pageReady = !!pages.length;
 
 		return (
 			<div className={classes.buttonContainer}>
-				{ siteReady ?
+				{ pageReady ?
 						<div>
 							<Button className={classes.btn} icon={importIcon} onclick={this.handleDownloadSiteCode}/>
 							<span>{`Download site ${mainModel.generateBlockModel.siteInfo.siteTitle}`}</span>
@@ -51,7 +57,7 @@ class GenerateResults extends React.Component {
 						pages.map((page, index) =>
 							(
 								<div key={page.id}>
-									<Button className={classes.btn} icon={importIcon} onclick={() => {this.handleDownloadPageCode(index)}}/>
+									<Button className={classes.btn} icon={importIcon} onclick={() => {this.handleDownloadPageCode(page, index)}}/>
 									<span>{`Download page ${page.name}`}</span>
 								</div>
 							)
