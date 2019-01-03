@@ -31,7 +31,7 @@ public class {{type}} extends WebPage {
 {{elements}}	
 }`,
 	"pageElementCss" : `    @Css("{{locator}}") public {{type}} {{name}};`,
-	"pageElementXpath" : `    @XPath("{{locator}}") public {{type}} {{name}};`,
+	"pageElementXPath" : `    @XPath("{{locator}}") public {{type}} {{name}};`,
 	"pageElementComplex" : `    @J{{type}}({{locators}})
 	public {{type}} {{name}};`,
 	"locatorCss" : `{{type}} = @FindBy(css = "{{locator}}"),`,

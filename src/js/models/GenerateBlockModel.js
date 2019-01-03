@@ -7,7 +7,10 @@ const getElements = ({ log }, dom, locatorType) => {
 	try {
 		elements = locatorType.xpath ? getElementsByXpath(dom, locatorType.locator) : dom.querySelectorAll(locatorType.locator);
 	} catch (e) {
-		log.addToLog(`Error!: cannot get elements by ${locatorType.locator}`);
+		log.addToLog({
+			message: `Error!: cannot get elements by ${locatorType.locator}`,
+			type: 'error',
+		});
 		// objCopy.warningLog = [...objCopy.warningLog, getLog()];
 		document.querySelector('#refresh').click();
 	}
@@ -268,11 +271,16 @@ const defineElements = ({ results, mainModel }, dom, Locator, uniq, t, ruleId, p
 		fillEl({ results, mainModel }, e, t, parent, ruleId);
 		return;
 	}
-	let tooMuchElements = `Too much elements found(${elements.length} for ${uniqness.value}. Locator (${firstSearch.locatorType.locator}))`;
-	generateBlockModel.log.addToLog(tooMuchElements);
+	generateBlockModel.log.addToLog({
+		message: `Warning! Too much elements found(${elements.length} for ${uniqness.value}. Locator (${firstSearch.locatorType.locator}))`,
+		type: 'warning'
+	});
 	if (elements.length > 1) {
 		if (uniqness.value === "tag" || uniqness.value === '[') {
-			generateBlockModel.log.addToLog(`Warning! Too much elements found by locator ${firstSearch.locatorType.locator}; uniqness ${uniqness.value}; ${elements.length} elements`);
+			generateBlockModel.log.addToLog({
+				message: `Warning! Too much elements found by locator ${firstSearch.locatorType.locator}; uniqness ${uniqness.value}; ${elements.length} elements`,
+				type: 'warning',
+			});
 			// document.querySelector('#refresh').click();
 		}
 		for (let i = 0; i < elements.length; i++) {
@@ -289,7 +297,10 @@ const defineElements = ({ results, mainModel }, dom, Locator, uniq, t, ruleId, p
 				};
 				fillEl({ results, mainModel }, e, t, parent, ruleId);
 			} else {
-				generateBlockModel.log.addToLog(`Warning! Too much elements found by locator ${finalLocator}; ${s2.elements.length} elements`);
+				generateBlockModel.log.addToLog({
+					message: `Warning! Too much elements found by locator ${finalLocator}; ${s2.elements.length} elements`,
+					type: 'warning',
+				});
 				// document.querySelector('#refresh').click();
 			}
 		}
@@ -395,7 +406,10 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 	const results = [];
 
 	if (err) {
-		generateBlockModel.log.addToLog(`Error, loading data from active page! ${err}`);
+		generateBlockModel.log.addToLog({
+			message: `Error, loading data from active page! ${err}`,
+			type: 'error',
+		});
 		// objCopy.warningLog = [...objCopy.warningLog, getLog()];
 		// document.querySelector('#refresh').click();
 	}
@@ -405,7 +419,10 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 			try {
 				getComposite({ mainModel, results }, observedDOM, rule)
 			} catch (e) {
-				generateBlockModel.log.addToLog(`Error! Getting composite element: ${e}`);
+				generateBlockModel.log.addToLog({
+					message: `Error! Getting composite element: ${e}`,
+					type: 'error',
+				});
 				// objCopy.warningLog = [...objCopy.warningLog, getLog()];
 				// document.querySelector('#refresh').click();
 			}
@@ -439,7 +456,10 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 				try {
 					getComplex({ mainModel, results }, section, rule);
 				} catch (e) {
-					generateBlockModel.log.addToLog(`Error! Getting complex element: ${e}`);
+					generateBlockModel.log.addToLog({
+						message: `Error! Getting complex element: ${e}`,
+						type: 'error',
+					});
 					// objCopy.warningLog = [...objCopy.warningLog, getLog()];
 					// document.querySelector('#refresh').click();
 				}
@@ -451,7 +471,10 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 				try {
 					getSimple({ mainModel, results }, section, rule);
 				} catch (e) {
-					generateBlockModel.log.addToLog(`Error! Getting simple element: ${e}`);
+					generateBlockModel.log.addToLog({
+						message: `Error! Getting simple element: ${e}`,
+						type: 'error',
+					});
 					// objCopy.warningLog = [...objCopy.warningLog, getLog()];
 					// document.querySelector('#refresh').click();
 				}
@@ -468,6 +491,11 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 			if (settingsModel.downloadAfterGeneration) {
 				conversionModel.downloadPageCode(generateBlockModel.page, mainModel.settingsModel.extension);
 			}
+			generateBlockModel.log.addToLog({
+				message: `Success! Generates ${generateBlockModel.page.name}`,
+				type: 'success',
+			});
+			mainModel.fillLog(generateBlockModel.log.log);
 		}
 		// TODO create beautiful popup
 	}
@@ -484,7 +512,10 @@ export const getLocationCallBack = ({ mainModel }, r, err) => {
 	const { generateBlockModel } = mainModel;
 
 	if (err) {
-		generateBlockModel.log.addToLog(`Error, getting location from active page! ${err}`);
+		generateBlockModel.log.addToLog({
+			message: `Error, getting location from active page! ${err}`,
+			type: 'error',
+		});
 		// objCopy.warningLog = [...objCopy.warningLog, getLog()];
 		// document.querySelector('#refresh').click();
 	}
@@ -504,7 +535,10 @@ export const getDomainCallBack = ({ mainModel }, r, err) => {
 	const { generateBlockModel } = mainModel;
 
 	if (err) {
-		generateBlockModel.log.addToLog(`Error, getting domain from active page! ${err}`);
+		generateBlockModel.log.addToLog({
+			message: `Error, getting domain from active page! ${err}`,
+			type: 'error',
+		});
 		// objCopy.warningLog = [...objCopy.warningLog, getLog()];
 		// document.querySelector('#refresh').click();
 	}
@@ -519,7 +553,10 @@ export const getTitleCallBack = ({ mainModel }, r, err) => {
 	const { generateBlockModel } = mainModel;
 
 	if (err) {
-		generateBlockModel.log.addToLog(`Error, getting title from active page! ${err}`);
+		generateBlockModel.log.addToLog({
+			message: `Error, getting title from active page! ${err}`,
+			type: 'error',
+		});
 		// objCopy.warningLog = [...objCopy.warningLog, getLog()];
 		// document.querySelector('#refresh').click();
 	}
@@ -532,7 +569,6 @@ export const getTitleCallBack = ({ mainModel }, r, err) => {
 
 export default class GenerateBlockModel {
 	@observable log;
-//	@observable jdi = true;
 	@observable sections;
 	@observable pages = [];
 	@observable page = {
@@ -561,6 +597,8 @@ export default class GenerateBlockModel {
 			package: '',
 			elements: []
 		};
+
+		this.log.clearLog();
 
 		chrome.devtools.inspectedWindow.eval('document.location', (r, err) => {
 			getLocationCallBack({ mainModel }, r, err);

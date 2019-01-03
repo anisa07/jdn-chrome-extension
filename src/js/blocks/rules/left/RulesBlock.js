@@ -71,6 +71,15 @@ class RulesBlock extends React.Component {
 		currentRule ? mainModel.ruleBlockModel.setCurrentRuleName(currentRule) : mainModel.ruleBlockModel.setCurrentRuleName('');
 	};
 
+	handleExportRules = () => {
+		const { mainModel } = this.props;
+		const rulesName = mainModel.settingsModel.framework;
+
+		mainModel.ruleBlockModel.downloadCurrentRules(rulesName);
+	};
+
+	handleImportRules = () => {};
+
 	render () {
 		const { classes, mainModel } = this.props;
 		const simpleRules = Object.keys(mainModel.ruleBlockModel.rules.SimpleRules) || [];
@@ -82,8 +91,8 @@ class RulesBlock extends React.Component {
 				<span className={classes.headerStyle}>Page: </span>
 				<LabelWrapper>{mainModel.ruleBlockModel.ruleName}</LabelWrapper>
 				<div className={classes.buttonContainer}>
-					<Button className={classes.btn} label={'Import'} icon={importIcon}/>
-					<Button className={classes.btn} label={'Export'} icon={exportIcon}/>
+					<Button className={classes.btn} label={'Import'} icon={importIcon} onclick={this.handleImportRules}/>
+					<Button className={classes.btn} label={'Export'} icon={exportIcon} onclick={this.handleExportRules}/>
 				</div>
 				<div>
 					<ul className={classes.list}>

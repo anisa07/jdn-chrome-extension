@@ -1,5 +1,6 @@
 import { observable, action } from 'mobx';
 import RulesJson from '../json/rules';
+import { saveAs } from "file-saver";
 
 export default class RulesBlockModel {
 	@observable rules;
@@ -190,4 +191,15 @@ export default class RulesBlockModel {
 	// TODO copy rule e.g Button
 	// TODO delete rule e.g Button
 	// TODO add new rule for unknown item next generation
+
+	downloadCurrentRules (framework) {
+		let objToSave = {
+			content: JSON.stringify(this.rules),
+			name: `${framework}Rules.json`
+		};
+		if (objToSave.content && objToSave.name) {
+			let blob = new Blob([objToSave.content], { type: "text/plain;charset=utf-8" });
+			saveAs(blob, objToSave.name);
+		}
+	}
 }

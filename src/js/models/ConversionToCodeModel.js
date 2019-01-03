@@ -108,23 +108,16 @@ function complexCode (type, locator, name, mainModel) {
 	complexTemplate = complexTemplate.replace(/({{name}})/, varName(name));
 
 	return complexTemplate + '\n';
-	// ` @${locatorType}(${locator}) public ${elType} ${varName(name)};`;
 }
 
 function simpleCode (locatorType, locator, elType, name, mainModel) {
 	const template = mainModel.settingsModel.template;
-	let templatePath = locatorType === 'Css' ? template.pageElementCss : template.pageElementXpath;
+	let templatePath = locatorType === 'Css' ? template.pageElementCss : template.pageElementXPath;
 	templatePath = templatePath.replace(/({{locator}})/, locator);
 	templatePath = templatePath.replace(/({{type}})/, elType);
 	templatePath = templatePath.replace(/({{name}})/, varName(name));
 
 	return templatePath + '\n';
-
-	// `@Css("{{locator}}") public {{type}} {{name}};`,
-
-	// return ` @${locatorType}(${locator}) public ${elType} ${varName(name)};
-	// `;
-	// return elementCode(locatorType, `"${locator}"`, elType, name)
 }
 
 function pageElementCode (page, pageName, mainModel) {
@@ -136,7 +129,7 @@ function pageElementCode (page, pageName, mainModel) {
 	pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{type}})/, getPageName(pageName));
 	pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{name}})/, varName(pageName));
 
-	return pageElementCodeTemplate;
+	return pageElementCodeTemplate + '\n';
 };
 
 function complexLocators (el, fields, mainModel) {
@@ -193,7 +186,6 @@ function genEntities (parentId, arrOfElements, mainModel) {
 		.filter(el => el.parentId === parentId && (simple[el.Type] || complex[el.Type]) && el.Type != "Button")
 		.map(el => entityTemplate.replace(/({{name}})/, varName(el.Name)))
 		.join('\n');
-	// `public String ${varName(el.Name)};`
 }
 
 function getElement (el, generateBlockModel) {
@@ -230,7 +222,6 @@ function genCodeOfElements (parentId, arrOfElements, mainModel) {
 
 function getPageCode (mainModel) {
 	return mainModel.generateBlockModel.pages.map(page => pageElementCode(page, getPageName(page.name), mainModel)).join('');
-	// return objCopy.PageObjects.map(page=>pageElementCode(page, getPageName(page.name))).join('');
 }
 
 function sectionTemplate (pack, name, code, mainModel) {

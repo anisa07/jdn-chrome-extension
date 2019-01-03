@@ -7,12 +7,14 @@ import { observable } from "mobx";
 import PropTypes from 'prop-types';
 import ScreenSizes from './utils/screen-dimesions';
 import { TabsBlockWrapper, LeftBlockWrapper, RightBlockWrapper } from './blocks/tabs/Tabs';
+import LogComponentWrapper from './blocks/log/LogComponent';
 import MainModel from './models/MainModel';
 
 
 const styles = {
 	commonContainer: {
 		height: '100vh',
+		position: 'relative'
 	},
 	contentContainerDesktopTablet: {
 		display: 'flex',
@@ -44,19 +46,22 @@ class App extends React.Component {
 		return (
 			<Provider mainModel={this.mainModel}>
 				<div className={classes.commonContainer}>
-					<TabsBlockWrapper/>
-					<MediaQuery minWidth={ScreenSizes.tablet}>
-						<div className={classes.contentContainerDesktopTablet}>
-							<LeftBlockWrapper><ComponentLeft/></LeftBlockWrapper>
-							<RightBlockWrapper>{ComponentRight &&  <ComponentRight/>}</RightBlockWrapper>
-						</div>
-					</MediaQuery>
-					<MediaQuery maxWidth={ScreenSizes.tablet}>
-						<div className={classes.contentContainerMobile}>
-							<LeftBlockWrapper><ComponentLeft/></LeftBlockWrapper>
-							<RightBlockWrapper>{ComponentRight &&  <ComponentRight/>}</RightBlockWrapper>
-						</div>
-					</MediaQuery>
+					<LogComponentWrapper/>
+					{!this.mainModel.showLog && <div>
+						<TabsBlockWrapper/>
+						<MediaQuery minWidth={ScreenSizes.tablet}>
+							<div className={classes.contentContainerDesktopTablet}>
+								<LeftBlockWrapper><ComponentLeft/></LeftBlockWrapper>
+								<RightBlockWrapper>{ComponentRight && <ComponentRight/>}</RightBlockWrapper>
+							</div>
+						</MediaQuery>
+						<MediaQuery maxWidth={ScreenSizes.tablet}>
+							<div className={classes.contentContainerMobile}>
+								<LeftBlockWrapper><ComponentLeft/></LeftBlockWrapper>
+								<RightBlockWrapper>{ComponentRight && <ComponentRight/>}</RightBlockWrapper>
+							</div>
+						</MediaQuery>
+					</div>}
 				</div>
 			</Provider>
 		)
@@ -66,4 +71,6 @@ class App extends React.Component {
 const AppWrapper = injectSheet(styles)(App);
 
 const div = document.getElementById("chromeExtensionReactApp");
-ReactDOM.render(<AppWrapper/>, div);
+ReactDOM.render(
+	<AppWrapper/>
+	, div);

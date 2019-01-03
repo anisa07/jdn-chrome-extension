@@ -5,6 +5,9 @@ const add = 'src/icons/add.png';
 const close = 'src/icons/close.png';
 const back = 'src/icons/back.png';
 const arrowDown = 'src/icons/arrow-down.png';
+const errorIcon = 'src/icons/error.png';
+const successIcon = 'src/icons/success.png';
+const warningIcon = 'src/icons/warning.png';
 
 export {
 	settings,
@@ -14,4 +17,7 @@ export {
 	close,
 	back,
 	arrowDown,
+	errorIcon,
+	successIcon,
+	warningIcon
 }

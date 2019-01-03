@@ -20,6 +20,8 @@ export default class MainModel {
 	@observable currentRightPart = '';
 	@observable currentLeftPart = 'GenerateBlockWrapper';
 	@observable currentPageId;
+	@observable applicationLog = [];
+	@observable showLog = false;
 	ApplicationMap = new Map();
 
 	constructor () {
@@ -69,6 +71,21 @@ export default class MainModel {
 		this.currentLeftPart = currentLeftPart;
 		// ruleSet ? this.ruleBlockModel.setCurrentRuleSet(ruleSet) : this.ruleBlockModel.setCurrentRuleSet('');
 		// currentRule ? this.ruleBlockModel.setCurrentRuleName(currentRule) : this.ruleBlockModel.setCurrentRuleName('');
+	}
+
+	@action
+	clearLog () {
+		this.applicationLog = [];
+	}
+
+	@action
+	fillLog (log) {
+		this.applicationLog = log.slice().reverse();
+	}
+
+	@action
+	triggerShowLog () {
+		this.showLog = !this.showLog;
 	}
 
 	// @action

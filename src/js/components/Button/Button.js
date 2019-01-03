@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 class Button extends React.Component {
 	handleClick = () => {
 		const { onclick } = this.props;
+
 		if (onclick) {
-			this.props.onclick();
+			onclick();
 		}
 	};
 

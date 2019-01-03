@@ -37815,7 +37815,215 @@ var LeftBlockWrapper = (0, _reactJss.default)(styles)(LeftBlock);
 exports.LeftBlockWrapper = LeftBlockWrapper;
 var RightBlockWrapper = (0, _reactJss.default)(styles)(RightBlock);
 exports.RightBlockWrapper = RightBlockWrapper;
-},{"react":"../../node_modules/react/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","react-responsive":"../../node_modules/react-responsive/dist/react-responsive.js","mobx-react":"../../node_modules/mobx-react/index.module.js","classnames":"../../node_modules/classnames/index.js","prop-types":"../../node_modules/prop-types/index.js","../../utils/screen-dimesions":"utils/screen-dimesions.js"}],"utils/helpers.js":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","react-responsive":"../../node_modules/react-responsive/dist/react-responsive.js","mobx-react":"../../node_modules/mobx-react/index.module.js","classnames":"../../node_modules/classnames/index.js","prop-types":"../../node_modules/prop-types/index.js","../../utils/screen-dimesions":"utils/screen-dimesions.js"}],"../icons/index.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.warningIcon = exports.successIcon = exports.errorIcon = exports.arrowDown = exports.back = exports.close = exports.add = exports.exportIcon = exports.importIcon = exports.settings = void 0;
+var settings = 'src/icons/settings.png';
+exports.settings = settings;
+var importIcon = 'src/icons/import.png';
+exports.importIcon = importIcon;
+var exportIcon = 'src/icons/export.png';
+exports.exportIcon = exportIcon;
+var add = 'src/icons/add.png';
+exports.add = add;
+var close = 'src/icons/close.png';
+exports.close = close;
+var back = 'src/icons/back.png';
+exports.back = back;
+var arrowDown = 'src/icons/arrow-down.png';
+exports.arrowDown = arrowDown;
+var errorIcon = 'src/icons/error.png';
+exports.errorIcon = errorIcon;
+var successIcon = 'src/icons/success.png';
+exports.successIcon = successIcon;
+var warningIcon = 'src/icons/warning.png';
+exports.warningIcon = warningIcon;
+},{}],"blocks/log/LogComponent.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _reactJss = _interopRequireDefault(require("react-jss"));
+
+var _mobxReact = require("mobx-react");
+
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
+var _index = require("../../../icons/index");
+
+var _dec, _class;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var styles = {
+  buttonContainer: {
+    margin: '20px 0'
+  },
+  btn: {
+    marginRight: '5px'
+  },
+  list: {
+    paddingLeft: '15px',
+    display: 'block'
+  },
+  link: {
+    color: 'black',
+    cursor: 'pointer'
+  },
+  logContainer: {
+    position: 'fixed',
+    height: '50px',
+    width: '50px',
+    right: 10,
+    bottom: 10,
+    cursor: 'pointer',
+    textAlign: 'center',
+    paddingTop: '5px'
+  },
+  logContainerExpand: {
+    height: '100%',
+    width: '100%'
+  },
+  logIcon: {
+    width: '35px',
+    height: '35px'
+  },
+  logItemContainer: {
+    display: 'flex',
+    padding: '10px'
+  },
+  logItem: {
+    marginLeft: '10px'
+  }
+};
+var LogComponent = (_dec = (0, _mobxReact.inject)('mainModel'), _dec(_class = (0, _mobxReact.observer)(_class =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(LogComponent, _React$Component);
+
+  function LogComponent() {
+    var _getPrototypeOf2;
+
+    var _this;
+
+    var _temp;
+
+    _classCallCheck(this, LogComponent);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _possibleConstructorReturn(_this, (_temp = _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(LogComponent)).call.apply(_getPrototypeOf2, [this].concat(args))), _this.triggerShow = function () {
+      var mainModel = _this.props.mainModel;
+      mainModel.triggerShowLog();
+    }, _this.displayLogIcon = function () {
+      var _this$props = _this.props,
+          mainModel = _this$props.mainModel,
+          classes = _this$props.classes;
+      var findError = mainModel.applicationLog.find(function (logItem) {
+        return logItem.type === 'error';
+      });
+      var findWarn = mainModel.applicationLog.find(function (logItem) {
+        return logItem.type === 'warning';
+      });
+      var findSuccess = mainModel.applicationLog.find(function (logItem) {
+        return logItem.type === 'success';
+      });
+      var icon;
+
+      if (findSuccess) {
+        icon = _index.successIcon;
+      }
+
+      if (findWarn) {
+        icon = _index.warningIcon;
+      }
+
+      if (findError) {
+        icon = _index.errorIcon;
+      }
+
+      if (icon) {
+        return _react.default.createElement("img", {
+          className: classes.logIcon,
+          src: icon
+        });
+      }
+
+      return _react.default.createElement("p", null, "Empty Log");
+    }, _this.displayLogItem = function (item) {
+      var classes = _this.props.classes;
+      var time;
+
+      if (item.time) {
+        time = "".concat(item.time.getHours(), ":").concat(item.time.getMinutes(), ":").concat(item.time.getSeconds(), ":").concat(item.time.getMilliseconds());
+      }
+
+      return _react.default.createElement("div", {
+        className: classes.logItemContainer
+      }, _react.default.createElement("p", {
+        className: classes.logItem
+      }, time), _react.default.createElement("p", {
+        className: classes.logItem
+      }, item.message));
+    }, _temp));
+  }
+
+  _createClass(LogComponent, [{
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      var _this$props2 = this.props,
+          classes = _this$props2.classes,
+          mainModel = _this$props2.mainModel;
+      var classContainer = mainModel.showLog ? classes.logContainerExpand : classes.logContainer;
+      return _react.default.createElement("div", {
+        className: classContainer,
+        onClick: this.triggerShow
+      }, !mainModel.showLog && _react.default.createElement("div", null, this.displayLogIcon()), mainModel.showLog && _react.default.createElement("div", null, mainModel.applicationLog.map(function (item, index) {
+        return _react.default.createElement("div", {
+          key: item.message + index
+        }, _this2.displayLogItem(item));
+      })));
+    }
+  }]);
+
+  return LogComponent;
+}(_react.default.Component)) || _class) || _class);
+LogComponent.propTypes = {};
+var LogComponentWrapper = (0, _reactJss.default)(styles)(LogComponent);
+var _default = LogComponentWrapper;
+exports.default = _default;
+},{"react":"../../node_modules/react/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","mobx-react":"../../node_modules/mobx-react/index.module.js","prop-types":"../../node_modules/prop-types/index.js","../../../icons/index":"../icons/index.js"}],"utils/helpers.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -38008,6 +38216,8 @@ function () {
     _classCallCheck(this, Log);
 
     _initDefineProp(this, "log", _descriptor, this);
+
+    this.log = [];
   }
 
   _createClass(Log, [{
@@ -38017,22 +38227,27 @@ function () {
     }
   }, {
     key: "addToLog",
-    value: function addToLog(log) {
-      this.log = this.isEmpty() ? log : "".concat(this.log, " \n").concat(log);
+    value: function addToLog(_ref) {
+      var message = _ref.message,
+          type = _ref.type;
+      var date = new Date();
+      this.log.push({
+        message: message,
+        type: type,
+        time: date
+      });
     }
   }, {
     key: "clearLog",
     value: function clearLog() {
-      this.log = '';
+      this.log = [];
     }
   }]);
 
   return Log;
 }(), (_descriptor = _applyDecoratedDescriptor(_class.prototype, "log", [_mobx.observable], {
   enumerable: true,
-  initializer: function initializer() {
-    return '';
-  }
+  initializer: null
 }), _applyDecoratedDescriptor(_class.prototype, "addToLog", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "addToLog"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "clearLog", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "clearLog"), _class.prototype)), _class);
 exports.default = Log;
 },{"mobx":"../../node_modules/mobx/lib/mobx.module.js"}],"models/GenerateBlockModel.js":[function(require,module,exports) {
@@ -38111,7 +38326,10 @@ var getElements = function getElements(_ref, dom, locatorType) {
   try {
     elements = locatorType.xpath ? getElementsByXpath(dom, locatorType.locator) : dom.querySelectorAll(locatorType.locator);
   } catch (e) {
-    log.addToLog("Error!: cannot get elements by ".concat(locatorType.locator)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+    log.addToLog({
+      message: "Error!: cannot get elements by ".concat(locatorType.locator),
+      type: 'error'
+    }); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
 
     document.querySelector('#refresh').click();
   }
@@ -38445,12 +38663,17 @@ var defineElements = function defineElements(_ref7, dom, Locator, uniq, t, ruleI
     return;
   }
 
-  var tooMuchElements = "Too much elements found(".concat(elements.length, " for ").concat(uniqness.value, ". Locator (").concat(firstSearch.locatorType.locator, "))");
-  generateBlockModel.log.addToLog(tooMuchElements);
+  generateBlockModel.log.addToLog({
+    message: "Warning! Too much elements found(".concat(elements.length, " for ").concat(uniqness.value, ". Locator (").concat(firstSearch.locatorType.locator, "))"),
+    type: 'warning'
+  });
 
   if (elements.length > 1) {
     if (uniqness.value === "tag" || uniqness.value === '[') {
-      generateBlockModel.log.addToLog("Warning! Too much elements found by locator ".concat(firstSearch.locatorType.locator, "; uniqness ").concat(uniqness.value, "; ").concat(elements.length, " elements")); // document.querySelector('#refresh').click();
+      generateBlockModel.log.addToLog({
+        message: "Warning! Too much elements found by locator ".concat(firstSearch.locatorType.locator, "; uniqness ").concat(uniqness.value, "; ").concat(elements.length, " elements"),
+        type: 'warning'
+      }); // document.querySelector('#refresh').click();
     }
 
     for (var i = 0; i < elements.length; i++) {
@@ -38474,7 +38697,10 @@ var defineElements = function defineElements(_ref7, dom, Locator, uniq, t, ruleI
           mainModel: mainModel
         }, _e, t, parent, ruleId);
       } else {
-        generateBlockModel.log.addToLog("Warning! Too much elements found by locator ".concat(finalLocator, "; ").concat(s2.elements.length, " elements")); // document.querySelector('#refresh').click();
+        generateBlockModel.log.addToLog({
+          message: "Warning! Too much elements found by locator ".concat(finalLocator, "; ").concat(s2.elements.length, " elements"),
+          type: 'warning'
+        }); // document.querySelector('#refresh').click();
       }
     }
   }
@@ -38604,7 +38830,10 @@ var generationCallBack = function generationCallBack(_ref11, r, err) {
   var results = [];
 
   if (err) {
-    generateBlockModel.log.addToLog("Error, loading data from active page! ".concat(err)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+    generateBlockModel.log.addToLog({
+      message: "Error, loading data from active page! ".concat(err),
+      type: 'error'
+    }); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
     // document.querySelector('#refresh').click();
   }
 
@@ -38616,7 +38845,10 @@ var generationCallBack = function generationCallBack(_ref11, r, err) {
           results: results
         }, observedDOM, rule);
       } catch (e) {
-        generateBlockModel.log.addToLog("Error! Getting composite element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+        generateBlockModel.log.addToLog({
+          message: "Error! Getting composite element: ".concat(e),
+          type: 'error'
+        }); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
         // document.querySelector('#refresh').click();
       }
 
@@ -38669,7 +38901,10 @@ var generationCallBack = function generationCallBack(_ref11, r, err) {
             results: results
           }, section, rule);
         } catch (e) {
-          generateBlockModel.log.addToLog("Error! Getting complex element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+          generateBlockModel.log.addToLog({
+            message: "Error! Getting complex element: ".concat(e),
+            type: 'error'
+          }); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
           // document.querySelector('#refresh').click();
         }
       });
@@ -38682,7 +38917,10 @@ var generationCallBack = function generationCallBack(_ref11, r, err) {
             results: results
           }, section, rule);
         } catch (e) {
-          generateBlockModel.log.addToLog("Error! Getting simple element: ".concat(e)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+          generateBlockModel.log.addToLog({
+            message: "Error! Getting simple element: ".concat(e),
+            type: 'error'
+          }); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
           // document.querySelector('#refresh').click();
         }
       });
@@ -38698,6 +38936,12 @@ var generationCallBack = function generationCallBack(_ref11, r, err) {
       if (settingsModel.downloadAfterGeneration) {
         conversionModel.downloadPageCode(generateBlockModel.page, mainModel.settingsModel.extension);
       }
+
+      generateBlockModel.log.addToLog({
+        message: "Success! Generates ".concat(generateBlockModel.page.name),
+        type: 'success'
+      });
+      mainModel.fillLog(generateBlockModel.log.log);
     } // TODO create beautiful popup
 
   } // console.log(this.page.elements)
@@ -38715,7 +38959,10 @@ var getLocationCallBack = function getLocationCallBack(_ref12, r, err) {
   var generateBlockModel = mainModel.generateBlockModel;
 
   if (err) {
-    generateBlockModel.log.addToLog("Error, getting location from active page! ".concat(err)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+    generateBlockModel.log.addToLog({
+      message: "Error, getting location from active page! ".concat(err),
+      type: 'error'
+    }); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
     // document.querySelector('#refresh').click();
   }
 
@@ -38737,7 +38984,10 @@ var getDomainCallBack = function getDomainCallBack(_ref13, r, err) {
   var generateBlockModel = mainModel.generateBlockModel;
 
   if (err) {
-    generateBlockModel.log.addToLog("Error, getting domain from active page! ".concat(err)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+    generateBlockModel.log.addToLog({
+      message: "Error, getting domain from active page! ".concat(err),
+      type: 'error'
+    }); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
     // document.querySelector('#refresh').click();
   }
 
@@ -38754,7 +39004,10 @@ var getTitleCallBack = function getTitleCallBack(_ref14, r, err) {
   var generateBlockModel = mainModel.generateBlockModel;
 
   if (err) {
-    generateBlockModel.log.addToLog("Error, getting title from active page! ".concat(err)); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
+    generateBlockModel.log.addToLog({
+      message: "Error, getting title from active page! ".concat(err),
+      type: 'error'
+    }); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
     // document.querySelector('#refresh').click();
   }
 
@@ -38785,8 +39038,7 @@ function () {
 
     this.log = new _Log.default();
     this.sections = new Map();
-  } //	@observable jdi = true;
-
+  }
 
   _createClass(GenerateBlockModel, [{
     key: "generate",
@@ -38799,6 +39051,7 @@ function () {
         package: '',
         elements: []
       };
+      this.log.clearLog();
       chrome.devtools.inspectedWindow.eval('document.location', function (r, err) {
         getLocationCallBack({
           mainModel: mainModel
@@ -39052,6 +39305,12 @@ var rulesJson = {
 };
 var _default = rulesJson;
 exports.default = _default;
+},{}],"../../node_modules/file-saver/dist/FileSaver.min.js":[function(require,module,exports) {
+var define;
+var global = arguments[3];
+(function(a,b){if("function"==typeof define&&define.amd)define([],b);else if("undefined"!=typeof exports)b();else{b(),a.FileSaver={exports:{}}.exports}})(this,function(){"use strict";function b(a,b){return"undefined"==typeof b?b={autoBom:!1}:"object"!=typeof b&&(console.warn("Depricated: Expected third argument to be a object"),b={autoBom:!b}),b.autoBom&&/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(a.type)?new Blob(["\uFEFF",a],{type:a.type}):a}function c(b,c,d){var e=new XMLHttpRequest;e.open("GET",b),e.responseType="blob",e.onload=function(){a(e.response,c,d)},e.onerror=function(){console.error("could not download file")},e.send()}function d(a){var b=new XMLHttpRequest;return b.open("HEAD",a,!1),b.send(),200<=b.status&&299>=b.status}function e(a){try{a.dispatchEvent(new MouseEvent("click"))}catch(c){var b=document.createEvent("MouseEvents");b.initMouseEvent("click",!0,!0,window,0,0,0,80,20,!1,!1,!1,!1,0,null),a.dispatchEvent(b)}}var f="object"==typeof window&&window.window===window?window:"object"==typeof self&&self.self===self?self:"object"==typeof global&&global.global===global?global:void 0,a=f.saveAs||"object"!=typeof window||window!==f?function(){}:"download"in HTMLAnchorElement.prototype?function(b,g,h){var i=f.URL||f.webkitURL,j=document.createElement("a");g=g||b.name||"download",j.download=g,j.rel="noopener","string"==typeof b?(j.href=b,j.origin===location.origin?e(j):d(j.href)?c(b,g,h):e(j,j.target="_blank")):(j.href=i.createObjectURL(b),setTimeout(function(){i.revokeObjectURL(j.href)},4E4),setTimeout(function(){e(j)},0))}:"msSaveOrOpenBlob"in navigator?function(f,g,h){if(g=g||f.name||"download","string"!=typeof f)navigator.msSaveOrOpenBlob(b(f,h),g);else if(d(f))c(f,g,h);else{var i=document.createElement("a");i.href=f,i.target="_blank",setTimeout(function(){e(i)})}}:function(a,b,d,e){if(e=e||open("","_blank"),e&&(e.document.title=e.document.body.innerText="downloading..."),"string"==typeof a)return c(a,b,d);var g="application/octet-stream"===a.type,h=/constructor/i.test(f.HTMLElement)||f.safari,i=/CriOS\/[\d]+/.test(navigator.userAgent);if((i||g&&h)&&"object"==typeof FileReader){var j=new FileReader;j.onloadend=function(){var a=j.result;a=i?a:a.replace(/^data:[^;]*;/,"data:attachment/file;"),e?e.location.href=a:location=a,e=null},j.readAsDataURL(a)}else{var k=f.URL||f.webkitURL,l=k.createObjectURL(a);e?e.location=l:location.href=l,e=null,setTimeout(function(){k.revokeObjectURL(l)},4E4)}};f.saveAs=a.saveAs=a,"undefined"!=typeof module&&(module.exports=a)});
+
+
 },{}],"models/RulesBlockModel.js":[function(require,module,exports) {
 "use strict";
 
@@ -39063,6 +39322,8 @@ exports.default = void 0;
 var _mobx = require("mobx");
 
 var _rules = _interopRequireDefault(require("../json/rules"));
+
+var _fileSaver = require("file-saver");
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -39310,6 +39571,21 @@ function () {
     // TODO delete rule e.g Button
     // TODO add new rule for unknown item next generation
 
+  }, {
+    key: "downloadCurrentRules",
+    value: function downloadCurrentRules(framework) {
+      var objToSave = {
+        content: JSON.stringify(this.rules),
+        name: "".concat(framework, "Rules.json")
+      };
+
+      if (objToSave.content && objToSave.name) {
+        var blob = new Blob([objToSave.content], {
+          type: "text/plain;charset=utf-8"
+        });
+        (0, _fileSaver.saveAs)(blob, objToSave.name);
+      }
+    }
   }]);
 
   return RulesBlockModel;
@@ -39343,7 +39619,7 @@ function () {
   }
 }), _applyDecoratedDescriptor(_class.prototype, "clearRuleStorage", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "clearRuleStorage"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "changeListOfAttr", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "changeListOfAttr"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "deleteItemFromListOfAttr", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "deleteItemFromListOfAttr"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "addItemToListOfAttr", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "addItemToListOfAttr"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setCurrentRuleName", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setCurrentRuleName"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setCurrentRuleSet", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setCurrentRuleSet"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "handleSwitchRule", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "handleSwitchRule"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "handleAddRuleItem", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "handleAddRuleItem"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "handleDeleteRuleItem", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "handleDeleteRuleItem"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "handleEditRuleName", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "handleEditRuleName"), _class.prototype)), _class);
 exports.default = RulesBlockModel;
-},{"mobx":"../../node_modules/mobx/lib/mobx.module.js","../json/rules":"json/rules.js"}],"components/Button/Button.js":[function(require,module,exports) {
+},{"mobx":"../../node_modules/mobx/lib/mobx.module.js","../json/rules":"json/rules.js","file-saver":"../../node_modules/file-saver/dist/FileSaver.min.js"}],"components/Button/Button.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39397,7 +39673,7 @@ function (_React$Component) {
       var onclick = _this.props.onclick;
 
       if (onclick) {
-        _this.props.onclick();
+        onclick();
       }
     }, _temp));
   }
@@ -39436,28 +39712,7 @@ Button.propTypes = {
 };
 var _default = Button;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","prop-types":"../../node_modules/prop-types/index.js"}],"../icons/index.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.arrowDown = exports.back = exports.close = exports.add = exports.exportIcon = exports.importIcon = exports.settings = void 0;
-var settings = 'src/icons/settings.png';
-exports.settings = settings;
-var importIcon = 'src/icons/import.png';
-exports.importIcon = importIcon;
-var exportIcon = 'src/icons/export.png';
-exports.exportIcon = exportIcon;
-var add = 'src/icons/add.png';
-exports.add = add;
-var close = 'src/icons/close.png';
-exports.close = close;
-var back = 'src/icons/back.png';
-exports.back = back;
-var arrowDown = 'src/icons/arrow-down.png';
-exports.arrowDown = arrowDown;
-},{}],"blocks/generate/left/GenerateBlock.js":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","prop-types":"../../node_modules/prop-types/index.js"}],"blocks/generate/left/GenerateBlock.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39602,8 +39857,15 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 var styles = {
   generateStyle: {
     margin: '10px 0 10px 10px'
+  },
+  buttonContainer: {
+    margin: '20px 0'
+  },
+  btn: {
+    marginRight: '5px'
   }
-};
+}; // downloadCurrentTemplate
+
 var GenerateSettings = (_dec = (0, _mobxReact.inject)('mainModel'), _dec(_class = (0, _mobxReact.observer)(_class =
 /*#__PURE__*/
 function (_React$Component) {
@@ -39625,7 +39887,10 @@ function (_React$Component) {
     return _possibleConstructorReturn(_this, (_temp = _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(GenerateSettings)).call.apply(_getPrototypeOf2, [this].concat(args))), _this.handleSettings = function () {
       var mainModel = _this.props.mainModel;
       mainModel.setRightPart('GeneralSettingsWrapper');
-    }, _this.handleBack = function () {
+    }, _this.handleExportTemplate = function () {
+      var mainModel = _this.props.mainModel;
+      mainModel.settingsModel.downloadCurrentTemplate();
+    }, _this.handleImportTemplate = function () {}, _this.handleBack = function () {
       var mainModel = _this.props.mainModel;
       mainModel.setLeftPart('GenerateBlockWrapper');
 
@@ -39641,7 +39906,7 @@ function (_React$Component) {
     key: "render",
     value: function render() {
       var classes = this.props.classes;
-      return _react.default.createElement("div", {
+      return _react.default.createElement("div", null, _react.default.createElement("div", {
         className: "".concat(classes.generateStyle, " BtnGroup")
       }, _react.default.createElement(_Button.default, {
         className: "BtnGroup-item",
@@ -39651,7 +39916,19 @@ function (_React$Component) {
         className: "BtnGroup-item",
         label: 'Settings',
         onclick: this.handleSettings
-      }));
+      })), _react.default.createElement("div", {
+        className: classes.buttonContainer
+      }, _react.default.createElement(_Button.default, {
+        className: classes.btn,
+        label: 'Import',
+        icon: _index.importIcon,
+        onclick: this.handleImportTemplate
+      }), _react.default.createElement(_Button.default, {
+        className: classes.btn,
+        label: 'Export',
+        icon: _index.exportIcon,
+        onclick: this.handleExportTemplate
+      })));
     }
   }]);
 
@@ -52918,7 +53195,11 @@ function (_React$Component2) {
       mainModel.setRightPart(part, currentRule, ruleSet);
       ruleSet ? mainModel.ruleBlockModel.setCurrentRuleSet(ruleSet) : mainModel.ruleBlockModel.setCurrentRuleSet('');
       currentRule ? mainModel.ruleBlockModel.setCurrentRuleName(currentRule) : mainModel.ruleBlockModel.setCurrentRuleName('');
-    }, _temp2));
+    }, _this4.handleExportRules = function () {
+      var mainModel = _this4.props.mainModel;
+      var rulesName = mainModel.settingsModel.framework;
+      mainModel.ruleBlockModel.downloadCurrentRules(rulesName);
+    }, _this4.handleImportRules = function () {}, _temp2));
   }
 
   _createClass(RulesBlock, [{
@@ -52939,11 +53220,13 @@ function (_React$Component2) {
       }, _react.default.createElement(_Button.default, {
         className: classes.btn,
         label: 'Import',
-        icon: _index.importIcon
+        icon: _index.importIcon,
+        onclick: this.handleImportRules
       }), _react.default.createElement(_Button.default, {
         className: classes.btn,
         label: 'Export',
-        icon: _index.exportIcon
+        icon: _index.exportIcon,
+        onclick: this.handleExportRules
       })), _react.default.createElement("div", null, _react.default.createElement("ul", {
         className: classes.list
       }, _react.default.createElement("li", null, _react.default.createElement("a", {
@@ -53551,13 +53834,7 @@ RuleForElement.propTypes = {};
 var RuleForElementWrapper = (0, _reactJss.default)(styles)(RuleForElement);
 var _default = RuleForElementWrapper;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","prop-types":"../../node_modules/prop-types/index.js","mobx-react":"../../node_modules/mobx-react/index.module.js","mobx":"../../node_modules/mobx/lib/mobx.module.js","../../BlockStyles":"blocks/BlockStyles.js","../../../components/Button/Button":"components/Button/Button.js","../../../components/Link/Link":"components/Link/Link.js","../../../components/Input/Input":"components/Input/Input.js","../../../../icons/index":"../icons/index.js"}],"../../node_modules/file-saver/dist/FileSaver.min.js":[function(require,module,exports) {
-var define;
-var global = arguments[3];
-(function(a,b){if("function"==typeof define&&define.amd)define([],b);else if("undefined"!=typeof exports)b();else{b(),a.FileSaver={exports:{}}.exports}})(this,function(){"use strict";function b(a,b){return"undefined"==typeof b?b={autoBom:!1}:"object"!=typeof b&&(console.warn("Depricated: Expected third argument to be a object"),b={autoBom:!b}),b.autoBom&&/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(a.type)?new Blob(["\uFEFF",a],{type:a.type}):a}function c(b,c,d){var e=new XMLHttpRequest;e.open("GET",b),e.responseType="blob",e.onload=function(){a(e.response,c,d)},e.onerror=function(){console.error("could not download file")},e.send()}function d(a){var b=new XMLHttpRequest;return b.open("HEAD",a,!1),b.send(),200<=b.status&&299>=b.status}function e(a){try{a.dispatchEvent(new MouseEvent("click"))}catch(c){var b=document.createEvent("MouseEvents");b.initMouseEvent("click",!0,!0,window,0,0,0,80,20,!1,!1,!1,!1,0,null),a.dispatchEvent(b)}}var f="object"==typeof window&&window.window===window?window:"object"==typeof self&&self.self===self?self:"object"==typeof global&&global.global===global?global:void 0,a=f.saveAs||"object"!=typeof window||window!==f?function(){}:"download"in HTMLAnchorElement.prototype?function(b,g,h){var i=f.URL||f.webkitURL,j=document.createElement("a");g=g||b.name||"download",j.download=g,j.rel="noopener","string"==typeof b?(j.href=b,j.origin===location.origin?e(j):d(j.href)?c(b,g,h):e(j,j.target="_blank")):(j.href=i.createObjectURL(b),setTimeout(function(){i.revokeObjectURL(j.href)},4E4),setTimeout(function(){e(j)},0))}:"msSaveOrOpenBlob"in navigator?function(f,g,h){if(g=g||f.name||"download","string"!=typeof f)navigator.msSaveOrOpenBlob(b(f,h),g);else if(d(f))c(f,g,h);else{var i=document.createElement("a");i.href=f,i.target="_blank",setTimeout(function(){e(i)})}}:function(a,b,d,e){if(e=e||open("","_blank"),e&&(e.document.title=e.document.body.innerText="downloading..."),"string"==typeof a)return c(a,b,d);var g="application/octet-stream"===a.type,h=/constructor/i.test(f.HTMLElement)||f.safari,i=/CriOS\/[\d]+/.test(navigator.userAgent);if((i||g&&h)&&"object"==typeof FileReader){var j=new FileReader;j.onloadend=function(){var a=j.result;a=i?a:a.replace(/^data:[^;]*;/,"data:attachment/file;"),e?e.location.href=a:location=a,e=null},j.readAsDataURL(a)}else{var k=f.URL||f.webkitURL,l=k.createObjectURL(a);e?e.location=l:location.href=l,e=null,setTimeout(function(){k.revokeObjectURL(l)},4E4)}};f.saveAs=a.saveAs=a,"undefined"!=typeof module&&(module.exports=a)});
-
-
-},{}],"../../node_modules/base64-js/index.js":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","prop-types":"../../node_modules/prop-types/index.js","mobx-react":"../../node_modules/mobx-react/index.module.js","mobx":"../../node_modules/mobx/lib/mobx.module.js","../../BlockStyles":"blocks/BlockStyles.js","../../../components/Button/Button":"components/Button/Button.js","../../../components/Link/Link":"components/Link/Link.js","../../../components/Input/Input":"components/Input/Input.js","../../../../icons/index":"../icons/index.js"}],"../../node_modules/base64-js/index.js":[function(require,module,exports) {
 'use strict'
 
 exports.byteLength = byteLength
@@ -69479,19 +69756,16 @@ function complexCode(type, locator, name, mainModel) {
   complexTemplate = complexTemplate.replace(/({{type}})/g, type);
   complexTemplate = complexTemplate.replace(/({{locators}})/, locator);
   complexTemplate = complexTemplate.replace(/({{name}})/, varName(name));
-  return complexTemplate + '\n'; // ` @${locatorType}(${locator}) public ${elType} ${varName(name)};`;
+  return complexTemplate + '\n';
 }
 
 function simpleCode(locatorType, locator, elType, name, mainModel) {
   var template = mainModel.settingsModel.template;
-  var templatePath = locatorType === 'Css' ? template.pageElementCss : template.pageElementXpath;
+  var templatePath = locatorType === 'Css' ? template.pageElementCss : template.pageElementXPath;
   templatePath = templatePath.replace(/({{locator}})/, locator);
   templatePath = templatePath.replace(/({{type}})/, elType);
   templatePath = templatePath.replace(/({{name}})/, varName(name));
-  return templatePath + '\n'; // `@Css("{{locator}}") public {{type}} {{name}};`,
-  // return ` @${locatorType}(${locator}) public ${elType} ${varName(name)};
-  // `;
-  // return elementCode(locatorType, `"${locator}"`, elType, name)
+  return templatePath + '\n';
 }
 
 function pageElementCode(page, pageName, mainModel) {
@@ -69501,7 +69775,7 @@ function pageElementCode(page, pageName, mainModel) {
   pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{title}})/, page.title);
   pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{type}})/, getPageName(pageName));
   pageElementCodeTemplate = pageElementCodeTemplate.replace(/({{name}})/, varName(pageName));
-  return pageElementCodeTemplate;
+  return pageElementCodeTemplate + '\n';
 }
 
 ;
@@ -69564,7 +69838,7 @@ function genEntities(parentId, arrOfElements, mainModel) {
     return el.parentId === parentId && (simple[el.Type] || complex[el.Type]) && el.Type != "Button";
   }).map(function (el) {
     return entityTemplate.replace(/({{name}})/, varName(el.Name));
-  }).join('\n'); // `public String ${varName(el.Name)};`
+  }).join('\n');
 }
 
 function getElement(el, generateBlockModel) {
@@ -69606,7 +69880,7 @@ function genCodeOfElements(parentId, arrOfElements, mainModel) {
 function getPageCode(mainModel) {
   return mainModel.generateBlockModel.pages.map(function (page) {
     return pageElementCode(page, getPageName(page.name), mainModel);
-  }).join(''); // return objCopy.PageObjects.map(page=>pageElementCode(page, getPageName(page.name))).join('');
+  }).join('');
 }
 
 function sectionTemplate(pack, name, code, mainModel) {
@@ -69691,7 +69965,7 @@ var JavaJDIUITemplate = {
   "siteElement": "    @JPage(url = \"{{url}}\", title = \"{{title}}\") \n    public static {{type}} {{name}};",
   "page": "package {{package}}.pages;\n\nimport com.epam.jdi.uitests.web.selenium.elements.common.*;\nimport com.epam.jdi.uitests.web.selenium.elements.complex.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.*;\nimport com.epam.jdi.uitests.web.selenium.elements.composite.WebPage;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.objects.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.simple.*;\nimport com.epam.jdi.uitests.web.selenium.elements.pageobjects.annotations.FindBy;\nimport {{package}}.sections.*;\n\npublic class {{type}} extends WebPage {\n{{elements}}\t\n}",
   "pageElementCss": "    @Css(\"{{locator}}\") public {{type}} {{name}};",
-  "pageElementXpath": "    @XPath(\"{{locator}}\") public {{type}} {{name}};",
+  "pageElementXPath": "    @XPath(\"{{locator}}\") public {{type}} {{name}};",
   "pageElementComplex": "    @J{{type}}({{locators}})\n\tpublic {{type}} {{name}};",
   "locatorCss": "{{type}} = @FindBy(css = \"{{locator}}\"),",
   "locatorXPath": "{{type}} = @FindBy(xpath = \"{{locator}}\"),",
@@ -69701,6 +69975,32 @@ var JavaJDIUITemplate = {
   "dataElement": "    public String {{name}};"
 };
 exports.JavaJDIUITemplate = JavaJDIUITemplate;
+},{}],"json/JavaJDILightTemplate.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.JavaJDILightTemplate = void 0;
+var JavaJDILightTemplate = {
+  "package": "",
+  "siteName": "",
+  "nameCase": "camelCase",
+  "typeCase": "PascalCase",
+  "site": "package {{package}};\n\t\nimport com.epam.jdi.light.elements.pageobjects.annotations.*;\nimport {{package}}.pages.*;\n\n@JSite(\"{{domain}}\")\npublic class {{siteName}} {\n{{pages}} \t\n}",
+  "siteElement": "    @Url(\"{{url}}\") @Title(\"{{title}}\") \n    public static {{type}} {{name}};",
+  "page": "package {{package}}.pages;\n\nimport com.epam.jdi.light.elements.pageobjects.annotations.simple.UI;\nimport com.epam.jdi.light.elements.composite.*;\nimport com.epam.jdi.light.ui.html.complex.*;\nimport com.epam.jdi.light.ui.html.common.*;\nimport {{package}}.sections.*;\n\npublic class {{type}} extends WebPage {\n{{elements}}\t\n}",
+  "pageElementCss": "    @UI(\"{{locator}}\") public {{type}} {{name}};",
+  "pageElementXPath": "    @UI(\"{{locator}}\") public {{type}} {{name}};",
+  "pageElementComplex": "    @J{{type}}({{locators}}) \n\tpublic {{type}} {{name}};",
+  "locatorCss": "{{type}} = \"{{locator}}\",",
+  "locatorXPath": "{{type}} = \"{{locator}}\",",
+  "section": "package {{package}}.sections;\n\nimport com.epam.jdi.light.elements.pageobjects.annotations.simple.UI;\nimport com.epam.jdi.light.elements.composite.*;\nimport com.epam.jdi.light.ui.html.complex.*;\nimport com.epam.jdi.light.ui.html.common.*;\n\npublic class {{type}} extends Section {\n{{elements}}\t\n}",
+  "form": "package {{package}}.sections;\n\nimport com.epam.jdi.light.elements.pageobjects.annotations.simple.UI;\nimport com.epam.jdi.light.elements.composite.*;\nimport com.epam.jdi.light.ui.html.complex.*;\nimport com.epam.jdi.light.ui.html.common.*;\nimport {{package}}.entities.*;\n\npublic class {{type}} extends Form<{{data}}> {\n{{elements}}\t\n}",
+  "data": "package {{package}}.entities;\n\nimport com.epam.jdi.tools.DataClass;\n\npublic class {{type}} extends DataClass<{{type}}> {\n{{elements}}\n}",
+  "dataElement": "    public String {{name}};"
+};
+exports.JavaJDILightTemplate = JavaJDILightTemplate;
 },{}],"models/SettingsModel.js":[function(require,module,exports) {
 "use strict";
 
@@ -69713,7 +70013,11 @@ var _mobx = require("mobx");
 
 var _JavaJDIUITemplate = require("../json/JavaJDIUITemplate");
 
-var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5;
+var _JavaJDILightTemplate = require("../json/JavaJDILightTemplate");
+
+var _fileSaver = require("file-saver");
+
+var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -69772,13 +70076,11 @@ function () {
 
     _initDefineProp(this, "downloadAfterGeneration", _descriptor, this);
 
-    _initDefineProp(this, "jdi", _descriptor2, this);
+    _initDefineProp(this, "extension", _descriptor2, this);
 
-    _initDefineProp(this, "extension", _descriptor3, this);
+    _initDefineProp(this, "framework", _descriptor3, this);
 
-    _initDefineProp(this, "framework", _descriptor4, this);
-
-    _initDefineProp(this, "template", _descriptor5, this);
+    _initDefineProp(this, "template", _descriptor4, this);
 
     var settingsStorage = window.localStorage;
     this.downloadAfterGeneration = settingsStorage.getItem('DownloadAfterGeneration') === 'true';
@@ -69786,16 +70088,28 @@ function () {
     this.framework = settingsStorage.getItem('DefaultFramework') || 'jdiUI';
 
     if (this.extension === '.java' && this.framework === 'jdiUI') {
-      var defaultTemplate = settingsStorage.getItem('DefaultTemplate');
+      var defaultTemplate = settingsStorage.getItem('DefaultTemplateJdiUI');
 
       if (defaultTemplate) {
         this.template = JSON.parse(defaultTemplate);
       } else {
         this.template = _JavaJDIUITemplate.JavaJDIUITemplate;
-        settingsStorage.setItem('DefaultTemplate', JSON.stringify(_JavaJDIUITemplate.JavaJDIUITemplate));
+        settingsStorage.setItem('DefaultTemplateJdiUI', JSON.stringify(_JavaJDIUITemplate.JavaJDIUITemplate));
       }
     }
-  }
+
+    if (this.extension === '.java' && this.framework === 'jdiLight') {
+      var _defaultTemplate = settingsStorage.getItem('DefaultTemplateJdiLight');
+
+      if (_defaultTemplate) {
+        this.template = JSON.parse(_defaultTemplate);
+      } else {
+        this.template = _JavaJDILightTemplate.JavaJDILightTemplate;
+        settingsStorage.setItem('DefaultTemplateJdiLight', JSON.stringify(_JavaJDILightTemplate.JavaJDILightTemplate));
+      }
+    }
+  } // @observable jdi = true;
+
 
   _createClass(SettingsModel, [{
     key: "updateSiteImportSettings",
@@ -69828,6 +70142,21 @@ function () {
       this.framework = frame;
       window.localStorage.setItem('DefaultFramework', this.framework);
     }
+  }, {
+    key: "downloadCurrentTemplate",
+    value: function downloadCurrentTemplate() {
+      var objToSave = {
+        content: JSON.stringify(this.template),
+        name: "".concat(this.framework, "Template.json")
+      };
+
+      if (objToSave.content && objToSave.name) {
+        var blob = new Blob([objToSave.content], {
+          type: "text/plain;charset=utf-8"
+        });
+        (0, _fileSaver.saveAs)(blob, objToSave.name);
+      }
+    }
   }]);
 
   return SettingsModel;
@@ -69836,27 +70165,22 @@ function () {
   initializer: function initializer() {
     return false;
   }
-}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "jdi", [_mobx.observable], {
-  enumerable: true,
-  initializer: function initializer() {
-    return true;
-  }
-}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "extension", [_mobx.observable], {
+}), _descriptor2 = _applyDecoratedDescriptor(_class.prototype, "extension", [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return '';
   }
-}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "framework", [_mobx.observable], {
+}), _descriptor3 = _applyDecoratedDescriptor(_class.prototype, "framework", [_mobx.observable], {
   enumerable: true,
   initializer: function initializer() {
     return '';
   }
-}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, "template", [_mobx.observable], {
+}), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "template", [_mobx.observable], {
   enumerable: true,
   initializer: null
 }), _applyDecoratedDescriptor(_class.prototype, "clearSiteStorage", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "clearSiteStorage"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "triggerDownloadAfterGen", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "triggerDownloadAfterGen"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "changeLanguage", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "changeLanguage"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "changeFramework", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "changeFramework"), _class.prototype)), _class);
 exports.default = SettingsModel;
-},{"mobx":"../../node_modules/mobx/lib/mobx.module.js","../json/JavaJDIUITemplate":"json/JavaJDIUITemplate.js"}],"models/MainModel.js":[function(require,module,exports) {
+},{"mobx":"../../node_modules/mobx/lib/mobx.module.js","../json/JavaJDIUITemplate":"json/JavaJDIUITemplate.js","../json/JavaJDILightTemplate":"json/JavaJDILightTemplate.js","file-saver":"../../node_modules/file-saver/dist/FileSaver.min.js"}],"models/MainModel.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -69888,7 +70212,7 @@ var _ConversionToCodeModel = _interopRequireDefault(require("./ConversionToCodeM
 
 var _SettingsModel = _interopRequireDefault(require("./SettingsModel"));
 
-var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8;
+var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -69963,6 +70287,10 @@ function () {
 
     _initDefineProp(this, "currentPageId", _descriptor8, this);
 
+    _initDefineProp(this, "applicationLog", _descriptor9, this);
+
+    _initDefineProp(this, "showLog", _descriptor10, this);
+
     this.ApplicationMap = new Map();
     this.generateBlockModel = new _GenerateBlockModel.default();
     this.ruleBlockModel = new _RulesBlockModel.default();
@@ -70016,6 +70344,21 @@ function () {
     value: function setLeftPart(currentLeftPart) {
       this.currentLeftPart = currentLeftPart; // ruleSet ? this.ruleBlockModel.setCurrentRuleSet(ruleSet) : this.ruleBlockModel.setCurrentRuleSet('');
       // currentRule ? this.ruleBlockModel.setCurrentRuleName(currentRule) : this.ruleBlockModel.setCurrentRuleName('');
+    }
+  }, {
+    key: "clearLog",
+    value: function clearLog() {
+      this.applicationLog = [];
+    }
+  }, {
+    key: "fillLog",
+    value: function fillLog(log) {
+      this.applicationLog = log.slice().reverse();
+    }
+  }, {
+    key: "triggerShowLog",
+    value: function triggerShowLog() {
+      this.showLog = !this.showLog;
     } // @action
     // setPageId (id) {
     // 	this.currentPageId = id;
@@ -70054,7 +70397,17 @@ function () {
 }), _descriptor8 = _applyDecoratedDescriptor(_class.prototype, "currentPageId", [_mobx.observable], {
   enumerable: true,
   initializer: null
-}), _applyDecoratedDescriptor(_class.prototype, "switchTab", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "switchTab"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setRightPart", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setRightPart"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setLeftPart", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setLeftPart"), _class.prototype)), _class);
+}), _descriptor9 = _applyDecoratedDescriptor(_class.prototype, "applicationLog", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return [];
+  }
+}), _descriptor10 = _applyDecoratedDescriptor(_class.prototype, "showLog", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return false;
+  }
+}), _applyDecoratedDescriptor(_class.prototype, "switchTab", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "switchTab"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setRightPart", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setRightPart"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setLeftPart", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setLeftPart"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "clearLog", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "clearLog"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "fillLog", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "fillLog"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "triggerShowLog", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "triggerShowLog"), _class.prototype)), _class);
 exports.default = MainModel;
 },{"mobx":"../../node_modules/mobx/lib/mobx.module.js","./GenerateBlockModel":"models/GenerateBlockModel.js","./RulesBlockModel":"models/RulesBlockModel.js","../blocks/generate/left/GenerateBlock":"blocks/generate/left/GenerateBlock.js","../blocks/generate/left/GenerateSettings":"blocks/generate/left/GenerateSettings.js","../blocks/generate/right/GenerateResults":"blocks/generate/right/GenerateResults.js","../blocks/generate/right/GeneralSettings":"blocks/generate/right/GeneralSettings.js","../blocks/rules/left/RulesBlock":"blocks/rules/left/RulesBlock.js","../blocks/rules/right/ListOfSearchAttributes":"blocks/rules/right/ListOfSearchAttributes.js","../blocks/rules/right/RuleForElement":"blocks/rules/right/RuleForElement.js","./ConversionToCodeModel":"models/ConversionToCodeModel.js","./SettingsModel":"models/SettingsModel.js"}],"main.js":[function(require,module,exports) {
 "use strict";
@@ -70076,6 +70429,8 @@ var _propTypes = _interopRequireDefault(require("prop-types"));
 var _screenDimesions = _interopRequireDefault(require("./utils/screen-dimesions"));
 
 var _Tabs = require("./blocks/tabs/Tabs");
+
+var _LogComponent = _interopRequireDefault(require("./blocks/log/LogComponent"));
 
 var _MainModel = _interopRequireDefault(require("./models/MainModel"));
 
@@ -70146,7 +70501,8 @@ function _initializerWarningHelper(descriptor, context) {
 
 var styles = {
   commonContainer: {
-    height: '100vh'
+    height: '100vh',
+    position: 'relative'
   },
   contentContainerDesktopTablet: {
     display: 'flex',
@@ -70197,7 +70553,7 @@ function (_React$Component) {
         mainModel: this.mainModel
       }, _react.default.createElement("div", {
         className: classes.commonContainer
-      }, _react.default.createElement(_Tabs.TabsBlockWrapper, null), _react.default.createElement(_reactResponsive.default, {
+      }, _react.default.createElement(_LogComponent.default, null), !this.mainModel.showLog && _react.default.createElement("div", null, _react.default.createElement(_Tabs.TabsBlockWrapper, null), _react.default.createElement(_reactResponsive.default, {
         minWidth: _screenDimesions.default.tablet
       }, _react.default.createElement("div", {
         className: classes.contentContainerDesktopTablet
@@ -70205,7 +70561,7 @@ function (_React$Component) {
         maxWidth: _screenDimesions.default.tablet
       }, _react.default.createElement("div", {
         className: classes.contentContainerMobile
-      }, _react.default.createElement(_Tabs.LeftBlockWrapper, null, _react.default.createElement(ComponentLeft, null)), _react.default.createElement(_Tabs.RightBlockWrapper, null, ComponentRight && _react.default.createElement(ComponentRight, null))))));
+      }, _react.default.createElement(_Tabs.LeftBlockWrapper, null, _react.default.createElement(ComponentLeft, null)), _react.default.createElement(_Tabs.RightBlockWrapper, null, ComponentRight && _react.default.createElement(ComponentRight, null)))))));
     }
   }]);
 
@@ -70221,7 +70577,7 @@ var AppWrapper = (0, _reactJss.default)(styles)(App);
 var div = document.getElementById("chromeExtensionReactApp");
 
 _reactDom.default.render(_react.default.createElement(AppWrapper, null), div);
-},{"react":"../../node_modules/react/index.js","react-dom":"../../node_modules/react-dom/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","react-responsive":"../../node_modules/react-responsive/dist/react-responsive.js","mobx-react":"../../node_modules/mobx-react/index.module.js","mobx":"../../node_modules/mobx/lib/mobx.module.js","prop-types":"../../node_modules/prop-types/index.js","./utils/screen-dimesions":"utils/screen-dimesions.js","./blocks/tabs/Tabs":"blocks/tabs/Tabs.js","./models/MainModel":"models/MainModel.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","react-dom":"../../node_modules/react-dom/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","react-responsive":"../../node_modules/react-responsive/dist/react-responsive.js","mobx-react":"../../node_modules/mobx-react/index.module.js","mobx":"../../node_modules/mobx/lib/mobx.module.js","prop-types":"../../node_modules/prop-types/index.js","./utils/screen-dimesions":"utils/screen-dimesions.js","./blocks/tabs/Tabs":"blocks/tabs/Tabs.js","./blocks/log/LogComponent":"blocks/log/LogComponent.js","./models/MainModel":"models/MainModel.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -70248,7 +70604,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63194" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55391" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
