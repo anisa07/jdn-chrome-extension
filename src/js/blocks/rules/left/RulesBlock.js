@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactFileReader from 'react-file-reader';
 import injectSheet from 'react-jss';
 import { inject, observer } from "mobx-react";
 import { observable, action } from 'mobx';
@@ -11,6 +12,7 @@ import { headerStyle } from "../../BlockStyles";
 const styles = {
 	headerStyle,
 	buttonContainer: {
+		display: 'flex',
 		margin: '20px 0',
 	},
 	btn: {
@@ -78,7 +80,11 @@ class RulesBlock extends React.Component {
 		mainModel.ruleBlockModel.downloadCurrentRules(rulesName);
 	};
 
-	handleImportRules = () => {};
+	handleImportRules = (file) => {
+		const { mainModel } = this.props;
+
+		mainModel.ruleBlockModel.importRules(file, mainModel);
+	};
 
 	render () {
 		const { classes, mainModel } = this.props;
@@ -91,7 +97,13 @@ class RulesBlock extends React.Component {
 				<span className={classes.headerStyle}>Page: </span>
 				<LabelWrapper>{mainModel.ruleBlockModel.ruleName}</LabelWrapper>
 				<div className={classes.buttonContainer}>
-					<Button className={classes.btn} label={'Import'} icon={importIcon} onclick={this.handleImportRules}/>
+					<ReactFileReader
+						handleFiles={file => {this.handleImportRules(file);}}
+						fileTypes={[".json"]}
+						multipleFiles={false}
+					>
+						<Button className={classes.btn} label={'Import'} icon={importIcon}/>
+					</ReactFileReader>
 					<Button className={classes.btn} label={'Export'} icon={exportIcon} onclick={this.handleExportRules}/>
 				</div>
 				<div>

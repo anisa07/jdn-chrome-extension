@@ -31,7 +31,7 @@ Button.propTypes = {
 	label: PropTypes.string,
 	className: PropTypes.string,
 	icon: PropTypes.string,
-	onclick: PropTypes.func.isRequired,
+	onclick: PropTypes.func,
 };
 
 export default Button;

@@ -72,7 +72,7 @@ export default class SettingsModel {
 
 	downloadCurrentTemplate () {
 		let objToSave = {
-			content: JSON.stringify(this.template),
+			content: JSON.stringify(this.template, null, '\t').replace(/\\n|\\t/g, "\n"),
 			name: `${this.framework}Template.json`
 		};
 		if (objToSave.content && objToSave.name) {
