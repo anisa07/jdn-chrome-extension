@@ -39073,6 +39073,14 @@ function () {
         }, r, err);
       });
     }
+  }, {
+    key: "clearGeneration",
+    value: function clearGeneration() {
+      this.sections = new Map();
+      this.pages = [];
+      this.siteInfo = {};
+      this.page = {};
+    }
   }]);
 
   return GenerateBlockModel;
@@ -39107,7 +39115,7 @@ function () {
 }), _descriptor6 = _applyDecoratedDescriptor(_class.prototype, "currentPageId", [_mobx.observable], {
   enumerable: true,
   initializer: null
-}), _applyDecoratedDescriptor(_class.prototype, "generate", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "generate"), _class.prototype)), _class);
+}), _applyDecoratedDescriptor(_class.prototype, "generate", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "generate"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "clearGeneration", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "clearGeneration"), _class.prototype)), _class);
 exports.default = GenerateBlockModel;
 },{"../utils/helpers":"utils/helpers.js","mobx":"../../node_modules/mobx/lib/mobx.module.js","./Log":"models/Log.js"}],"../../node_modules/file-saver/dist/FileSaver.min.js":[function(require,module,exports) {
 var define;
@@ -39785,9 +39793,11 @@ function (_React$Component) {
       var _this$props = this.props,
           label = _this$props.label,
           className = _this$props.className,
-          icon = _this$props.icon;
+          icon = _this$props.icon,
+          disabled = _this$props.disabled;
       var cl = "btn ".concat(className);
       return _react.default.createElement("button", {
+        disabled: disabled,
         className: cl,
         type: "button",
         onClick: this.handleClick
@@ -39913,7 +39923,217 @@ GenerateBlock.propTypes = {};
 var GenerateBlockWrapper = (0, _reactJss.default)(styles)(GenerateBlock);
 var _default = GenerateBlockWrapper;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","prop-types":"../../node_modules/prop-types/index.js","mobx-react":"../../node_modules/mobx-react/index.module.js","../../../components/Button/Button":"components/Button/Button.js","../../../../icons/index":"../icons/index.js"}],"blocks/generate/left/GenerateSettings.js":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","prop-types":"../../node_modules/prop-types/index.js","mobx-react":"../../node_modules/mobx-react/index.module.js","../../../components/Button/Button":"components/Button/Button.js","../../../../icons/index":"../icons/index.js"}],"../../node_modules/uuid4/browser.js":[function(require,module,exports) {
+var define;
+(function() {
+  function getBytes() {
+    try {
+      // Modern Browser
+      return Array.from(
+        (window.crypto || window.msCrypto).getRandomValues(new Uint8Array(16))
+      );
+    } catch (error) {
+      // Legacy Browser, fallback to Math.random
+      var ret = [];
+      while (ret.length < 16) ret.push((Math.random() * 256) & 0xff);
+      return ret;
+    }
+  }
+
+  function m(v) {
+    v = v.toString(16);
+    if (v.length < 2) v = "0" + v;
+    return v;
+  }
+
+  function genUUID() {
+    var rnd = getBytes();
+    rnd[6] = (rnd[6] & 0x0f) | 0x40;
+    rnd[8] = (rnd[8] & 0x3f) | 0x80;
+    rnd = rnd
+      .map(m)
+      .join("")
+      .match(/(.{8})(.{4})(.{4})(.{4})(.{12})/);
+    rnd.shift();
+    return rnd.join("-");
+  }
+
+  var uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+  function isUUID(uuid) {
+    return uuidPattern.test(uuid);
+  }
+
+  genUUID.valid = isUUID;
+
+  // global
+  if (window) {
+    window.uuid4 = genUUID;
+  }
+
+  // Node-style CJS
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = genUUID;
+  }
+
+  // AMD - legacy
+  if (typeof define === "function" && define.amd) {
+    define([], function() {
+      return genUUID;
+    });
+  }
+})();
+
+},{}],"../../node_modules/react-file-reader/index.js":[function(require,module,exports) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _uuid = require('uuid4');
+
+var _uuid2 = _interopRequireDefault(_uuid);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ReactFileReader = function (_React$Component) {
+  _inherits(ReactFileReader, _React$Component);
+
+  function ReactFileReader() {
+    var _ref;
+
+    var _temp, _this, _ret;
+
+    _classCallCheck(this, ReactFileReader);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ReactFileReader.__proto__ || Object.getPrototypeOf(ReactFileReader)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      elementId: _this.props.elementId || (0, _uuid2.default)()
+    }, _this.clickInput = function () {
+      var element = document.getElementById(_this.state.elementId);
+      element.value = '';
+      element.click();
+    }, _this.handleFiles = function (event) {
+      if (_this.props.base64) {
+        _this.convertFilesToBase64(event.target.files);
+      } else {
+        _this.props.handleFiles(event.target.files);
+      }
+    }, _this.convertFilesToBase64 = function (files) {
+      var ef = files;
+
+      if (_this.props.multipleFiles) {
+        var i, len;
+
+        (function () {
+          var files = { base64: [], fileList: ef };
+
+          var _loop = function _loop() {
+            var reader = new FileReader();
+            var f = ef[i];
+
+            reader.onloadend = function (e) {
+              files.base64.push(reader.result);
+
+              if (files.base64.length === ef.length) {
+                _this.props.handleFiles(files);
+              }
+            };
+
+            reader.readAsDataURL(f);
+          };
+
+          for (i = 0, len = ef.length; i < len; i++) {
+            _loop();
+          }
+        })();
+      } else {
+        var _files = { base64: '', fileList: ef };
+        var f = ef[0];
+        var _reader = new FileReader();
+
+        _reader.onloadend = function (e) {
+          _files.base64 = _reader.result;
+          _this.props.handleFiles(_files);
+        };
+
+        _reader.readAsDataURL(f);
+      }
+    }, _temp), _possibleConstructorReturn(_this, _ret);
+  }
+
+  _createClass(ReactFileReader, [{
+    key: 'render',
+    value: function render() {
+      var hideInput = {
+        width: '0px',
+        opacity: '0',
+        position: 'fixed'
+      };
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'react-file-reader' },
+        _react2.default.createElement('input', { type: 'file',
+          onChange: this.handleFiles,
+          accept: Array.isArray(this.props.fileTypes) ? this.props.fileTypes.join(',') : this.props.fileTypes,
+          className: 'react-file-reader-input',
+          id: this.state.elementId,
+          multiple: this.props.multipleFiles,
+          style: hideInput,
+          disabled: this.props.disabled
+        }),
+        _react2.default.createElement(
+          'div',
+          { className: 'react-file-reader-button', onClick: this.clickInput },
+          this.props.children
+        )
+      );
+    }
+  }]);
+
+  return ReactFileReader;
+}(_react2.default.Component);
+
+exports.default = ReactFileReader;
+
+
+ReactFileReader.defaultProps = {
+  fileTypes: 'image/*',
+  multipleFiles: false,
+  base64: false,
+  disabled: false
+};
+
+ReactFileReader.propTypes = {
+  multipleFiles: _propTypes2.default.bool,
+  handleFiles: _propTypes2.default.func.isRequired,
+  fileTypes: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.array]),
+  base64: _propTypes2.default.bool,
+  children: _propTypes2.default.element.isRequired,
+  disabled: _propTypes2.default.bool
+};
+
+},{"react":"../../node_modules/react/index.js","uuid4":"../../node_modules/uuid4/browser.js","prop-types":"../../node_modules/prop-types/index.js"}],"blocks/generate/left/GenerateSettings.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -39924,6 +40144,8 @@ exports.default = void 0;
 var _react = _interopRequireDefault(require("react"));
 
 var _reactJss = _interopRequireDefault(require("react-jss"));
+
+var _reactFileReader = _interopRequireDefault(require("react-file-reader"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
@@ -39960,13 +40182,13 @@ var styles = {
     margin: '10px 0 10px 10px'
   },
   buttonContainer: {
+    display: 'flex',
     margin: '20px 0'
   },
   btn: {
     marginRight: '5px'
   }
-}; // downloadCurrentTemplate
-
+};
 var GenerateSettings = (_dec = (0, _mobxReact.inject)('mainModel'), _dec(_class = (0, _mobxReact.observer)(_class =
 /*#__PURE__*/
 function (_React$Component) {
@@ -39991,7 +40213,11 @@ function (_React$Component) {
     }, _this.handleExportTemplate = function () {
       var mainModel = _this.props.mainModel;
       mainModel.settingsModel.downloadCurrentTemplate();
-    }, _this.handleImportTemplate = function () {}, _this.handleBack = function () {
+    }, _this.handleImportTemplate = function (file) {
+      var mainModel = _this.props.mainModel;
+      mainModel.generateBlockModel.clearGeneration();
+      mainModel.settingsModel.importNewTemplate(file, mainModel);
+    }, _this.handleBack = function () {
       var mainModel = _this.props.mainModel;
       mainModel.setLeftPart('GenerateBlockWrapper');
 
@@ -40006,6 +40232,8 @@ function (_React$Component) {
   _createClass(GenerateSettings, [{
     key: "render",
     value: function render() {
+      var _this2 = this;
+
       var classes = this.props.classes;
       return _react.default.createElement("div", null, _react.default.createElement("div", {
         className: "".concat(classes.generateStyle, " BtnGroup")
@@ -40019,12 +40247,17 @@ function (_React$Component) {
         onclick: this.handleSettings
       })), _react.default.createElement("div", {
         className: classes.buttonContainer
+      }, _react.default.createElement(_reactFileReader.default, {
+        handleFiles: function handleFiles(file) {
+          _this2.handleImportTemplate(file);
+        },
+        fileTypes: [".json"],
+        multipleFiles: false
       }, _react.default.createElement(_Button.default, {
         className: classes.btn,
         label: 'Import',
-        icon: _index.importIcon,
-        onclick: this.handleImportTemplate
-      }), _react.default.createElement(_Button.default, {
+        icon: _index.importIcon
+      })), _react.default.createElement(_Button.default, {
         className: classes.btn,
         label: 'Export',
         icon: _index.exportIcon,
@@ -40039,7 +40272,7 @@ GenerateSettings.propTypes = {};
 var GenerateSettingsWrapper = (0, _reactJss.default)(styles)(GenerateSettings);
 var _default = GenerateSettingsWrapper;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","prop-types":"../../node_modules/prop-types/index.js","mobx-react":"../../node_modules/mobx-react/index.module.js","../../../components/Button/Button":"components/Button/Button.js","../../../../icons/index":"../icons/index.js"}],"../../node_modules/react-loading/dist/react-loading.js":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","react-file-reader":"../../node_modules/react-file-reader/index.js","prop-types":"../../node_modules/prop-types/index.js","mobx-react":"../../node_modules/mobx-react/index.module.js","../../../components/Button/Button":"components/Button/Button.js","../../../../icons/index":"../icons/index.js"}],"../../node_modules/react-loading/dist/react-loading.js":[function(require,module,exports) {
 var define;
 (function webpackUniversalModuleDefinition(root, factory) {
   if (typeof exports === 'object' && typeof module === 'object') module.exports = factory();else if (typeof define === 'function' && define.amd) define([], factory);else if (typeof exports === 'object') exports["Loading"] = factory();else root["Loading"] = factory();
@@ -43601,7 +43834,6 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 var styles = {
   buttonContainer: {
-    padding: '10px 0 0 0',
     display: 'flex',
     flexDirection: 'column'
   },
@@ -43609,6 +43841,11 @@ var styles = {
     margin: '0 10px 10px 0',
     padding: '5px',
     width: '35px'
+  },
+  controlsContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: '10px 0 0 0'
   }
 };
 var GenerateResults = (_dec = (0, _mobxReact.inject)('mainModel'), _dec(_class = (0, _mobxReact.observer)(_class =
@@ -43641,6 +43878,9 @@ function (_React$Component) {
       mainModel.conversionModel.genPageCode(page, mainModel);
       mainModel.conversionModel.setCurrentPageCode(index);
       mainModel.conversionModel.downloadPageCode(page, mainModel.settingsModel.extension);
+    }, _this.clearGenResults = function () {
+      var mainModel = _this.props.mainModel;
+      mainModel.generateBlockModel.clearGeneration();
     }, _temp));
   }
 
@@ -43655,18 +43895,14 @@ function (_React$Component) {
       var pages = mainModel.generateBlockModel.pages || [];
       var pageReady = !!pages.length;
       return _react.default.createElement("div", {
+        className: classes.controlsContainer
+      }, _react.default.createElement("div", {
         className: classes.buttonContainer
-      }, pageReady ? _react.default.createElement("div", null, _react.default.createElement(_Button.default, {
+      }, pageReady && _react.default.createElement("div", null, _react.default.createElement(_Button.default, {
         className: classes.btn,
         icon: _index.importIcon,
         onclick: this.handleDownloadSiteCode
-      }), _react.default.createElement("span", null, "Download site ".concat(mainModel.generateBlockModel.siteInfo.siteTitle))) : _react.default.createElement(_Infinity.default, {
-        size: {
-          height: '40px',
-          width: '40px'
-        },
-        color: '#6f42c1'
-      }), pageReady ? pages.map(function (page, index) {
+      }), _react.default.createElement("span", null, "Download site ".concat(mainModel.generateBlockModel.siteInfo.siteTitle))), pageReady && pages.map(function (page, index) {
         return _react.default.createElement("div", {
           key: page.id
         }, _react.default.createElement(_Button.default, {
@@ -43676,13 +43912,10 @@ function (_React$Component) {
             _this2.handleDownloadPageCode(page, index);
           }
         }), _react.default.createElement("span", null, "Download page ".concat(page.name)));
-      }) : _react.default.createElement(_Infinity.default, {
-        size: {
-          height: '40px',
-          width: '40px'
-        },
-        color: '#6f42c1'
-      }));
+      })), _react.default.createElement("div", null, pageReady && _react.default.createElement(_Button.default, {
+        label: 'Clear Results',
+        onclick: this.clearGenResults
+      })));
     }
   }]);
 
@@ -52931,9 +53164,11 @@ function (_React$Component) {
     }, _this.handleChangeLanguage = function (option) {
       var mainModel = _this.props.mainModel;
       mainModel.settingsModel.changeLanguage(option.value);
+      mainModel.generateBlockModel.clearGeneration();
     }, _this.handleChangeFramework = function (option) {
       var mainModel = _this.props.mainModel;
       mainModel.settingsModel.changeFramework(option.value);
+      mainModel.generateBlockModel.clearGeneration();
     }, _temp));
   }
 
@@ -52981,217 +53216,7 @@ GeneralSettings.propTypes = {};
 var GeneralSettingsWrapper = (0, _reactJss.default)(styles)(GeneralSettings);
 var _default = GeneralSettingsWrapper;
 exports.default = _default;
-},{"react":"../../node_modules/react/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","prop-types":"../../node_modules/prop-types/index.js","mobx-react":"../../node_modules/mobx-react/index.module.js","../../../components/Checkbox/Checkbox":"components/Checkbox/Checkbox.js","../../../components/CustomSelect/CustomSelect":"components/CustomSelect/CustomSelect.js","../../../json/settings":"json/settings.js"}],"../../node_modules/uuid4/browser.js":[function(require,module,exports) {
-var define;
-(function() {
-  function getBytes() {
-    try {
-      // Modern Browser
-      return Array.from(
-        (window.crypto || window.msCrypto).getRandomValues(new Uint8Array(16))
-      );
-    } catch (error) {
-      // Legacy Browser, fallback to Math.random
-      var ret = [];
-      while (ret.length < 16) ret.push((Math.random() * 256) & 0xff);
-      return ret;
-    }
-  }
-
-  function m(v) {
-    v = v.toString(16);
-    if (v.length < 2) v = "0" + v;
-    return v;
-  }
-
-  function genUUID() {
-    var rnd = getBytes();
-    rnd[6] = (rnd[6] & 0x0f) | 0x40;
-    rnd[8] = (rnd[8] & 0x3f) | 0x80;
-    rnd = rnd
-      .map(m)
-      .join("")
-      .match(/(.{8})(.{4})(.{4})(.{4})(.{12})/);
-    rnd.shift();
-    return rnd.join("-");
-  }
-
-  var uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-  function isUUID(uuid) {
-    return uuidPattern.test(uuid);
-  }
-
-  genUUID.valid = isUUID;
-
-  // global
-  if (window) {
-    window.uuid4 = genUUID;
-  }
-
-  // Node-style CJS
-  if (typeof module !== "undefined" && module.exports) {
-    module.exports = genUUID;
-  }
-
-  // AMD - legacy
-  if (typeof define === "function" && define.amd) {
-    define([], function() {
-      return genUUID;
-    });
-  }
-})();
-
-},{}],"../../node_modules/react-file-reader/index.js":[function(require,module,exports) {
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _uuid = require('uuid4');
-
-var _uuid2 = _interopRequireDefault(_uuid);
-
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var ReactFileReader = function (_React$Component) {
-  _inherits(ReactFileReader, _React$Component);
-
-  function ReactFileReader() {
-    var _ref;
-
-    var _temp, _this, _ret;
-
-    _classCallCheck(this, ReactFileReader);
-
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ReactFileReader.__proto__ || Object.getPrototypeOf(ReactFileReader)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-      elementId: _this.props.elementId || (0, _uuid2.default)()
-    }, _this.clickInput = function () {
-      var element = document.getElementById(_this.state.elementId);
-      element.value = '';
-      element.click();
-    }, _this.handleFiles = function (event) {
-      if (_this.props.base64) {
-        _this.convertFilesToBase64(event.target.files);
-      } else {
-        _this.props.handleFiles(event.target.files);
-      }
-    }, _this.convertFilesToBase64 = function (files) {
-      var ef = files;
-
-      if (_this.props.multipleFiles) {
-        var i, len;
-
-        (function () {
-          var files = { base64: [], fileList: ef };
-
-          var _loop = function _loop() {
-            var reader = new FileReader();
-            var f = ef[i];
-
-            reader.onloadend = function (e) {
-              files.base64.push(reader.result);
-
-              if (files.base64.length === ef.length) {
-                _this.props.handleFiles(files);
-              }
-            };
-
-            reader.readAsDataURL(f);
-          };
-
-          for (i = 0, len = ef.length; i < len; i++) {
-            _loop();
-          }
-        })();
-      } else {
-        var _files = { base64: '', fileList: ef };
-        var f = ef[0];
-        var _reader = new FileReader();
-
-        _reader.onloadend = function (e) {
-          _files.base64 = _reader.result;
-          _this.props.handleFiles(_files);
-        };
-
-        _reader.readAsDataURL(f);
-      }
-    }, _temp), _possibleConstructorReturn(_this, _ret);
-  }
-
-  _createClass(ReactFileReader, [{
-    key: 'render',
-    value: function render() {
-      var hideInput = {
-        width: '0px',
-        opacity: '0',
-        position: 'fixed'
-      };
-
-      return _react2.default.createElement(
-        'div',
-        { className: 'react-file-reader' },
-        _react2.default.createElement('input', { type: 'file',
-          onChange: this.handleFiles,
-          accept: Array.isArray(this.props.fileTypes) ? this.props.fileTypes.join(',') : this.props.fileTypes,
-          className: 'react-file-reader-input',
-          id: this.state.elementId,
-          multiple: this.props.multipleFiles,
-          style: hideInput,
-          disabled: this.props.disabled
-        }),
-        _react2.default.createElement(
-          'div',
-          { className: 'react-file-reader-button', onClick: this.clickInput },
-          this.props.children
-        )
-      );
-    }
-  }]);
-
-  return ReactFileReader;
-}(_react2.default.Component);
-
-exports.default = ReactFileReader;
-
-
-ReactFileReader.defaultProps = {
-  fileTypes: 'image/*',
-  multipleFiles: false,
-  base64: false,
-  disabled: false
-};
-
-ReactFileReader.propTypes = {
-  multipleFiles: _propTypes2.default.bool,
-  handleFiles: _propTypes2.default.func.isRequired,
-  fileTypes: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.array]),
-  base64: _propTypes2.default.bool,
-  children: _propTypes2.default.element.isRequired,
-  disabled: _propTypes2.default.bool
-};
-
-},{"react":"../../node_modules/react/index.js","uuid4":"../../node_modules/uuid4/browser.js","prop-types":"../../node_modules/prop-types/index.js"}],"components/Label/Label.js":[function(require,module,exports) {
+},{"react":"../../node_modules/react/index.js","react-jss":"../../node_modules/react-jss/lib/index.js","prop-types":"../../node_modules/prop-types/index.js","mobx-react":"../../node_modules/mobx-react/index.module.js","../../../components/Checkbox/Checkbox":"components/Checkbox/Checkbox.js","../../../components/CustomSelect/CustomSelect":"components/CustomSelect/CustomSelect.js","../../../json/settings":"json/settings.js"}],"components/Label/Label.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -53515,6 +53540,7 @@ function (_React$Component2) {
       mainModel.ruleBlockModel.downloadCurrentRules(rulesName);
     }, _this4.handleImportRules = function (file) {
       var mainModel = _this4.props.mainModel;
+      mainModel.generateBlockModel.clearGeneration();
       mainModel.ruleBlockModel.importRules(file, mainModel);
     }, _temp2));
   }
@@ -70339,7 +70365,11 @@ var _JavaJDILightTemplate = require("../json/JavaJDILightTemplate");
 
 var _fileSaver = require("file-saver");
 
-var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4;
+var _Log = _interopRequireDefault(require("./Log"));
+
+var _desc, _value, _class, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -70393,6 +70423,7 @@ function _initializerWarningHelper(descriptor, context) {
 var SettingsModel = (_class =
 /*#__PURE__*/
 function () {
+  // @observable jdi = true;
   function SettingsModel() {
     _classCallCheck(this, SettingsModel);
 
@@ -70404,34 +70435,15 @@ function () {
 
     _initDefineProp(this, "template", _descriptor4, this);
 
+    _initDefineProp(this, "log", _descriptor5, this);
+
     var settingsStorage = window.localStorage;
+    this.log = new _Log.default();
     this.downloadAfterGeneration = settingsStorage.getItem('DownloadAfterGeneration') === 'true';
     this.extension = settingsStorage.getItem('DefaultLanguage') || '.java';
     this.framework = settingsStorage.getItem('DefaultFramework') || 'jdiUI';
-
-    if (this.extension === '.java' && this.framework === 'jdiUI') {
-      var defaultTemplate = settingsStorage.getItem('DefaultTemplateJdiUI');
-
-      if (defaultTemplate) {
-        this.template = JSON.parse(defaultTemplate);
-      } else {
-        this.template = _JavaJDIUITemplate.JavaJDIUITemplate;
-        settingsStorage.setItem('DefaultTemplateJdiUI', JSON.stringify(_JavaJDIUITemplate.JavaJDIUITemplate));
-      }
-    }
-
-    if (this.extension === '.java' && this.framework === 'jdiLight') {
-      var _defaultTemplate = settingsStorage.getItem('DefaultTemplateJdiLight');
-
-      if (_defaultTemplate) {
-        this.template = JSON.parse(_defaultTemplate);
-      } else {
-        this.template = _JavaJDILightTemplate.JavaJDILightTemplate;
-        settingsStorage.setItem('DefaultTemplateJdiLight', JSON.stringify(_JavaJDILightTemplate.JavaJDILightTemplate));
-      }
-    }
-  } // @observable jdi = true;
-
+    this.setTemplate();
+  }
 
   _createClass(SettingsModel, [{
     key: "updateSiteImportSettings",
@@ -70457,19 +70469,63 @@ function () {
     value: function changeLanguage(lang) {
       this.extension = lang;
       window.localStorage.setItem('DefaultLanguage', this.extension);
+      this.setTemplate();
     }
   }, {
     key: "changeFramework",
     value: function changeFramework(frame) {
       this.framework = frame;
       window.localStorage.setItem('DefaultFramework', this.framework);
+      this.setTemplate();
+    }
+  }, {
+    key: "setTemplate",
+    value: function setTemplate() {
+      var settingsStorage = window.localStorage;
+
+      if (this.extension === '.java' && this.framework === 'jdiUI') {
+        var defaultTemplate = settingsStorage.getItem('DefaultTemplateJdiUI');
+
+        if (defaultTemplate) {
+          this.template = JSON.parse(defaultTemplate);
+        } else {
+          this.template = _JavaJDIUITemplate.JavaJDIUITemplate;
+          settingsStorage.setItem('DefaultTemplateJdiUI', JSON.stringify(_JavaJDIUITemplate.JavaJDIUITemplate));
+        }
+      }
+
+      if (this.extension === '.java' && this.framework === 'jdiLight') {
+        var _defaultTemplate = settingsStorage.getItem('DefaultTemplateJdiLight');
+
+        if (_defaultTemplate) {
+          this.template = JSON.parse(_defaultTemplate);
+        } else {
+          this.template = _JavaJDILightTemplate.JavaJDILightTemplate;
+          settingsStorage.setItem('DefaultTemplateJdiLight', JSON.stringify(_JavaJDILightTemplate.JavaJDILightTemplate));
+        }
+      }
+    }
+  }, {
+    key: "updateTemplate",
+    value: function updateTemplate() {
+      var settingsStorage = window.localStorage;
+
+      if (this.extension === '.java' && this.framework === 'jdiUI') {
+        settingsStorage.setItem('DefaultTemplateJdiUI', JSON.stringify(this.template));
+      }
+
+      if (this.extension === '.java' && this.framework === 'jdiLight') {
+        settingsStorage.setItem('DefaultTemplateJdiLight', JSON.stringify(this.template));
+      }
     }
   }, {
     key: "downloadCurrentTemplate",
     value: function downloadCurrentTemplate() {
       var objToSave = {
-        content: JSON.stringify(this.template, null, '\t').replace(/\\n|\\t/g, "\n"),
-        name: "".concat(this.framework, "Template.json")
+        content: JSON.stringify(this.template, null, '\t'),
+        //content: JSON.stringify(this.template, null, '\t').replace(/\\n|\\t/g, "\n"),
+        name: "".concat(this.framework, "Template.json") // name: `${this.framework}Template.js`
+
       };
 
       if (objToSave.content && objToSave.name) {
@@ -70477,6 +70533,89 @@ function () {
           type: "text/plain;charset=utf-8"
         });
         (0, _fileSaver.saveAs)(blob, objToSave.name);
+      }
+    }
+  }, {
+    key: "importNewTemplate",
+    value: function importNewTemplate(file, mainModel) {
+      var _this = this;
+
+      this.log.clearLog();
+
+      function FieldException(field) {
+        this.message = "Template does not have required field ".concat(field);
+        this.name = "Template Error.";
+      }
+
+      if (window.File && window.FileReader && window.FileList && window.Blob) {
+        try {
+          var f = file[0];
+
+          if (!f) {
+            return;
+          }
+
+          var reader = new FileReader();
+
+          reader.onload = function (e) {
+            var contents = e.target.result;
+            var isErrorContent = false;
+
+            try {
+              var newTemplate = JSON.parse(contents);
+
+              for (var field in _this.template) {
+                try {
+                  if (!['siteName', 'package'].includes(field) && !newTemplate[field]) {
+                    isErrorContent = true;
+                    throw new FieldException(field);
+                  }
+                } catch (e) {
+                  _this.log.addToLog({
+                    message: "".concat(e.name, " ").concat(e.message),
+                    type: 'error'
+                  });
+
+                  mainModel.fillLog(_this.log.log);
+                }
+              }
+
+              if (!isErrorContent) {
+                _this.template = newTemplate;
+
+                _this.updateTemplate();
+
+                _this.log.addToLog({
+                  message: "Success! New template uploaded",
+                  type: 'success'
+                });
+
+                mainModel.fillLog(_this.log.log);
+              }
+            } catch (e) {
+              _this.log.addToLog({
+                message: "Error occurs parsing json file: ".concat(e, ". JSON is invalid. Check JSON."),
+                type: 'error'
+              });
+
+              mainModel.fillLog(_this.log.log);
+            }
+          };
+
+          reader.readAsText(f);
+        } catch (e) {
+          this.log.addToLog({
+            message: "Error occurs reading file ".concat(e, "."),
+            type: 'error'
+          });
+          mainModel.fillLog(this.log.log);
+        }
+      } else {
+        this.log.addToLog({
+          message: 'Warning! The File APIs are not fully supported in this browser.',
+          type: 'warning'
+        });
+        mainModel.fillLog(this.log.log);
       }
     }
   }]);
@@ -70500,9 +70639,14 @@ function () {
 }), _descriptor4 = _applyDecoratedDescriptor(_class.prototype, "template", [_mobx.observable], {
   enumerable: true,
   initializer: null
-}), _applyDecoratedDescriptor(_class.prototype, "clearSiteStorage", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "clearSiteStorage"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "triggerDownloadAfterGen", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "triggerDownloadAfterGen"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "changeLanguage", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "changeLanguage"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "changeFramework", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "changeFramework"), _class.prototype)), _class);
+}), _descriptor5 = _applyDecoratedDescriptor(_class.prototype, "log", [_mobx.observable], {
+  enumerable: true,
+  initializer: function initializer() {
+    return {};
+  }
+}), _applyDecoratedDescriptor(_class.prototype, "clearSiteStorage", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "clearSiteStorage"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "triggerDownloadAfterGen", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "triggerDownloadAfterGen"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "changeLanguage", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "changeLanguage"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "changeFramework", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "changeFramework"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "setTemplate", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "setTemplate"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "updateTemplate", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "updateTemplate"), _class.prototype), _applyDecoratedDescriptor(_class.prototype, "importNewTemplate", [_mobx.action], Object.getOwnPropertyDescriptor(_class.prototype, "importNewTemplate"), _class.prototype)), _class);
 exports.default = SettingsModel;
-},{"mobx":"../../node_modules/mobx/lib/mobx.module.js","../json/JavaJDIUITemplate":"json/JavaJDIUITemplate.js","../json/JavaJDILightTemplate":"json/JavaJDILightTemplate.js","file-saver":"../../node_modules/file-saver/dist/FileSaver.min.js"}],"models/MainModel.js":[function(require,module,exports) {
+},{"mobx":"../../node_modules/mobx/lib/mobx.module.js","../json/JavaJDIUITemplate":"json/JavaJDIUITemplate.js","../json/JavaJDILightTemplate":"json/JavaJDILightTemplate.js","file-saver":"../../node_modules/file-saver/dist/FileSaver.min.js","./Log":"models/Log.js"}],"models/MainModel.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -70926,7 +71070,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52571" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51596" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

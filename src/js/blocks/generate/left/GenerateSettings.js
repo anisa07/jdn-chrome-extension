@@ -1,5 +1,6 @@
 import React from 'react';
 import injectSheet from 'react-jss';
+import ReactFileReader from 'react-file-reader';
 import PropTypes from 'prop-types';
 import { inject, observer } from "mobx-react";
 import Button from '../../../components/Button/Button';
@@ -10,14 +11,13 @@ const styles = {
 		margin: '10px 0 10px 10px'
 	},
 	buttonContainer: {
+		display: 'flex',
 		margin: '20px 0',
 	},
 	btn: {
 		marginRight: '5px'
 	},
 };
-
-// downloadCurrentTemplate
 
 @inject('mainModel')
 @observer
@@ -34,8 +34,11 @@ class GenerateSettings extends React.Component {
 		mainModel.settingsModel.downloadCurrentTemplate();
 	};
 
-	handleImportTemplate = () => {
+	handleImportTemplate = (file) => {
+		const { mainModel } = this.props;
 
+		mainModel.generateBlockModel.clearGeneration();
+		mainModel.settingsModel.importNewTemplate(file, mainModel);
 	};
 
 	handleBack = () => {
@@ -65,7 +68,13 @@ class GenerateSettings extends React.Component {
 						onclick={this.handleSettings}/>
 				</div>
 				<div className={classes.buttonContainer}>
-					<Button className={classes.btn} label={'Import'} icon={importIcon} onclick={this.handleImportTemplate}/>
+					<ReactFileReader
+						handleFiles={file => {this.handleImportTemplate(file)}}
+						fileTypes={[".json"]}
+						multipleFiles={false}
+					>
+						<Button className={classes.btn} label={'Import'} icon={importIcon}/>
+					</ReactFileReader>
 					<Button className={classes.btn} label={'Export'} icon={exportIcon} onclick={this.handleExportTemplate}/>
 				</div>
 			</div>

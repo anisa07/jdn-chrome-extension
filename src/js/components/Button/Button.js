@@ -11,10 +11,10 @@ class Button extends React.Component {
 	};
 
 	render () {
-		const { label, className, icon } = this.props;
+		const { label, className, icon, disabled } = this.props;
 		let cl = `btn ${className}`;
 		return (
-			<button className={cl} type="button" onClick={this.handleClick}>
+			<button disabled={disabled} className={cl} type="button" onClick={this.handleClick}>
 				{icon
 					? <span>
 							<img className='icon' src={icon}/>

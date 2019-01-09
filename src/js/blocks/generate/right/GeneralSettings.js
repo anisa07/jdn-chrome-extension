@@ -31,12 +31,14 @@ class GeneralSettings extends React.Component {
 		const { mainModel } = this.props;
 
 		mainModel.settingsModel.changeLanguage(option.value);
+		mainModel.generateBlockModel.clearGeneration();
 	};
 
 	handleChangeFramework = (option) => {
 		const { mainModel } = this.props;
 
 		mainModel.settingsModel.changeFramework(option.value);
+		mainModel.generateBlockModel.clearGeneration();
 	};
 
 	render () {

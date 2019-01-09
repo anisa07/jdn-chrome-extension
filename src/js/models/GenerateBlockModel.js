@@ -616,4 +616,12 @@ export default class GenerateBlockModel {
 			generationCallBack({ mainModel }, r, err)
 		});
 	}
+
+	@action
+	clearGeneration () {
+		this.sections = new Map();
+		this.pages = [];
+		this.siteInfo = {};
+		this.page = {};
+	}
 }

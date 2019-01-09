@@ -83,6 +83,7 @@ class RulesBlock extends React.Component {
 	handleImportRules = (file) => {
 		const { mainModel } = this.props;
 
+		mainModel.generateBlockModel.clearGeneration();
 		mainModel.ruleBlockModel.importRules(file, mainModel);
 	};
 
