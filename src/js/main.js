@@ -71,6 +71,9 @@ class App extends React.Component {
 const AppWrapper = injectSheet(styles)(App);
 
 const div = document.getElementById("chromeExtensionReactApp");
-ReactDOM.render(
-	<AppWrapper/>
-	, div);
+
+if (div instanceof Element) {
+	ReactDOM.render(
+		<AppWrapper/>
+		, div);
+}

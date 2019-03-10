@@ -17,7 +17,14 @@ class GenerateBlock extends React.Component {
 	handleGenerate = () => {
 		const { mainModel } = this.props;
 
-		mainModel.generateBlockModel.generate(mainModel );
+		mainModel.generateBlockModel.generate(mainModel);
+		mainModel.setRightPart('GenerateResultsWrapper');
+	};
+
+	handleGenerateSeveral = () => {
+		const { mainModel } = this.props;
+
+		mainModel.generateBlockModel.generateSeveralPages(mainModel);
 		mainModel.setRightPart('GenerateResultsWrapper');
 	};
 
@@ -31,17 +38,26 @@ class GenerateBlock extends React.Component {
 	render () {
 		const { classes } = this.props;
 		return (
-			<div className={`${classes.generateStyle} BtnGroup`}>
-				<Button
-					className='BtnGroup-item btn-primary'
-					label={'Generate'}
-					onclick={this.handleGenerate}
-				/>
-				<Button
-					className='BtnGroup-item'
-					icon={settings}
-					onclick={this.handleOpenSettings}
-				/>
+			<div>
+				<div className={`${classes.generateStyle} BtnGroup`}>
+					<Button
+						className='BtnGroup-item btn-primary'
+						label={'Generate'}
+						onclick={this.handleGenerate}
+					/>
+					<Button
+						className='BtnGroup-item'
+						icon={settings}
+						onclick={this.handleOpenSettings}
+					/>
+				</div>
+				<div className={`${classes.generateStyle}`}>
+					<Button
+						className='BtnGroup-item btn-primary'
+						label={'Generate PO for Several Pages'}
+						onclick={this.handleGenerateSeveral}
+					/>
+				</div>
 			</div>
 		)
 	}

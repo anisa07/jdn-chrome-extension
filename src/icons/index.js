@@ -1,13 +1,13 @@
-const settings = 'src/icons/settings.png';
-const importIcon = 'src/icons/import.png';
-const exportIcon = 'src/icons/export.png';
-const add = 'src/icons/add.png';
-const close = 'src/icons/close.png';
-const back = 'src/icons/back.png';
-const arrowDown = 'src/icons/arrow-down.png';
-const errorIcon = 'src/icons/error.png';
-const successIcon = 'src/icons/success.png';
-const warningIcon = 'src/icons/warning.png';
+const settings = 'icons/settings.png';
+const importIcon = 'icons/import.png';
+const exportIcon = 'icons/export.png';
+const add = 'icons/add.png';
+const close = 'icons/close.png';
+const back = 'icons/back.png';
+const arrowDown = 'icons/arrow-down.png';
+const errorIcon = 'icons/error.png';
+const successIcon = 'icons/success.png';
+const warningIcon = 'icons/warning.png';
 
 export {
 	settings,

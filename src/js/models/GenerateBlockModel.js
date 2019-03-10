@@ -1,5 +1,6 @@
 import { genRand, cssToXPath } from "../utils/helpers";
 import { observable, action } from 'mobx';
+import $ from "jquery";
 import Log from "./Log";
 
 const getElements = ({ log }, dom, locatorType) => {
@@ -74,10 +75,14 @@ function createCorrectXpath (originalLocator, uniqness, value, locator) {
 	if (locator) {
 		return `${originalLocator}${locator}${result}`
 	}
-	if (originalLocator.indexOf(']') === originalLocator.length - 1) {
-		return `${originalLocator.slice(0, -1)} and ${result}]`
+	if (originalLocator) {
+		if (originalLocator.indexOf(']') === originalLocator.length - 1) {
+			return `${originalLocator.slice(0, -1)} and ${result}]`
+		} else {
+			return `${originalLocator}[${result}]`
+		}
 	} else {
-		return `${originalLocator}[${result}]`
+		return `.//*[${result}]`
 	}
 }
 
@@ -295,6 +300,13 @@ const defineElements = ({ results, mainModel }, dom, Locator, uniq, t, ruleId, p
 					content: s2.elements[0],
 					Name: nameElement(finalLocator, uniq, val, s2.elements[0]).slice(0, 20),
 				};
+				let smallFinalLocator = xpath
+					? valueToXpath('', uniqness, val)
+					: '' + valueToCss(uniqness, val);
+				let s3 = getElements({ log: generateBlockModel.log }, dom, { locator: smallFinalLocator, xpath: xpath });
+				if (s3.elements.length === 1) {
+					e.Locator = smallFinalLocator;
+				}
 				fillEl({ results, mainModel }, e, t, parent, ruleId);
 			} else {
 				generateBlockModel.log.addToLog({
@@ -395,7 +407,13 @@ function getSimple ({ mainModel, results }, parent, t) {
 
 export const generationCallBack = ({ mainModel }, r, err) => {
 	const parser = new DOMParser();
-	const observedDOM = parser.parseFromString(r, "text/html").body;
+	const rDom = parser.parseFromString(r, "text/html");
+
+	console.log()
+
+	getTitleCallBack({ mainModel }, rDom.title);
+
+	const observedDOM = rDom.body;
 	// document.evaluate(".//*[@ui='label' and contains(.,'Bootstrap')]", observedDOM, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 	//let copyOfDom = parser.parseFromString(r, "text/html").body;
 	const { ruleBlockModel, settingsModel, conversionModel, generateBlockModel } = mainModel;
@@ -483,8 +501,10 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 
 		const pageAlreadyGenerated = generateBlockModel.pages.find(page => page.id === generateBlockModel.page.id);
 
+
 		if (!pageAlreadyGenerated) {
-			generateBlockModel.pages.push(generateBlockModel.page);
+			generateBlockModel.pages = [...generateBlockModel.pages, {...generateBlockModel.page}];
+			// generateBlockModel.pages.push(generateBlockModel.page);
 			// mainModel.conversionModel.siteCodeReady = true;
 			// conversionModel.genPageCode(generateBlockModel.page, mainModel);
 
@@ -528,6 +548,8 @@ export const getLocationCallBack = ({ mainModel }, r, err) => {
 		generateBlockModel.siteInfo.siteTitle = camelCase(r.hostname.substring(0, r.hostname.lastIndexOf(".")));
 		generateBlockModel.siteInfo.origin = r.origin;
 		generateBlockModel.currentPageId = hashCode(r.pathname);
+		generateBlockModel.siteInfo.domainName = r.host;
+		generateBlockModel.siteInfo.pack = r.host.split('.').reverse().join('.');
 	}
 };
 
@@ -604,15 +626,15 @@ export default class GenerateBlockModel {
 			getLocationCallBack({ mainModel }, r, err);
 		});
 
-		chrome.devtools.inspectedWindow.eval('document.domain', (r, err) => {
-			getDomainCallBack({ mainModel }, r, err);
-		});
+		// chrome.devtools.inspectedWindow.eval('document.domain', (r, err) => {
+		// 	getDomainCallBack({ mainModel }, r, err);
+		// });
 
-		chrome.devtools.inspectedWindow.eval('document.title', (r, err) => {
-			getTitleCallBack({ mainModel }, r, err);
-		});
+		// chrome.devtools.inspectedWindow.eval('document.title', (r, err) => {
+		// 	getTitleCallBack({ mainModel }, r, err);
+		// });
 
-		chrome.devtools.inspectedWindow.eval('document.body.outerHTML', (r, err) => {
+		chrome.devtools.inspectedWindow.eval('document.lastChild.outerHTML', (r, err) => {
 			generationCallBack({ mainModel }, r, err)
 		});
 	}
@@ -622,6 +644,40 @@ export default class GenerateBlockModel {
 		this.sections = new Map();
 		this.pages = [];
 		this.siteInfo = {};
-		this.page = {};
+		this.page = {
+			id: '',
+			name: '',
+			title: '',
+			url: '',
+			package: '',
+			elements: []
+		};
+	}
+
+	@action
+  async generateSeveralPages (mainModel) {
+		const urlList = [
+			 // 'https://www.facebook.com',
+			 // 'https://www.facebook.com/stepanovanv.spb',
+			 'https://epam.github.io/JDI/index.html',
+			'https://epam.github.io/JDI/contacts.html'
+		];
+
+		const getDOMByUrl = async (mainModel, url, index) => {
+			index++;
+	  	const u = new URL(url);
+
+			getLocationCallBack({mainModel}, u);
+
+			const response = await fetch(url);
+			const textDom = await response.text();
+			generationCallBack({ mainModel }, textDom);
+
+			if (index < urlList.length) {
+				await getDOMByUrl(mainModel, urlList[index], index);
+			}
+		};
+
+		await getDOMByUrl(mainModel, urlList[0], 0);
 	}
 }
