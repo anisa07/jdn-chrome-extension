@@ -40,7 +40,7 @@ class GenerateResults extends React.Component {
 		const { mainModel } = this.props;
 
 		mainModel.conversionModel.genPageCode(page, mainModel);
-		mainModel.conversionModel.setCurrentPageCode(index);
+		// mainModel.conversionModel.setCurrentPageCode(index);
 		mainModel.conversionModel.downloadPageCode(page, mainModel.settingsModel.extension);
 	};
 

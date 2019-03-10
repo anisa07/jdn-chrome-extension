@@ -409,11 +409,10 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 	const parser = new DOMParser();
 	const rDom = parser.parseFromString(r, "text/html");
 
-	console.log()
-
 	getTitleCallBack({ mainModel }, rDom.title);
 
 	const observedDOM = rDom.body;
+	console.log(rDom.body);
 	// document.evaluate(".//*[@ui='label' and contains(.,'Bootstrap')]", observedDOM, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 	//let copyOfDom = parser.parseFromString(r, "text/html").body;
 	const { ruleBlockModel, settingsModel, conversionModel, generateBlockModel } = mainModel;
@@ -499,11 +498,14 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 			});
 		});
 
+		console.log(generateBlockModel.page.id)
+		console.log(generateBlockModel.page.name)
+
 		const pageAlreadyGenerated = generateBlockModel.pages.find(page => page.id === generateBlockModel.page.id);
 
-
 		if (!pageAlreadyGenerated) {
-			generateBlockModel.pages = [...generateBlockModel.pages, {...generateBlockModel.page}];
+			generateBlockModel.pages = [...generateBlockModel.pages, { ...generateBlockModel.page }];
+			// console.log(generateBlockModel.pages);
 			// generateBlockModel.pages.push(generateBlockModel.page);
 			// mainModel.conversionModel.siteCodeReady = true;
 			// conversionModel.genPageCode(generateBlockModel.page, mainModel);
@@ -652,32 +654,64 @@ export default class GenerateBlockModel {
 			package: '',
 			elements: []
 		};
+		this.log.clearLog();
 	}
 
 	@action
-  async generateSeveralPages (mainModel) {
+	generateSeveralPages (mainModel) {
+		this.clearGeneration();
+
 		const urlList = [
-			 // 'https://www.facebook.com',
-			 // 'https://www.facebook.com/stepanovanv.spb',
-			 'https://epam.github.io/JDI/index.html',
+			// 'https://www.facebook.com',
+			// 'https://www.facebook.com/stepanovanv.spb',
+			'https://epam.github.io/JDI/index.html',
 			'https://epam.github.io/JDI/contacts.html'
 		];
 
 		const getDOMByUrl = async (mainModel, url, index) => {
-			index++;
-	  	const u = new URL(url);
+			this.page = {
+				id: '',
+				name: '',
+				title: '',
+				url: '',
+				package: '',
+				elements: []
+			};
 
-			getLocationCallBack({mainModel}, u);
+			const domReady = () => {
+				chrome.devtools.inspectedWindow.eval('document.location', (r, err) => {
+					getLocationCallBack({ mainModel }, r, err);
+				});
+				chrome.devtools.inspectedWindow.eval('document.lastChild.outerHTML', (r, err) => {
+					generationCallBack({ mainModel }, r, err);
+					index++;
+					if (index < urlList.length) {
+						getDOMByUrl(mainModel, urlList[index], index);
+					}
+				});
+			};
 
-			const response = await fetch(url);
-			const textDom = await response.text();
-			generationCallBack({ mainModel }, textDom);
+			chrome.devtools.inspectedWindow.eval(`window.location='${url}'`, (result, err) => {
+				setTimeout(() => {
+					domReady();
+				}, 2500);
+			});
 
-			if (index < urlList.length) {
-				await getDOMByUrl(mainModel, urlList[index], index);
-			}
+			// const u = new URL(url);
+			//
+			// getLocationCallBack({mainModel}, u);
+			//
+			// const response = await fetch(url);
+			// const textDom = await response.text();
+			// generationCallBack({ mainModel }, textDom);
+			//
+			// if (index < urlList.length) {
+			// 	await getDOMByUrl(mainModel, urlList[index], index);
+			// }
 		};
 
-		await getDOMByUrl(mainModel, urlList[0], 0);
+		getDOMByUrl(mainModel, urlList[0], 0);
+
+		// await getDOMByUrl(mainModel, urlList[0], 0);
 	}
 }

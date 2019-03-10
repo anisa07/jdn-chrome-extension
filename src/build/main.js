@@ -50120,11 +50120,11 @@ var generationCallBack = function generationCallBack(_ref11, r, err) {
   var mainModel = _ref11.mainModel;
   var parser = new DOMParser();
   var rDom = parser.parseFromString(r, "text/html");
-  console.log();
   getTitleCallBack({
     mainModel: mainModel
   }, rDom.title);
-  var observedDOM = rDom.body; // document.evaluate(".//*[@ui='label' and contains(.,'Bootstrap')]", observedDOM, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+  var observedDOM = rDom.body;
+  console.log(rDom.body); // document.evaluate(".//*[@ui='label' and contains(.,'Bootstrap')]", observedDOM, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
   //let copyOfDom = parser.parseFromString(r, "text/html").body;
 
   var ruleBlockModel = mainModel.ruleBlockModel,
@@ -50233,12 +50233,15 @@ var generationCallBack = function generationCallBack(_ref11, r, err) {
         }
       });
     });
+    console.log(generateBlockModel.page.id);
+    console.log(generateBlockModel.page.name);
     var pageAlreadyGenerated = generateBlockModel.pages.find(function (page) {
       return page.id === generateBlockModel.page.id;
     });
 
     if (!pageAlreadyGenerated) {
-      generateBlockModel.pages = [].concat((0, _toConsumableArray2.default)(generateBlockModel.pages), [(0, _extends2.default)({}, generateBlockModel.page)]); // generateBlockModel.pages.push(generateBlockModel.page);
+      generateBlockModel.pages = [].concat((0, _toConsumableArray2.default)(generateBlockModel.pages), [(0, _extends2.default)({}, generateBlockModel.page)]); // console.log(generateBlockModel.pages);
+      // generateBlockModel.pages.push(generateBlockModel.page);
       // mainModel.conversionModel.siteCodeReady = true;
       // conversionModel.genPageCode(generateBlockModel.page, mainModel);
 
@@ -50387,90 +50390,87 @@ function () {
         package: '',
         elements: []
       };
+      this.log.clearLog();
     }
   }, {
     key: "generateSeveralPages",
-    value: function () {
-      var _generateSeveralPages = (0, _asyncToGenerator2.default)(
+    value: function generateSeveralPages(mainModel) {
+      var _this = this;
+
+      this.clearGeneration();
+      var urlList = [// 'https://www.facebook.com',
+      // 'https://www.facebook.com/stepanovanv.spb',
+      'https://epam.github.io/JDI/index.html', 'https://epam.github.io/JDI/contacts.html'];
+
+      var getDOMByUrl =
       /*#__PURE__*/
-      _regenerator.default.mark(function _callee2(mainModel) {
-        var urlList, getDOMByUrl;
-        return _regenerator.default.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                urlList = [// 'https://www.facebook.com',
-                // 'https://www.facebook.com/stepanovanv.spb',
-                'https://epam.github.io/JDI/index.html', 'https://epam.github.io/JDI/contacts.html'];
-
-                getDOMByUrl =
-                /*#__PURE__*/
-                function () {
-                  var _ref15 = (0, _asyncToGenerator2.default)(
-                  /*#__PURE__*/
-                  _regenerator.default.mark(function _callee(mainModel, url, index) {
-                    var u, response, textDom;
-                    return _regenerator.default.wrap(function _callee$(_context) {
-                      while (1) {
-                        switch (_context.prev = _context.next) {
-                          case 0:
-                            index++;
-                            u = new URL(url);
-                            getLocationCallBack({
-                              mainModel: mainModel
-                            }, u);
-                            _context.next = 5;
-                            return fetch(url);
-
-                          case 5:
-                            response = _context.sent;
-                            _context.next = 8;
-                            return response.text();
-
-                          case 8:
-                            textDom = _context.sent;
-                            generationCallBack({
-                              mainModel: mainModel
-                            }, textDom);
-
-                            if (!(index < urlList.length)) {
-                              _context.next = 13;
-                              break;
-                            }
-
-                            _context.next = 13;
-                            return getDOMByUrl(mainModel, urlList[index], index);
-
-                          case 13:
-                          case "end":
-                            return _context.stop();
-                        }
-                      }
-                    }, _callee);
-                  }));
-
-                  return function getDOMByUrl(_x2, _x3, _x4) {
-                    return _ref15.apply(this, arguments);
+      function () {
+        var _ref15 = (0, _asyncToGenerator2.default)(
+        /*#__PURE__*/
+        _regenerator.default.mark(function _callee(mainModel, url, index) {
+          var domReady;
+          return _regenerator.default.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  _this.page = {
+                    id: '',
+                    name: '',
+                    title: '',
+                    url: '',
+                    package: '',
+                    elements: []
                   };
-                }();
 
-                _context2.next = 4;
-                return getDOMByUrl(mainModel, urlList[0], 0);
+                  domReady = function domReady() {
+                    chrome.devtools.inspectedWindow.eval('document.location', function (r, err) {
+                      getLocationCallBack({
+                        mainModel: mainModel
+                      }, r, err);
+                    });
+                    chrome.devtools.inspectedWindow.eval('document.lastChild.outerHTML', function (r, err) {
+                      generationCallBack({
+                        mainModel: mainModel
+                      }, r, err);
+                      index++;
 
-              case 4:
-              case "end":
-                return _context2.stop();
+                      if (index < urlList.length) {
+                        getDOMByUrl(mainModel, urlList[index], index);
+                      }
+                    });
+                  };
+
+                  chrome.devtools.inspectedWindow.eval("window.location='".concat(url, "'"), function (result, err) {
+                    setTimeout(function () {
+                      domReady();
+                    }, 2500);
+                  }); // const u = new URL(url);
+                  //
+                  // getLocationCallBack({mainModel}, u);
+                  //
+                  // const response = await fetch(url);
+                  // const textDom = await response.text();
+                  // generationCallBack({ mainModel }, textDom);
+                  //
+                  // if (index < urlList.length) {
+                  // 	await getDOMByUrl(mainModel, urlList[index], index);
+                  // }
+
+                case 3:
+                case "end":
+                  return _context.stop();
+              }
             }
-          }
-        }, _callee2);
-      }));
+          }, _callee);
+        }));
 
-      function generateSeveralPages(_x) {
-        return _generateSeveralPages.apply(this, arguments);
-      }
+        return function getDOMByUrl(_x, _x2, _x3) {
+          return _ref15.apply(this, arguments);
+        };
+      }();
 
-      return generateSeveralPages;
-    }()
+      getDOMByUrl(mainModel, urlList[0], 0); // await getDOMByUrl(mainModel, urlList[0], 0);
+    }
   }]);
   return GenerateBlockModel;
 }(), (_descriptor = (0, _applyDecoratedDescriptor2.default)(_class.prototype, "log", [_mobx.observable], {
@@ -55197,8 +55197,8 @@ function (_React$Component) {
       mainModel.conversionModel.zipAllCode(mainModel);
     }, _this.handleDownloadPageCode = function (page, index) {
       var mainModel = _this.props.mainModel;
-      mainModel.conversionModel.genPageCode(page, mainModel);
-      mainModel.conversionModel.setCurrentPageCode(index);
+      mainModel.conversionModel.genPageCode(page, mainModel); // mainModel.conversionModel.setCurrentPageCode(index);
+
       mainModel.conversionModel.downloadPageCode(page, mainModel.settingsModel.extension);
     }, _this.clearGenResults = function () {
       var mainModel = _this.props.mainModel;
