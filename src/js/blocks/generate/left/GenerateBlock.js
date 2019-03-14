@@ -3,11 +3,16 @@ import injectSheet from 'react-jss';
 import PropTypes from 'prop-types';
 import { inject, observer } from "mobx-react";
 import Button from '../../../components/Button/Button';
-import { settings } from '../../../../icons/index';
+import { exportIcon, importIcon, settings } from '../../../../icons/index';
+import ReactFileReader from "react-file-reader";
 
 const styles = {
 	generateStyle: {
 		margin: '10px 0 10px 10px'
+	},
+	generateStyleAll: {
+		margin: '10px 0 10px 10px',
+		display: 'flex'
 	}
 };
 
@@ -35,28 +40,55 @@ class GenerateBlock extends React.Component {
 		mainModel.setRightPart('GeneralSettingsWrapper');
 	};
 
+	handleImportUrlsListJSON = (file) => {
+		const { mainModel } = this.props;
+
+		mainModel.generateBlockModel.importUrlList(file, mainModel);
+	};
+
+	handleExportUrlsListJSON = () => {
+		const { mainModel } = this.props;
+
+		mainModel.generateBlockModel.downloadUrlsList();
+	};
+
 	render () {
 		const { classes } = this.props;
 		return (
 			<div>
-				<div className={`${classes.generateStyle} BtnGroup`}>
-					<Button
-						className='BtnGroup-item btn-primary'
-						label={'Generate'}
-						onclick={this.handleGenerate}
-					/>
-					<Button
-						className='BtnGroup-item'
-						icon={settings}
-						onclick={this.handleOpenSettings}
-					/>
+				<div>
+					<div className={`${classes.generateStyle} BtnGroup`}>
+						<Button
+							className='BtnGroup-item btn-primary'
+							label={'Generate'}
+							onclick={this.handleGenerate}
+						/>
+						<Button
+							className='BtnGroup-item'
+							icon={settings}
+							onclick={this.handleOpenSettings}
+						/>
+					</div>
 				</div>
-				<div className={`${classes.generateStyle}`}>
-					<Button
-						className='BtnGroup-item btn-primary'
-						label={'Generate PO for Several Pages'}
-						onclick={this.handleGenerateSeveral}
-					/>
+				<div>
+					<div className={`${classes.generateStyleAll}`}>
+						<Button
+							className='BtnGroup-item btn-primary'
+							label={'Generate PO for Several Pages'}
+							onclick={this.handleGenerateSeveral}
+						/>
+						<ReactFileReader
+							handleFiles={file => {
+								this.handleImportUrlsListJSON(file);
+							}}
+							fileTypes={[".json"]}
+							multipleFiles={false}
+						>
+							<Button className='btn' label={'Load urls list'} icon={importIcon}/>
+						</ReactFileReader>
+						<Button className='btn' label={'See example'} icon={exportIcon}
+						        onclick={this.handleExportUrlsListJSON}/>
+					</div>
 				</div>
 			</div>
 		)

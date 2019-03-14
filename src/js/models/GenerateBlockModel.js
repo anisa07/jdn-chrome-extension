@@ -1,7 +1,8 @@
 import { genRand, cssToXPath } from "../utils/helpers";
 import { observable, action } from 'mobx';
-import $ from "jquery";
 import Log from "./Log";
+import { SiteUrls } from '../json/siteUrls';
+import { saveAs } from "file-saver";
 
 const getElements = ({ log }, dom, locatorType) => {
 	let elements = [];
@@ -605,10 +606,23 @@ export default class GenerateBlockModel {
 	};
 	@observable siteInfo = {};
 	@observable currentPageId;
+	@observable urlsList = [];
 
 	constructor () {
 		this.log = new Log();
 		this.sections = new Map();
+
+		const generateStorage = window.localStorage;
+		const urlsListFromStorage = generateStorage.getItem('SiteMapUrlsList');
+		this.log = new Log();
+
+		if (urlsListFromStorage) {
+			const urlsObject = JSON.parse(urlsListFromStorage);
+			this.urlsList = urlsObject.urlsList || [];
+		} else {
+			this.urlsList = SiteUrls.urlList;
+			generateStorage.setItem('SiteMapUrlsList', JSON.stringify(this.urlsList));
+		}
 	}
 
 	@action
@@ -657,16 +671,76 @@ export default class GenerateBlockModel {
 		this.log.clearLog();
 	}
 
+	downloadUrlsList () {
+		const objToSave = {
+			content: JSON.stringify({
+				urlsList: this.urlsList
+			}, null, '\t'),
+			name: `UrlsListExample.json`
+		};
+		if (objToSave.content && objToSave.name) {
+			let blob = new Blob([objToSave.content], { type: "text/plain;charset=utf-8" });
+			saveAs(blob, objToSave.name);
+		}
+	}
+
+	@action
+	importUrlList (file, mainModel) {
+		this.log.clearLog();
+
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			try {
+				const f = file[0];
+
+				if (!f) {
+					return;
+				}
+				const reader = new FileReader();
+
+				reader.onload = (e) => {
+					const contents = e.target.result;
+					try {
+						const newUrlObject = JSON.parse(contents);
+						const generateStorage = window.localStorage;
+
+						this.urlsList = newUrlObject.urlsList;
+						generateStorage.setItem('SiteMapUrlsList', JSON.stringify(newUrlObject));
+
+						this.log.addToLog({
+							message: `Success! New url list uploaded`,
+							type: 'success'
+						});
+						mainModel.fillLog(this.log.log);
+					} catch (e) {
+						this.log.addToLog({
+							message: `Error occurs parsing json file: ${e}. JSON is invalid. Check import JSON.`,
+							type: 'error'
+						});
+						mainModel.fillLog(this.log.log);
+					}
+				};
+				reader.readAsText(f)
+			} catch (e) {
+				this.log.addToLog({
+					message: `Error occurs reading file ${e}.`,
+					type: 'error'
+				});
+				mainModel.fillLog(this.log.log);
+			}
+		} else {
+			this.log.addToLog({
+				message: 'Warning! The File APIs are not fully supported in this browser.',
+				type: 'warning'
+			});
+			mainModel.fillLog(this.log.log);
+		}
+	}
+
 	@action
 	generateSeveralPages (mainModel) {
 		this.clearGeneration();
 
-		const urlList = [
-			// 'https://www.facebook.com',
-			// 'https://www.facebook.com/stepanovanv.spb',
-			'https://epam.github.io/JDI/index.html',
-			'https://epam.github.io/JDI/contacts.html'
-		];
+		const urlList = this.urlsList.slice();
 
 		const getDOMByUrl = async (mainModel, url, index) => {
 			this.page = {
