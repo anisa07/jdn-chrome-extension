@@ -614,6 +614,7 @@ export default class GenerateBlockModel {
 
 		const generateStorage = window.localStorage;
 		const urlsListFromStorage = generateStorage.getItem('SiteMapUrlsList');
+		console.log(urlsListFromStorage)
 		this.log = new Log();
 
 		if (urlsListFromStorage) {
@@ -703,7 +704,7 @@ export default class GenerateBlockModel {
 						const newUrlObject = JSON.parse(contents);
 						const generateStorage = window.localStorage;
 
-						this.urlsList = newUrlObject.urlsList;
+						this.urlsList = newUrlObject.urlsList || [];
 						generateStorage.setItem('SiteMapUrlsList', JSON.stringify(newUrlObject));
 
 						this.log.addToLog({

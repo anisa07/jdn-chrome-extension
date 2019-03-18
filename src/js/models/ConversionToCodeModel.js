@@ -209,7 +209,7 @@ function genCodeOfElements (parentId, arrOfElements, mainModel) {
 			if (!!complex[el.Type]) {
 				let fields = getFields(ruleBlockModel.elementFields[el.Type]);
 				result += isSimple(el, fields)
-					? simpleCode(locatorType(el.Root), el.Root, el.Type, el.Name)
+					? simpleCode(locatorType(el.Root), el.Root, el.Type, el.Name, mainModel)
 					: complexCode(el.Type, complexLocators(el, fields, mainModel), el.Name, mainModel);
 			}
 			if (!!simple[el.Type]) {

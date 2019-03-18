@@ -30,14 +30,16 @@ const styles = {
 		padding: '10px',
 		minWidth: '35%',
 		width: '100%',
-		minHeight: '400px'
+		minHeight: '400px',
+		overflow: 'overlay',
 	},
 	rightBlock: {
 		border: '1px solid #e1e4e8',
 		padding: '10px',
 		minWidth: '65%',
 		width: '100%',
-		minHeight: '400px'
+		minHeight: '400px',
+		overflow: 'overlay',
 	},
 };
 

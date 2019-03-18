@@ -53,7 +53,9 @@ class GenerateBlock extends React.Component {
 	};
 
 	render () {
-		const { classes } = this.props;
+		const { classes, mainModel } = this.props;
+		const isEnabled = (mainModel.generateBlockModel.urlsList || []).length;
+
 		return (
 			<div>
 				<div>
@@ -73,10 +75,13 @@ class GenerateBlock extends React.Component {
 				<div>
 					<div className={`${classes.generateStyleAll}`}>
 						<Button
+							disabled={!isEnabled}
 							className='BtnGroup-item btn-primary'
-							label={'Generate PO for Several Pages'}
+							label={'Generate Several Page'}
 							onclick={this.handleGenerateSeveral}
 						/>
+					</div>
+					<div className={`${classes.generateStyleAll}`}>
 						<ReactFileReader
 							handleFiles={file => {
 								this.handleImportUrlsListJSON(file);

@@ -37798,14 +37798,16 @@ var styles = {
     padding: '10px',
     minWidth: '35%',
     width: '100%',
-    minHeight: '400px'
+    minHeight: '400px',
+    overflow: 'overlay'
   },
   rightBlock: {
     border: '1px solid #e1e4e8',
     padding: '10px',
     minWidth: '65%',
     width: '100%',
-    minHeight: '400px'
+    minHeight: '400px',
+    overflow: 'overlay'
   }
 };
 var Nav = (_dec = (0, _mobxReact.inject)('mainModel'), _dec(_class = (0, _mobxReact.observer)(_class =
@@ -39998,6 +40000,7 @@ function () {
     this.sections = new Map();
     var generateStorage = window.localStorage;
     var urlsListFromStorage = generateStorage.getItem('SiteMapUrlsList');
+    console.log(urlsListFromStorage);
     this.log = new _Log.default();
 
     if (urlsListFromStorage) {
@@ -40094,7 +40097,7 @@ function () {
             try {
               var newUrlObject = JSON.parse(contents);
               var generateStorage = window.localStorage;
-              _this.urlsList = newUrlObject.urlsList;
+              _this.urlsList = newUrlObject.urlsList || [];
               generateStorage.setItem('SiteMapUrlsList', JSON.stringify(newUrlObject));
 
               _this.log.addToLog({
@@ -40275,7 +40278,7 @@ var rulesJson = {
       "uniqness": "text",
       "id": 0
     }],
-    "CheckBox": [{
+    "Checkbox": [{
       "Locator": "input[type=checkbox]",
       "id": 0,
       "uniqness": "name"
@@ -40285,7 +40288,7 @@ var rulesJson = {
       "id": 0,
       "uniqness": "id"
     }],
-    "Label": [{
+    "Title": [{
       "Locator": "h1",
       "id": 0,
       "uniqness": "name"
@@ -40297,10 +40300,6 @@ var rulesJson = {
       "Locator": "h3",
       "id": 2,
       "uniqness": "name"
-    }, {
-      "Locator": "[ui=label]",
-      "id": 3,
-      "uniqness": "text"
     }],
     "Link": [{
       "Locator": "",
@@ -40346,11 +40345,6 @@ var rulesJson = {
       "id": 0,
       "uniqness": ""
     }],
-    "Menu": [{
-      "Locator": "",
-      "id": 0,
-      "uniqness": ""
-    }],
     "RadioButtons": [{
       "Locator": "",
       "id": 0,
@@ -40360,24 +40354,24 @@ var rulesJson = {
       "Locator": "",
       "id": 0,
       "uniqness": ""
+    }],
+    "MultiDropdown": [{
+      "Locator": "[ui=droplist]",
+      "id": 0,
+      "uniqness": "id"
+    }],
+    "Menu": [{
+      "Locator": ".sidebar-menu",
+      "id": 0,
+      "uniqness": "class"
+    }],
+    "Dropdown": [{
+      "Locator": "[ui=dropdown]",
+      "id": 0,
+      "uniqness": "id"
     }]
   },
   "ComplexRules": {
-    "Dropdown": [{
-      "Root": "div[ui=dropdown]",
-      "uniqness": "id",
-      "Value": ".filter-option",
-      "List": "li",
-      "Expand": ".caret",
-      "id": 0
-    }, {
-      "Root": "select[ui=dropdown]",
-      "uniqness": "id",
-      "Value": "",
-      "List": "",
-      "Expand": "",
-      "id": 1
-    }],
     "ComboBox": [{
       "Root": "div[ui=combobox]",
       "uniqness": "id",
@@ -40393,28 +40387,8 @@ var rulesJson = {
       "Expand": "",
       "id": 1
     }],
-    "DropList": [{
-      "Root": "div[ui=droplist]",
-      "uniqness": "id",
-      "Value": "button",
-      "List": "li",
-      "Expand": ".caret",
-      "IsSelected": "././/input",
-      "id": 0
-    }],
     "Table": [{
       "Root": "table",
-      "Header": "",
-      "RowHeader": "",
-      "Cell": "",
-      "Column": "",
-      "Row": "",
-      "Footer": "",
-      "id": 0,
-      "uniqness": "class"
-    }],
-    "DynamicTable": [{
-      "Root": "",
       "Header": "",
       "RowHeader": "",
       "Cell": "",
@@ -40439,12 +40413,8 @@ var rulesJson = {
       "id": 2,
       "uniqness": "tag"
     }, {
-      "Locator": ".uui-side-bar",
-      "id": 3,
-      "uniqness": "name"
-    }, {
       "Locator": ".main-form",
-      "id": 4,
+      "id": 3,
       "uniqness": "tag"
     }],
     "Form": [{
@@ -41210,7 +41180,10 @@ function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      var classes = this.props.classes;
+      var _this$props = this.props,
+          classes = _this$props.classes,
+          mainModel = _this$props.mainModel;
+      var isEnabled = (mainModel.generateBlockModel.urlsList || []).length;
       return _react.default.createElement("div", null, _react.default.createElement("div", null, _react.default.createElement("div", {
         className: "".concat(classes.generateStyle, " BtnGroup")
       }, _react.default.createElement(_Button.default, {
@@ -41224,10 +41197,13 @@ function (_React$Component) {
       }))), _react.default.createElement("div", null, _react.default.createElement("div", {
         className: "".concat(classes.generateStyleAll)
       }, _react.default.createElement(_Button.default, {
+        disabled: !isEnabled,
         className: "BtnGroup-item btn-primary",
-        label: 'Generate PO for Several Pages',
+        label: 'Generate Several Page',
         onclick: this.handleGenerateSeveral
-      }), _react.default.createElement(_reactFileReader.default, {
+      })), _react.default.createElement("div", {
+        className: "".concat(classes.generateStyleAll)
+      }, _react.default.createElement(_reactFileReader.default, {
         handleFiles: function handleFiles(file) {
           _this2.handleImportUrlsListJSON(file);
         },
@@ -71099,7 +71075,7 @@ function genCodeOfElements(parentId, arrOfElements, mainModel) {
 
       if (!!complex[el.Type]) {
         var fields = getFields(ruleBlockModel.elementFields[el.Type]);
-        result += isSimple(el, fields) ? simpleCode(locatorType(el.Root), el.Root, el.Type, el.Name) : complexCode(el.Type, complexLocators(el, fields, mainModel), el.Name, mainModel);
+        result += isSimple(el, fields) ? simpleCode(locatorType(el.Root), el.Root, el.Type, el.Name, mainModel) : complexCode(el.Type, complexLocators(el, fields, mainModel), el.Name, mainModel);
       }
 
       if (!!simple[el.Type]) {
@@ -71847,7 +71823,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57448" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53385" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
