@@ -3,7 +3,7 @@
 ## How to import into browser
 * Download repo
 * Open Chrome Settings -> choose option 'More tools' -> choose option Extensions -> Click 'Load unpacked'
-* Select root folder of this project
+* Select src folder inside of this project
 * Open Chrome developer tools -> JDN tab should be added
 
 ## Preconditions to get page objects
