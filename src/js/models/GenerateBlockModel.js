@@ -236,6 +236,7 @@ function fillEl ({ results, mainModel }, element, type, parent, ruleId) {
 		result.elId = hashCode(element.Locator + type);
 		results.push(result);
 	} else {
+		console.log(element)
 		result.parentId = parent.elId;
 		result.parent = parent.Name;
 		result.elId = genRand('El');
@@ -254,9 +255,27 @@ function getValue (content, uniqness) {
 	}
 }
 
+const showEmptyLocator = (mainModel, uniq) => {
+	const { settingsModel, ruleBlockModel } = mainModel;
+
+	if (settingsModel.framework === 'jdiLight') {
+		const ListOfSearchAttributes = ruleBlockModel.rules.ListOfSearchAttributes || [];
+		if (ListOfSearchAttributes.includes(uniq)) {
+			return true;
+		}
+	}
+	return false;
+};
+
+const isSimpleRule = (type, uniq, mainModel) => {
+	const { ruleBlockModel } = mainModel;
+	const simples = Object.keys(ruleBlockModel.rules.SimpleRules);
+
+	return simples.includes(type) && showEmptyLocator(mainModel, uniq);
+};
+
 const defineElements = ({ results, mainModel }, dom, Locator, uniq, t, ruleId, parent) => {
 	const { generateBlockModel } = mainModel;
-
 	let splitUniqness = uniq.split("#");
 	let uniqness = {
 		locator: splitUniqness.length == 2 ? splitUniqness[0] : "",
@@ -270,7 +289,10 @@ const defineElements = ({ results, mainModel }, dom, Locator, uniq, t, ruleId, p
 	}
 	if (elements.length === 1) {
 		let e = {
-			Locator: firstSearch.locatorType.locator,
+			Locator: isSimpleRule(t, uniq, mainModel)
+				? genRand('EMPTY_LOCATOR')
+				: firstSearch.locatorType.locator,
+			// Locator: firstSearch.locatorType.locator,
 			content: elements[0],
 			Name: nameElement(firstSearch.locatorType.locator, uniq, '', elements[0]).slice(0, 20),
 		};
@@ -297,16 +319,21 @@ const defineElements = ({ results, mainModel }, dom, Locator, uniq, t, ruleId, p
 			let s2 = getElements({ log: generateBlockModel.log }, dom, { locator: finalLocator, xpath: xpath });
 			if (s2.elements.length === 1) {
 				let e = {
-					Locator: finalLocator,
+					Locator: isSimpleRule(t, uniq, mainModel)
+						? genRand('EMPTY_LOCATOR')
+						: finalLocator,
+					// Locator: finalLocator,
 					content: s2.elements[0],
 					Name: nameElement(finalLocator, uniq, val, s2.elements[0]).slice(0, 20),
 				};
-				let smallFinalLocator = xpath
-					? valueToXpath('', uniqness, val)
-					: '' + valueToCss(uniqness, val);
-				let s3 = getElements({ log: generateBlockModel.log }, dom, { locator: smallFinalLocator, xpath: xpath });
-				if (s3.elements.length === 1) {
-					e.Locator = smallFinalLocator;
+				if (!showEmptyLocator(mainModel, uniq)) {
+					let smallFinalLocator = xpath
+						? valueToXpath('', uniqness, val)
+						: '' + valueToCss(uniqness, val);
+					let s3 = getElements({ log: generateBlockModel.log }, dom, { locator: smallFinalLocator, xpath: xpath });
+					if (s3.elements.length === 1) {
+						e.Locator = smallFinalLocator;
+					}
 				}
 				fillEl({ results, mainModel }, e, t, parent, ruleId);
 			} else {
@@ -490,7 +517,7 @@ export const generationCallBack = ({ mainModel }, r, err) => {
 					getSimple({ mainModel, results }, section, rule);
 				} catch (e) {
 					generateBlockModel.log.addToLog({
-						message: `Error! Getting simple element: ${e}`,
+						message: `Error! Getting simple element: ${e}. Rule ${rule}`,
 						type: 'error',
 					});
 					// objCopy.warningLog = [...objCopy.warningLog, getLog()];

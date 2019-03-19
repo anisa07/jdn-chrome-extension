@@ -39550,6 +39550,7 @@ function fillEl(_ref6, element, type, parent, ruleId) {
     result.elId = hashCode(element.Locator + type);
     results.push(result);
   } else {
+    console.log(element);
     result.parentId = parent.elId;
     result.parent = parent.Name;
     result.elId = (0, _helpers.genRand)('El');
@@ -39574,6 +39575,27 @@ function getValue(content, uniqness) {
   }
 }
 
+var showEmptyLocator = function showEmptyLocator(mainModel, uniq) {
+  var settingsModel = mainModel.settingsModel,
+      ruleBlockModel = mainModel.ruleBlockModel;
+
+  if (settingsModel.framework === 'jdiLight') {
+    var ListOfSearchAttributes = ruleBlockModel.rules.ListOfSearchAttributes || [];
+
+    if (ListOfSearchAttributes.includes(uniq)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+var isSimpleRule = function isSimpleRule(type, uniq, mainModel) {
+  var ruleBlockModel = mainModel.ruleBlockModel;
+  var simples = Object.keys(ruleBlockModel.rules.SimpleRules);
+  return simples.includes(type) && showEmptyLocator(mainModel, uniq);
+};
+
 var defineElements = function defineElements(_ref7, dom, Locator, uniq, t, ruleId, parent) {
   var results = _ref7.results,
       mainModel = _ref7.mainModel;
@@ -39595,7 +39617,8 @@ var defineElements = function defineElements(_ref7, dom, Locator, uniq, t, ruleI
 
   if (elements.length === 1) {
     var e = {
-      Locator: firstSearch.locatorType.locator,
+      Locator: isSimpleRule(t, uniq, mainModel) ? (0, _helpers.genRand)('EMPTY_LOCATOR') : firstSearch.locatorType.locator,
+      // Locator: firstSearch.locatorType.locator,
       content: elements[0],
       Name: nameElement(firstSearch.locatorType.locator, uniq, '', elements[0]).slice(0, 20)
     };
@@ -39631,20 +39654,24 @@ var defineElements = function defineElements(_ref7, dom, Locator, uniq, t, ruleI
 
       if (s2.elements.length === 1) {
         var _e = {
-          Locator: finalLocator,
+          Locator: isSimpleRule(t, uniq, mainModel) ? (0, _helpers.genRand)('EMPTY_LOCATOR') : finalLocator,
+          // Locator: finalLocator,
           content: s2.elements[0],
           Name: nameElement(finalLocator, uniq, val, s2.elements[0]).slice(0, 20)
         };
-        var smallFinalLocator = xpath ? valueToXpath('', uniqness, val) : '' + valueToCss(uniqness, val);
-        var s3 = getElements({
-          log: generateBlockModel.log
-        }, dom, {
-          locator: smallFinalLocator,
-          xpath: xpath
-        });
 
-        if (s3.elements.length === 1) {
-          _e.Locator = smallFinalLocator;
+        if (!showEmptyLocator(mainModel, uniq)) {
+          var smallFinalLocator = xpath ? valueToXpath('', uniqness, val) : '' + valueToCss(uniqness, val);
+          var s3 = getElements({
+            log: generateBlockModel.log
+          }, dom, {
+            locator: smallFinalLocator,
+            xpath: xpath
+          });
+
+          if (s3.elements.length === 1) {
+            _e.Locator = smallFinalLocator;
+          }
         }
 
         fillEl({
@@ -39878,7 +39905,7 @@ var generationCallBack = function generationCallBack(_ref11, r, err) {
           }, section, rule);
         } catch (e) {
           generateBlockModel.log.addToLog({
-            message: "Error! Getting simple element: ".concat(e),
+            message: "Error! Getting simple element: ".concat(e, ". Rule ").concat(rule),
             type: 'error'
           }); // objCopy.warningLog = [...objCopy.warningLog, getLog()];
           // document.querySelector('#refresh').click();
@@ -70961,6 +70988,16 @@ function locatorType(locator) {
   return locator && locator.indexOf('/') !== 1 ? "Css" : "XPath";
 }
 
+var isEmptyLocator = function isEmptyLocator(locator) {
+  return locator && locator.includes('EMPTY_LOCATOR');
+};
+
+var isSection = function isSection(type, mainModel) {
+  var ruleBlockModel = mainModel.ruleBlockModel;
+  var composites = Object.keys(ruleBlockModel.rules.CompositeRules);
+  return composites[type];
+};
+
 function complexCode(type, locator, name, mainModel) {
   var template = mainModel.settingsModel.template;
   var complexTemplate = template.pageElementComplex;
@@ -70972,10 +71009,18 @@ function complexCode(type, locator, name, mainModel) {
 
 function simpleCode(locatorType, locator, elType, name, mainModel) {
   var template = mainModel.settingsModel.template;
-  var templatePath = locatorType === 'Css' ? template.pageElementCss : template.pageElementXPath;
-  templatePath = templatePath.replace(/({{locator}})/, locator);
-  templatePath = templatePath.replace(/({{type}})/, elType);
-  templatePath = templatePath.replace(/({{name}})/, varName(name));
+  var templatePath = '';
+  console.log('locator', locator);
+
+  if (isEmptyLocator(locator)) {
+    templatePath = "    public ".concat(elType, " ").concat(varName(name), ";");
+  } else {
+    templatePath = locatorType === 'Css' ? template.pageElementCss : template.pageElementXPath;
+    templatePath = templatePath.replace(/({{locator}})/, locator);
+    templatePath = templatePath.replace(/({{type}})/, elType);
+    templatePath = templatePath.replace(/({{name}})/, varName(name));
+  }
+
   return templatePath + '\n';
 }
 

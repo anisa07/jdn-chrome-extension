@@ -100,6 +100,15 @@ function locatorType (locator) {
 	return locator && locator.indexOf('/') !== 1 ? "Css" : "XPath";
 }
 
+const isEmptyLocator = (locator) => locator && locator.includes('EMPTY_LOCATOR');
+
+const isSection = (type, mainModel) => {
+	const { ruleBlockModel } = mainModel;
+	const composites = Object.keys(ruleBlockModel.rules.CompositeRules);
+
+	return composites[type];
+};
+
 function complexCode (type, locator, name, mainModel) {
 	const template = mainModel.settingsModel.template;
 	let complexTemplate = template.pageElementComplex;
@@ -112,10 +121,18 @@ function complexCode (type, locator, name, mainModel) {
 
 function simpleCode (locatorType, locator, elType, name, mainModel) {
 	const template = mainModel.settingsModel.template;
-	let templatePath = locatorType === 'Css' ? template.pageElementCss : template.pageElementXPath;
-	templatePath = templatePath.replace(/({{locator}})/, locator);
-	templatePath = templatePath.replace(/({{type}})/, elType);
-	templatePath = templatePath.replace(/({{name}})/, varName(name));
+	let templatePath = '';
+
+	console.log('locator', locator)
+
+	if (isEmptyLocator(locator)) {
+		templatePath = `    public ${elType} ${varName(name)};`
+	} else {
+		templatePath = locatorType === 'Css' ? template.pageElementCss : template.pageElementXPath;
+		templatePath = templatePath.replace(/({{locator}})/, locator);
+		templatePath = templatePath.replace(/({{type}})/, elType);
+		templatePath = templatePath.replace(/({{name}})/, varName(name));
+	}
 
 	return templatePath + '\n';
 }
@@ -202,6 +219,7 @@ function genCodeOfElements (parentId, arrOfElements, mainModel) {
 	let result = '';
 	for (let i = 0; i < arrOfElements.length; i++) {
 		let el = getElement(arrOfElements[i], generateBlockModel);
+
 		if (el.parentId === parentId && (!!el.Locator || !!el.Root)) {
 			if (!!composites[el.Type]) {
 				result += simpleCode(locatorType(el.Locator), el.Locator, getClassName(el.Name), el.Name, mainModel);
