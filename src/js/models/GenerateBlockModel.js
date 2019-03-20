@@ -26,19 +26,19 @@ function generateLocator (xpath, locator) {
 	return xpath === isXpath(locator) ? locator : cssToXPath(locator);
 }
 
-function getCorrectLocator (dom, locator, uniqness) {
+function getCorrectLocator (dom, locator, uniqueness) {
 	let results = {
-		xpath: isXpath(locator) || isXpath(uniqness.locator) || uniqness.value === "text",
+		xpath: isXpath(locator) || isXpath(uniqueness.locator) || uniqueness.value === "text",
 		locator: ""
 	};
 	results.locator = generateLocator(results.xpath, locator);
 	results.locator = results.locator.indexOf('//') === 0 ? '.' + results.locator : results.locator;
-	if (uniqness.locator) results.locator += generateLocator(results.xpath, uniqness.locator);
+	if (uniqueness.locator) results.locator += generateLocator(results.xpath, uniqueness.locator);
 	return results;
 }
 
-function searchByWithoutValue ({ log }, dom, locator, uniqness) {
-	let locatorType = getCorrectLocator(dom, locator, uniqness);
+function searchByWithoutValue ({ log }, dom, locator, uniqueness) {
+	let locatorType = getCorrectLocator(dom, locator, uniqueness);
 	return getElements({ log }, dom, locatorType);
 }
 
@@ -55,24 +55,24 @@ function camelCase (n) {
 	return name;
 }
 
-function nameElement (locator, uniqness, value, content) {
-	if (uniqness === "text" || uniqness.includes("#text")) {
+function nameElement (locator, uniqueness, value, content) {
+	if (uniqueness === "text" || uniqueness.includes("#text")) {
 		return camelCase(value || (content.innerText || content.textContent).trim());
 	}
-	if (uniqness.includes('tag')) {
+	if (uniqueness.includes('tag')) {
 		return camelCase(content.tagName.toLowerCase());
 	}
-	if (uniqness.indexOf('[') === 0) {
+	if (uniqueness.indexOf('[') === 0) {
 		return camelCase(locator.replace(/[\.\/\*\[\]@]/g, ''));
 	}
-	if (uniqness === "class") {
+	if (uniqueness === "class") {
 		return camelCase(content.classList.value);
 	}
-	return camelCase(content.getAttribute(uniqness));
+	return camelCase(content.getAttribute(uniqueness));
 }
 
-function createCorrectXpath (originalLocator, uniqness, value, locator) {
-	let result = uniqness === "text" ? `contains(.,'${value/*.split(/\n/)[0]*/}')` : `@${uniqness}='${value}')`;
+function createCorrectXpath (originalLocator, uniqueness, value, locator) {
+	let result = uniqueness === "text" ? `contains(.,'${value/*.split(/\n/)[0]*/}')` : `@${uniqueness}='${value}')`;
 	if (locator) {
 		return `${originalLocator}${locator}${result}`
 	}
@@ -87,29 +87,29 @@ function createCorrectXpath (originalLocator, uniqness, value, locator) {
 	}
 }
 
-function valueToXpath (originalLocator, uniqness, value) {
+function valueToXpath (originalLocator, uniqueness, value) {
 	if (!!value) {
-		if (!!uniqness.locator) {
-			return createCorrectXpath(originalLocator, uniqness, value, uniqness.locator);
+		if (!!uniqueness.locator) {
+			return createCorrectXpath(originalLocator, uniqueness, value, uniqueness.locator);
 		}
-		if (isXpath(uniqness.value)) {
-			return createCorrectXpath(originalLocator, uniqness, value);
+		if (isXpath(uniqueness.value)) {
+			return createCorrectXpath(originalLocator, uniqueness, value);
 		} else {
-			return createCorrectXpath(originalLocator, uniqness.value, value);
+			return createCorrectXpath(originalLocator, uniqueness.value, value);
 		}
 	}
 	return originalLocator;
 }
 
-function valueToCss (uniqness, value) {
+function valueToCss (uniqueness, value) {
 	if (!!value) {
-		switch (uniqness.value) {
+		switch (uniqueness.value) {
 			case "class":
 				return `.${value.replace(/\s/g, '.')}`;
 			case "id":
 				return `#${value}`;
 			default:
-				return `[${uniqness.value}='${value}']`
+				return `[${uniqueness.value}='${value}']`
 		}
 	}
 	return '';
@@ -246,12 +246,12 @@ function fillEl ({ results, mainModel }, element, type, parent, ruleId) {
 	}
 }
 
-function getValue (content, uniqness) {
-	switch (uniqness.value) {
+function getValue (content, uniqueness) {
+	switch (uniqueness.value) {
 		case "text":
 			return (content.innerText || content.textContent).trim().split(/\n/)[0];
 		default:
-			return content.attributes[uniqness.value] ? content.attributes[uniqness.value].value : undefined;
+			return content.attributes[uniqueness.value] ? content.attributes[uniqueness.value].value : undefined;
 	}
 }
 
@@ -276,12 +276,12 @@ const isSimpleRule = (type, uniq, mainModel) => {
 
 const defineElements = ({ results, mainModel }, dom, Locator, uniq, t, ruleId, parent) => {
 	const { generateBlockModel } = mainModel;
-	let splitUniqness = uniq.split("#");
-	let uniqness = {
-		locator: splitUniqness.length == 2 ? splitUniqness[0] : "",
-		value: splitUniqness.length == 2 ? splitUniqness[1] : uniq
+	let splituniqueness = uniq.split("#");
+	let uniqueness = {
+		locator: splituniqueness.length == 2 ? splituniqueness[0] : "",
+		value: splituniqueness.length == 2 ? splituniqueness[1] : uniq
 	};
-	let firstSearch = searchByWithoutValue({ log: generateBlockModel.log }, dom, Locator, uniqness);
+	let firstSearch = searchByWithoutValue({ log: generateBlockModel.log }, dom, Locator, uniqueness);
 	let xpath = firstSearch.locatorType.xpath;
 	let elements = firstSearch.elements;
 	if (elements.length === 0) {
@@ -300,22 +300,22 @@ const defineElements = ({ results, mainModel }, dom, Locator, uniq, t, ruleId, p
 		return;
 	}
 	generateBlockModel.log.addToLog({
-		message: `Warning! Too much elements found(${elements.length} for ${uniqness.value}. Locator (${firstSearch.locatorType.locator}))`,
+		message: `Warning! Too much elements found(${elements.length} for ${uniqueness.value}. Locator (${firstSearch.locatorType.locator}))`,
 		type: 'warning'
 	});
 	if (elements.length > 1) {
-		if (uniqness.value === "tag" || uniqness.value === '[') {
+		if (uniqueness.value === "tag" || uniqueness.value === '[') {
 			generateBlockModel.log.addToLog({
-				message: `Warning! Too much elements found by locator ${firstSearch.locatorType.locator}; uniqness ${uniqness.value}; ${elements.length} elements`,
+				message: `Warning! Too much elements found by locator ${firstSearch.locatorType.locator}; uniqueness ${uniqueness.value}; ${elements.length} elements`,
 				type: 'warning',
 			});
 			// document.querySelector('#refresh').click();
 		}
 		for (let i = 0; i < elements.length; i++) {
-			let val = getValue(elements[i], uniqness, Locator);
+			let val = getValue(elements[i], uniqueness, Locator);
 			let finalLocator = xpath
-				? valueToXpath(firstSearch.locatorType.locator, uniqness, val)
-				: firstSearch.locatorType.locator + valueToCss(uniqness, val);
+				? valueToXpath(firstSearch.locatorType.locator, uniqueness, val)
+				: firstSearch.locatorType.locator + valueToCss(uniqueness, val);
 			let s2 = getElements({ log: generateBlockModel.log }, dom, { locator: finalLocator, xpath: xpath });
 			if (s2.elements.length === 1) {
 				let e = {
@@ -328,8 +328,8 @@ const defineElements = ({ results, mainModel }, dom, Locator, uniq, t, ruleId, p
 				};
 				if (!showEmptyLocator(mainModel, uniq)) {
 					let smallFinalLocator = xpath
-						? valueToXpath('', uniqness, val)
-						: '' + valueToCss(uniqness, val);
+						? valueToXpath('', uniqueness, val)
+						: '' + valueToCss(uniqueness, val);
 					let s3 = getElements({ log: generateBlockModel.log }, dom, { locator: smallFinalLocator, xpath: xpath });
 					if (s3.elements.length === 1) {
 						e.Locator = smallFinalLocator;
@@ -368,7 +368,7 @@ function getComposite ({ mainModel, results }, dom, t) {
 
 	rules.forEach((rule) => {
 		if (!!rule.Locator) {
-			defineElements({ mainModel, results }, dom, rule.Locator, rule.uniqness, t, rule.id, null);
+			defineElements({ mainModel, results }, dom, rule.Locator, rule.uniqueness, t, rule.id, null);
 		}
 	});
 
@@ -415,7 +415,7 @@ function getComplex ({ mainModel, results }, parent, t) {
 	let rules = rulesObj.ComplexRules[t];
 	rules.forEach((rule) => {
 		if (!!rule.Root) {
-			defineElements({ mainModel, results }, dom, rule.Root, rule.uniqness, t, rule.id, parent)
+			defineElements({ mainModel, results }, dom, rule.Root, rule.uniqueness, t, rule.id, parent)
 		}
 	})
 }
@@ -428,7 +428,7 @@ function getSimple ({ mainModel, results }, parent, t) {
 	let rules = rulesObj.SimpleRules[t];
 	rules.forEach((rule, i) => {
 		if (!!rule.Locator) {
-			defineElements({ mainModel, results }, dom, rule.Locator, rule.uniqness, t, rule.id, parent);
+			defineElements({ mainModel, results }, dom, rule.Locator, rule.uniqueness, t, rule.id, parent);
 		}
 	});
 };

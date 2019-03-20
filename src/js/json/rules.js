@@ -3,56 +3,56 @@ const rulesJson = {
 	"SimpleRules":
 		{
 			"Button":
-				[{ "Locator": "button[type=submit]", "uniqness": "text", "id": 0 }],
+				[{ "Locator": "button[type=submit]", "uniqueness": "text", "id": 0 }],
 			"Checkbox":
-				[{ "Locator": "input[type=checkbox]", "id": 0, "uniqness": "name" }],
+				[{ "Locator": "input[type=checkbox]", "id": 0, "uniqueness": "name" }],
 			"Image":
-				[{ "Locator": "img", "id": 0, "uniqness": "id" }],
+				[{ "Locator": "img", "id": 0, "uniqueness": "id" }],
 			"Title":
-				[{ "Locator": "h1", "id": 0, "uniqness": "name" },
-					{ "Locator": "h2", "id": 1, "uniqness": "name" },
-					{ "Locator": "h3", "id": 2, "uniqness": "name" }
+				[{ "Locator": "h1", "id": 0, "uniqueness": "name" },
+					{ "Locator": "h2", "id": 1, "uniqueness": "name" },
+					{ "Locator": "h3", "id": 2, "uniqueness": "name" }
 				],
 			"Link":
-				[{ "Locator": "", "uniqness": "", "id": 0 }],
+				[{ "Locator": "", "uniqueness": "", "id": 0 }],
 			"Text":
-				[{ "Locator": ".main-txt", "id": 0, "uniqness": "name" }],
+				[{ "Locator": ".main-txt", "id": 0, "uniqueness": "name" }],
 			"TextField":
-				[{ "Locator": "input[type=text]", "id": 0, "uniqness": "id" },
-					{ "Locator": "input[type=password]", "id": 1, "uniqness": "id" }
+				[{ "Locator": "input[type=text]", "id": 0, "uniqueness": "id" },
+					{ "Locator": "input[type=password]", "id": 1, "uniqueness": "id" }
 				],
 			"TextArea":
-				[{ "Locator": "textarea", "id": 0, "uniqness": "id" }],
+				[{ "Locator": "textarea", "id": 0, "uniqueness": "id" }],
 			"DataPicker":
-				[{ "Locator": "", "id": 0, "uniqness": "" }],
+				[{ "Locator": "", "id": 0, "uniqueness": "" }],
 			"FileInput":
-				[{ "Locator": "", "id": 0, "uniqness": "" }],
+				[{ "Locator": "", "id": 0, "uniqueness": "" }],
 			"Selector":
-				[{ "Locator": "", "id": 0, "uniqness": "" }],
+				[{ "Locator": "", "id": 0, "uniqueness": "" }],
 			"CheckList":
-				[{ "Locator": "", "id": 0, "uniqness": "" }],
+				[{ "Locator": "", "id": 0, "uniqueness": "" }],
 			"RadioButtons":
-				[{ "Locator": "", "id": 0, "uniqness": "" }],
+				[{ "Locator": "", "id": 0, "uniqueness": "" }],
 			"Tabs":
-				[{ "Locator": "", "id": 0, "uniqness": "" }],
+				[{ "Locator": "", "id": 0, "uniqueness": "" }],
 			"MultiDropdown":
-				[{ "Locator": "[ui=droplist]", "id": 0, "uniqness": "id" }],
+				[{ "Locator": "[ui=droplist]", "id": 0, "uniqueness": "id" }],
 			"Menu":
-				[{ "Locator": ".sidebar-menu", "id": 0, "uniqness": "class" }],
+				[{ "Locator": ".sidebar-menu", "id": 0, "uniqueness": "class" }],
 			"Dropdown":
-				[{ "Locator": "[ui=dropdown]", "id": 0, "uniqness": "id" } ]
+				[{ "Locator": "[ui=dropdown]", "id": 0, "uniqueness": "id" } ]
 		} ,
 	"ComplexRules":
 		{
 			"ComboBox":
 				[{
 					"Root": "div[ui=combobox]",
-					"uniqness": "id",
+					"uniqueness": "id",
 					"Value": "input",
 					"List": "li",
 					"Expand": ".caret",
 					"id": 0
-				}, { "Root": "select[ui=combobox]", "uniqness": "id", "Value": "", "List": "", "Expand": "", "id": 1 }],
+				}, { "Root": "select[ui=combobox]", "uniqueness": "id", "Value": "", "List": "", "Expand": "", "id": 1 }],
 			"Table":
 				[{
 					"Root": "table",
@@ -63,20 +63,20 @@ const rulesJson = {
 					"Row": "",
 					"Footer": "",
 					"id": 0,
-					"uniqness": "class"
+					"uniqueness": "class"
 				}],
 		}
 	,
 	"CompositeRules":
 		{
 			"Section":
-				[{ "Locator": ".section", "id": 0, "uniqness": "class" },
-					{ "Locator": "header", "id": 1, "uniqness": "tag" },
-					{ "Locator": "footer", "id": 2, "uniqness": "tag" },
-					{ "Locator": ".main-form", "id": 3, "uniqness": "tag" }
+				[{ "Locator": ".section", "id": 0, "uniqueness": "class" },
+					{ "Locator": "header", "id": 1, "uniqueness": "tag" },
+					{ "Locator": "footer", "id": 2, "uniqueness": "tag" },
+					{ "Locator": ".main-form", "id": 3, "uniqueness": "tag" }
 				],
 			"Form":
-				[{ "Locator": "form", "id": 0, "uniqness": "id" }]
+				[{ "Locator": "form", "id": 0, "uniqueness": "id" }]
 		}
 };
 

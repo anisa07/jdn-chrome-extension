@@ -39284,20 +39284,20 @@ function generateLocator(xpath, locator) {
   return xpath === isXpath(locator) ? locator : (0, _helpers.cssToXPath)(locator);
 }
 
-function getCorrectLocator(dom, locator, uniqness) {
+function getCorrectLocator(dom, locator, uniqueness) {
   var results = {
-    xpath: isXpath(locator) || isXpath(uniqness.locator) || uniqness.value === "text",
+    xpath: isXpath(locator) || isXpath(uniqueness.locator) || uniqueness.value === "text",
     locator: ""
   };
   results.locator = generateLocator(results.xpath, locator);
   results.locator = results.locator.indexOf('//') === 0 ? '.' + results.locator : results.locator;
-  if (uniqness.locator) results.locator += generateLocator(results.xpath, uniqness.locator);
+  if (uniqueness.locator) results.locator += generateLocator(results.xpath, uniqueness.locator);
   return results;
 }
 
-function searchByWithoutValue(_ref2, dom, locator, uniqness) {
+function searchByWithoutValue(_ref2, dom, locator, uniqueness) {
   var log = _ref2.log;
-  var locatorType = getCorrectLocator(dom, locator, uniqness);
+  var locatorType = getCorrectLocator(dom, locator, uniqueness);
   return getElements({
     log: log
   }, dom, locatorType);
@@ -39319,30 +39319,30 @@ function camelCase(n) {
   return name;
 }
 
-function nameElement(locator, uniqness, value, content) {
-  if (uniqness === "text" || uniqness.includes("#text")) {
+function nameElement(locator, uniqueness, value, content) {
+  if (uniqueness === "text" || uniqueness.includes("#text")) {
     return camelCase(value || (content.innerText || content.textContent).trim());
   }
 
-  if (uniqness.includes('tag')) {
+  if (uniqueness.includes('tag')) {
     return camelCase(content.tagName.toLowerCase());
   }
 
-  if (uniqness.indexOf('[') === 0) {
+  if (uniqueness.indexOf('[') === 0) {
     return camelCase(locator.replace(/[\.\/\*\[\]@]/g, ''));
   }
 
-  if (uniqness === "class") {
+  if (uniqueness === "class") {
     return camelCase(content.classList.value);
   }
 
-  return camelCase(content.getAttribute(uniqness));
+  return camelCase(content.getAttribute(uniqueness));
 }
 
-function createCorrectXpath(originalLocator, uniqness, value, locator) {
-  var result = uniqness === "text" ? "contains(.,'".concat(value
+function createCorrectXpath(originalLocator, uniqueness, value, locator) {
+  var result = uniqueness === "text" ? "contains(.,'".concat(value
   /*.split(/\n/)[0]*/
-  , "')") : "@".concat(uniqness, "='").concat(value, "')");
+  , "')") : "@".concat(uniqueness, "='").concat(value, "')");
 
   if (locator) {
     return "".concat(originalLocator).concat(locator).concat(result);
@@ -39359,25 +39359,25 @@ function createCorrectXpath(originalLocator, uniqness, value, locator) {
   }
 }
 
-function valueToXpath(originalLocator, uniqness, value) {
+function valueToXpath(originalLocator, uniqueness, value) {
   if (!!value) {
-    if (!!uniqness.locator) {
-      return createCorrectXpath(originalLocator, uniqness, value, uniqness.locator);
+    if (!!uniqueness.locator) {
+      return createCorrectXpath(originalLocator, uniqueness, value, uniqueness.locator);
     }
 
-    if (isXpath(uniqness.value)) {
-      return createCorrectXpath(originalLocator, uniqness, value);
+    if (isXpath(uniqueness.value)) {
+      return createCorrectXpath(originalLocator, uniqueness, value);
     } else {
-      return createCorrectXpath(originalLocator, uniqness.value, value);
+      return createCorrectXpath(originalLocator, uniqueness.value, value);
     }
   }
 
   return originalLocator;
 }
 
-function valueToCss(uniqness, value) {
+function valueToCss(uniqueness, value) {
   if (!!value) {
-    switch (uniqness.value) {
+    switch (uniqueness.value) {
       case "class":
         return ".".concat(value.replace(/\s/g, '.'));
 
@@ -39385,7 +39385,7 @@ function valueToCss(uniqness, value) {
         return "#".concat(value);
 
       default:
-        return "[".concat(uniqness.value, "='").concat(value, "']");
+        return "[".concat(uniqueness.value, "='").concat(value, "']");
     }
   }
 
@@ -39565,13 +39565,13 @@ function fillEl(_ref6, element, type, parent, ruleId) {
   }
 }
 
-function getValue(content, uniqness) {
-  switch (uniqness.value) {
+function getValue(content, uniqueness) {
+  switch (uniqueness.value) {
     case "text":
       return (content.innerText || content.textContent).trim().split(/\n/)[0];
 
     default:
-      return content.attributes[uniqness.value] ? content.attributes[uniqness.value].value : undefined;
+      return content.attributes[uniqueness.value] ? content.attributes[uniqueness.value].value : undefined;
   }
 }
 
@@ -39600,14 +39600,14 @@ var defineElements = function defineElements(_ref7, dom, Locator, uniq, t, ruleI
   var results = _ref7.results,
       mainModel = _ref7.mainModel;
   var generateBlockModel = mainModel.generateBlockModel;
-  var splitUniqness = uniq.split("#");
-  var uniqness = {
-    locator: splitUniqness.length == 2 ? splitUniqness[0] : "",
-    value: splitUniqness.length == 2 ? splitUniqness[1] : uniq
+  var splituniqueness = uniq.split("#");
+  var uniqueness = {
+    locator: splituniqueness.length == 2 ? splituniqueness[0] : "",
+    value: splituniqueness.length == 2 ? splituniqueness[1] : uniq
   };
   var firstSearch = searchByWithoutValue({
     log: generateBlockModel.log
-  }, dom, Locator, uniqness);
+  }, dom, Locator, uniqueness);
   var xpath = firstSearch.locatorType.xpath;
   var elements = firstSearch.elements;
 
@@ -39630,21 +39630,21 @@ var defineElements = function defineElements(_ref7, dom, Locator, uniq, t, ruleI
   }
 
   generateBlockModel.log.addToLog({
-    message: "Warning! Too much elements found(".concat(elements.length, " for ").concat(uniqness.value, ". Locator (").concat(firstSearch.locatorType.locator, "))"),
+    message: "Warning! Too much elements found(".concat(elements.length, " for ").concat(uniqueness.value, ". Locator (").concat(firstSearch.locatorType.locator, "))"),
     type: 'warning'
   });
 
   if (elements.length > 1) {
-    if (uniqness.value === "tag" || uniqness.value === '[') {
+    if (uniqueness.value === "tag" || uniqueness.value === '[') {
       generateBlockModel.log.addToLog({
-        message: "Warning! Too much elements found by locator ".concat(firstSearch.locatorType.locator, "; uniqness ").concat(uniqness.value, "; ").concat(elements.length, " elements"),
+        message: "Warning! Too much elements found by locator ".concat(firstSearch.locatorType.locator, "; uniqueness ").concat(uniqueness.value, "; ").concat(elements.length, " elements"),
         type: 'warning'
       }); // document.querySelector('#refresh').click();
     }
 
     for (var i = 0; i < elements.length; i++) {
-      var val = getValue(elements[i], uniqness, Locator);
-      var finalLocator = xpath ? valueToXpath(firstSearch.locatorType.locator, uniqness, val) : firstSearch.locatorType.locator + valueToCss(uniqness, val);
+      var val = getValue(elements[i], uniqueness, Locator);
+      var finalLocator = xpath ? valueToXpath(firstSearch.locatorType.locator, uniqueness, val) : firstSearch.locatorType.locator + valueToCss(uniqueness, val);
       var s2 = getElements({
         log: generateBlockModel.log
       }, dom, {
@@ -39661,7 +39661,7 @@ var defineElements = function defineElements(_ref7, dom, Locator, uniq, t, ruleI
         };
 
         if (!showEmptyLocator(mainModel, uniq)) {
-          var smallFinalLocator = xpath ? valueToXpath('', uniqness, val) : '' + valueToCss(uniqness, val);
+          var smallFinalLocator = xpath ? valueToXpath('', uniqueness, val) : '' + valueToCss(uniqueness, val);
           var s3 = getElements({
             log: generateBlockModel.log
           }, dom, {
@@ -39715,7 +39715,7 @@ function getComposite(_ref8, dom, t) {
       defineElements({
         mainModel: mainModel,
         results: results
-      }, dom, rule.Locator, rule.uniqness, t, rule.id, null);
+      }, dom, rule.Locator, rule.uniqueness, t, rule.id, null);
     }
   });
 
@@ -39771,7 +39771,7 @@ function getComplex(_ref9, parent, t) {
       defineElements({
         mainModel: mainModel,
         results: results
-      }, dom, rule.Root, rule.uniqness, t, rule.id, parent);
+      }, dom, rule.Root, rule.uniqueness, t, rule.id, parent);
     }
   });
 }
@@ -39788,7 +39788,7 @@ function getSimple(_ref10, parent, t) {
       defineElements({
         mainModel: mainModel,
         results: results
-      }, dom, rule.Locator, rule.uniqness, t, rule.id, parent);
+      }, dom, rule.Locator, rule.uniqueness, t, rule.id, parent);
     }
   });
 }
@@ -40302,113 +40302,113 @@ var rulesJson = {
   "SimpleRules": {
     "Button": [{
       "Locator": "button[type=submit]",
-      "uniqness": "text",
+      "uniqueness": "text",
       "id": 0
     }],
     "Checkbox": [{
       "Locator": "input[type=checkbox]",
       "id": 0,
-      "uniqness": "name"
+      "uniqueness": "name"
     }],
     "Image": [{
       "Locator": "img",
       "id": 0,
-      "uniqness": "id"
+      "uniqueness": "id"
     }],
     "Title": [{
       "Locator": "h1",
       "id": 0,
-      "uniqness": "name"
+      "uniqueness": "name"
     }, {
       "Locator": "h2",
       "id": 1,
-      "uniqness": "name"
+      "uniqueness": "name"
     }, {
       "Locator": "h3",
       "id": 2,
-      "uniqness": "name"
+      "uniqueness": "name"
     }],
     "Link": [{
       "Locator": "",
-      "uniqness": "",
+      "uniqueness": "",
       "id": 0
     }],
     "Text": [{
       "Locator": ".main-txt",
       "id": 0,
-      "uniqness": "name"
+      "uniqueness": "name"
     }],
     "TextField": [{
       "Locator": "input[type=text]",
       "id": 0,
-      "uniqness": "id"
+      "uniqueness": "id"
     }, {
       "Locator": "input[type=password]",
       "id": 1,
-      "uniqness": "id"
+      "uniqueness": "id"
     }],
     "TextArea": [{
       "Locator": "textarea",
       "id": 0,
-      "uniqness": "id"
+      "uniqueness": "id"
     }],
     "DataPicker": [{
       "Locator": "",
       "id": 0,
-      "uniqness": ""
+      "uniqueness": ""
     }],
     "FileInput": [{
       "Locator": "",
       "id": 0,
-      "uniqness": ""
+      "uniqueness": ""
     }],
     "Selector": [{
       "Locator": "",
       "id": 0,
-      "uniqness": ""
+      "uniqueness": ""
     }],
     "CheckList": [{
       "Locator": "",
       "id": 0,
-      "uniqness": ""
+      "uniqueness": ""
     }],
     "RadioButtons": [{
       "Locator": "",
       "id": 0,
-      "uniqness": ""
+      "uniqueness": ""
     }],
     "Tabs": [{
       "Locator": "",
       "id": 0,
-      "uniqness": ""
+      "uniqueness": ""
     }],
     "MultiDropdown": [{
       "Locator": "[ui=droplist]",
       "id": 0,
-      "uniqness": "id"
+      "uniqueness": "id"
     }],
     "Menu": [{
       "Locator": ".sidebar-menu",
       "id": 0,
-      "uniqness": "class"
+      "uniqueness": "class"
     }],
     "Dropdown": [{
       "Locator": "[ui=dropdown]",
       "id": 0,
-      "uniqness": "id"
+      "uniqueness": "id"
     }]
   },
   "ComplexRules": {
     "ComboBox": [{
       "Root": "div[ui=combobox]",
-      "uniqness": "id",
+      "uniqueness": "id",
       "Value": "input",
       "List": "li",
       "Expand": ".caret",
       "id": 0
     }, {
       "Root": "select[ui=combobox]",
-      "uniqness": "id",
+      "uniqueness": "id",
       "Value": "",
       "List": "",
       "Expand": "",
@@ -40423,31 +40423,31 @@ var rulesJson = {
       "Row": "",
       "Footer": "",
       "id": 0,
-      "uniqness": "class"
+      "uniqueness": "class"
     }]
   },
   "CompositeRules": {
     "Section": [{
       "Locator": ".section",
       "id": 0,
-      "uniqness": "class"
+      "uniqueness": "class"
     }, {
       "Locator": "header",
       "id": 1,
-      "uniqness": "tag"
+      "uniqueness": "tag"
     }, {
       "Locator": "footer",
       "id": 2,
-      "uniqness": "tag"
+      "uniqueness": "tag"
     }, {
       "Locator": ".main-form",
       "id": 3,
-      "uniqness": "tag"
+      "uniqueness": "tag"
     }],
     "Form": [{
       "Locator": "form",
       "id": 0,
-      "uniqness": "id"
+      "uniqueness": "id"
     }]
   }
 };
