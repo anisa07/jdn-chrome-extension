@@ -39617,7 +39617,7 @@ var defineElements = function defineElements(_ref7, dom, Locator, uniq, t, ruleI
 
   if (elements.length === 1) {
     var e = {
-      Locator: isSimpleRule(t, uniq, mainModel) ? (0, _helpers.genRand)('EMPTY_LOCATOR') : firstSearch.locatorType.locator,
+      Locator: isSimpleRule(t, uniq, mainModel) ? "EMPTY_LOCATOR_".concat(firstSearch.locatorType.locator) : firstSearch.locatorType.locator,
       // Locator: firstSearch.locatorType.locator,
       content: elements[0],
       Name: nameElement(firstSearch.locatorType.locator, uniq, '', elements[0]).slice(0, 20)
@@ -39654,7 +39654,7 @@ var defineElements = function defineElements(_ref7, dom, Locator, uniq, t, ruleI
 
       if (s2.elements.length === 1) {
         var _e = {
-          Locator: isSimpleRule(t, uniq, mainModel) ? (0, _helpers.genRand)('EMPTY_LOCATOR') : finalLocator,
+          Locator: isSimpleRule(t, uniq, mainModel) ? "EMPTY_LOCATOR_".concat(finalLocator) : finalLocator,
           // Locator: finalLocator,
           content: s2.elements[0],
           Name: nameElement(finalLocator, uniq, val, s2.elements[0]).slice(0, 20)
@@ -71868,7 +71868,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53385" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60364" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);

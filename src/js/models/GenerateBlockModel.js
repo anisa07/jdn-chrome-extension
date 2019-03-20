@@ -290,7 +290,7 @@ const defineElements = ({ results, mainModel }, dom, Locator, uniq, t, ruleId, p
 	if (elements.length === 1) {
 		let e = {
 			Locator: isSimpleRule(t, uniq, mainModel)
-				? genRand('EMPTY_LOCATOR')
+				? `EMPTY_LOCATOR_${firstSearch.locatorType.locator}`
 				: firstSearch.locatorType.locator,
 			// Locator: firstSearch.locatorType.locator,
 			content: elements[0],
@@ -320,7 +320,7 @@ const defineElements = ({ results, mainModel }, dom, Locator, uniq, t, ruleId, p
 			if (s2.elements.length === 1) {
 				let e = {
 					Locator: isSimpleRule(t, uniq, mainModel)
-						? genRand('EMPTY_LOCATOR')
+						? `EMPTY_LOCATOR_${finalLocator}`
 						: finalLocator,
 					// Locator: finalLocator,
 					content: s2.elements[0],
